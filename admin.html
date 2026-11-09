@@ -1321,11 +1321,12 @@
           <div class="reqHead">
             <span class="pill">${esc(REQ_TYPES[r.type] || r.type)}</span>
             @${esc(r.discordKey || "?")}${r.driverName || r.discordName ? ` <span class="muted">(${esc(r.driverName || r.discordName)})</span>` : ""}
-            <span class="muted" style="font-weight:700;">· ${esc(r.leagueName || r.leagueId || "—")} · ${r.source === "league" ? "passed on by league" + (r.passedBy ? " (" + esc(r.passedBy) + ")" : "") : "from the driver"}</span>
+            <span class="muted" style="font-weight:700;">· ${esc(r.leagueName || r.leagueId || "—")} · ${r.source === "league" ? "passed on by league" + (r.passedBy ? " (" + esc(r.passedBy) + ")" : "") : r.source === "portal" ? "from the driver (Your data page)" : "from the driver"}</span>
             <span class="pill ${st === "done" ? "miniOk" : st === "refused" ? "miniBad" : ""}">${esc(REQ_STATUS[st] || st)}</span>
             ${liveReq && left != null ? `<span class="pill ${left <= 7 ? "miniBad" : ""}">${left >= 0 ? `Reply due in ${left} day${left === 1 ? "" : "s"}` : `${-left} day${left === -1 ? "" : "s"} overdue`}</span>` : ""}
           </div>
           <div class="reqBody">${esc(r.details || "")}</div>
+          ${Array.isArray(r.leagues) && r.leagues.length ? `<div style="margin-top:6px;">${r.leagues.map(l => `<div class="logLine"><strong>${esc(l.name)}</strong> — ${[l.profile && "profile", l.ticketsAbout && l.ticketsAbout + " ticket(s) about them" + (l.openAbout ? " (" + l.openAbout + " open)" : ""), l.ticketsReported && l.ticketsReported + " reported", l.statements && l.statements + " statement(s)", l.imported && l.imported + " imported"].filter(Boolean).map(esc).join(" · ") || "—"}${l.penaltiesKept || l.banned ? ` <span style="color:var(--amber-dark); font-weight:700;">· KEEP: ${[l.penaltiesKept && l.penaltiesKept + " confirmed penalt" + (l.penaltiesKept === 1 ? "y" : "ies"), l.banned && "ban"].filter(Boolean).join(" + ")}</span>` : ""}</div>`).join("")}</div>` : ""}
           <div class="muted" style="font-size:12px; margin-top:4px;">Received ${esc(fmtDate(r.createdAt))} · Reply to: <strong>${esc(r.contact || "—")}</strong> · ID ${esc(r.id)}</div>
           ${actions.length ? `<div style="margin-top:6px;">${actions.map(a => `<div class="logLine">${esc(fmtDate(a.at))} — ${esc(a.text)}${a.status ? ` <strong>[${esc(REQ_STATUS[a.status] || a.status)}]</strong>` : ""} <span class="muted">(${esc(a.by)})</span></div>`).join("")}</div>` : `<div class="muted" style="font-size:12px; margin-top:6px;">No actions logged yet.</div>`}
           <div class="row" style="margin-top:8px; flex-wrap:nowrap;">
