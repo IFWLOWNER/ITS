@@ -1,0 +1,28 @@
+// ============================================================
+// ITS — Firebase init (its-prod project)
+// Compat SDK version, to match the <script> tags the ITS pages use:
+//   firebase-app-compat, firebase-auth-compat,
+//   firebase-firestore-compat, firebase-functions-compat
+// Load this AFTER those script tags. It exposes three globals the
+// pages rely on: auth, db, functions.
+//
+// These config values are not secret — they're meant to live in the
+// browser. Firestore security rules are what protect the data.
+// ============================================================
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCldSav-pNGis2UPHCQqZq66R5K2xu8hLs",
+  authDomain: "its-prod-3b87c.firebaseapp.com",
+  projectId: "its-prod-3b87c",
+  storageBucket: "its-prod-3b87c.firebasestorage.app",
+  messagingSenderId: "781549835815",
+  appId: "1:781549835815:web:f148e5acb2c0d0cc1d2002"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+// Every ITS Cloud Function lives in London — firebase.functions()
+// would otherwise default to us-central1 and fail with "not found".
+const functions = firebase.app().functions("europe-west2");
