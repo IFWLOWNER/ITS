@@ -1,0 +1,2346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ITS — Owner Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* ============================================================
+       IFWL STEWARD DASHBOARD — design system (single source of truth)
+       Vibrant light theme. Every id/class the JS relies on is
+       preserved; this replaces three previously-stacked !important
+       patch layers with one consolidated, motion + icon-ready sheet.
+       ============================================================ */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap');
+
+    :root{
+      --navy:#0f172a;
+      --ink:#111827;
+      --muted:#64748b;
+      --muted-2:#94a3b8;
+      --line:#e4e0fb;
+      --line-soft:#eeecfc;
+      --bg:#f5f4fd;
+      --card:#ffffff;
+      --card-soft:#f8f7fe;
+
+      --primary:#4f46e5;
+      --primary-dark:#3730a3;
+      --primary-2:#7c3aed;
+      --accent:#db2777;
+      --accent-2:#06b6d4;
+      --grad-primary:linear-gradient(135deg,#4f46e5,#7c3aed 55%,#db2777);
+      --grad-cool:linear-gradient(135deg,#06b6d4,#4f46e5);
+
+      --red:#e11d48;
+      --red-dark:#9f1239;
+      --red-soft:#fff1f4;
+      --red-line:#fecdd6;
+
+      --amber:#d97706;
+      --amber-dark:#92400e;
+      --amber-soft:#fffbeb;
+      --amber-line:#fde68a;
+
+      --green:#059669;
+      --green-dark:#065f46;
+      --green-soft:#ecfdf5;
+      --green-line:#a7f3d0;
+
+      --blue:#2563eb;
+      --blue-dark:#1d4ed8;
+      --blue-soft:#eff6ff;
+      --blue-line:#bfdbfe;
+
+      --indigo:#4f46e5;
+      --indigo-dark:#3730a3;
+      --indigo-soft:#eef0ff;
+      --indigo-line:#c7d2fe;
+
+      --teal:#0d9488;
+      --teal-dark:#115e59;
+      --teal-soft:#f0fdfa;
+      --teal-line:#99f6e4;
+
+      --purple:#7c3aed;
+
+      --font-display:'Manrope', Inter, ui-sans-serif, system-ui, sans-serif;
+
+      --radius-lg:22px;
+      --radius:16px;
+      --radius-sm:12px;
+      --shadow:0 18px 40px rgba(79,70,229,.13);
+      --shadow-sm:0 8px 18px rgba(15,23,42,.07);
+      --shadow-glow:0 12px 26px rgba(124,58,237,.30);
+      --focus:0 0 0 4px rgba(79,70,229,.18);
+    }
+
+    *, *::before, *::after{ box-sizing:border-box; }
+
+    html{ background:var(--bg); scroll-behavior:smooth; }
+    html, body{ width:100%; max-width:100%; overflow-x:hidden; }
+
+    @keyframes fadeSlideIn{ from{ opacity:0; transform:translateY(7px); } to{ opacity:1; transform:translateY(0); } }
+    @keyframes gradientShift{ 0%{ background-position:0% 50%; } 50%{ background-position:100% 50%; } 100%{ background-position:0% 50%; } }
+    @keyframes pulseDot{ 0%{ box-shadow:0 0 0 0 rgba(217,119,6,.45); } 70%{ box-shadow:0 0 0 7px rgba(217,119,6,0); } 100%{ box-shadow:0 0 0 0 rgba(217,119,6,0); } }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+      color:var(--ink);
+      line-height:1.45;
+      background:
+        radial-gradient(circle at 12% -4%, rgba(79,70,229,.15), transparent 34%),
+        radial-gradient(circle at 88% 0%, rgba(219,39,119,.12), transparent 38%),
+        radial-gradient(circle at 50% 100%, rgba(6,182,212,.09), transparent 40%),
+        var(--bg);
+      background-attachment:fixed;
+    }
+
+    img, video, iframe, canvas, svg{ max-width:100%; }
+    .icon{ width:16px; height:16px; stroke:currentColor; stroke-width:2.2; fill:none; stroke-linecap:round; stroke-linejoin:round; display:block; flex:0 0 auto; }
+
+    /* ---------- header ---------- */
+    header{
+      position:sticky; top:0; z-index:50;
+      display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
+      padding:16px clamp(14px, 2vw, 26px);
+      background:rgba(255,255,255,.88);
+      border-bottom:1px solid var(--line);
+      box-shadow:0 12px 30px rgba(79,70,229,.10);
+      backdrop-filter:blur(18px) saturate(1.3);
+      -webkit-backdrop-filter:blur(18px) saturate(1.3);
+    }
+    header::before{
+      content:""; position:absolute; left:0; right:0; top:0; height:4px;
+      background:var(--grad-primary); background-size:200% 100%;
+      animation:gradientShift 7s ease infinite;
+    }
+    .brand{ display:flex; gap:12px; align-items:center; min-width:0; }
+    .brand img{
+      width:42px; height:42px; object-fit:contain; flex:0 0 auto;
+      padding:6px; border-radius:14px;
+      background:linear-gradient(135deg,#fff,#f1f0fe);
+      border:1px solid var(--line);
+      box-shadow:0 6px 16px rgba(79,70,229,.18);
+    }
+    .brandText{ min-width:0; }
+    .brandTitle{ font-family:var(--font-display); font-weight:800; font-size:19px; letter-spacing:-.02em; background:var(--grad-primary); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    .welcomeLine{ font-size:12px; color:#334155; margin-top:5px; line-height:1.3; max-width:900px; }
+    header .small{ font-size:12px; color:var(--muted); margin-top:4px; line-height:1.2; word-break:break-word; }
+    header .row{ align-items:center; }
+
+    @media (max-width: 980px){
+      header{ position:relative; flex-direction:column; align-items:stretch; padding:14px; }
+      header .row{ width:100%; display:grid; grid-template-columns:1fr; gap:8px; }
+      header button{ width:100%; }
+      .brand{ align-items:center; }
+      .brandText > div, .welcomeLine, header .small{ max-width:100%; overflow-wrap:anywhere; word-break:break-word; }
+    }
+
+    /* ---------- layout ---------- */
+    .wrap{
+      display:grid;
+      grid-template-columns:minmax(320px, 400px) minmax(0, 1fr);
+      gap:16px;
+      width:min(1680px, calc(100% - 28px));
+      margin:0 auto;
+      padding:16px 0 20px;
+      align-items:start;
+    }
+    body > div[style*="padding:14px"]{
+      width:min(1680px, calc(100% - 28px));
+      margin:0 auto;
+    }
+    @media (max-width: 980px){
+      .wrap{ grid-template-columns:1fr; width:calc(100% - 20px); }
+      body > div[style*="padding:14px"]{ width:calc(100% - 20px); }
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius-lg);
+      box-shadow:var(--shadow);
+      padding:18px;
+      overflow:hidden;
+    }
+    .wrap > .card{
+      position:sticky; top:88px;
+      max-height:calc(100vh - 108px);
+      display:flex; flex-direction:column;
+    }
+    @media (max-width: 980px){
+      .wrap > .card{ position:relative; top:auto; max-height:none; }
+    }
+    /* ✅ FIXED: the Live Workload card is a column flexbox with a capped
+       height, so every direct child (title row, workload summary box,
+       filter row, ticket list, hint line) defaulted to flex-shrink:1. When
+       the ticket list's natural content was taller than the available
+       space, the browser shrank ALL of them together instead of just
+       scrolling the list - and because each of those children also sets
+       its own overflow:hidden, shrinking below content height silently
+       clipped their content instead of resizing visibly (the workload
+       summary's pill/subtitle vanishing, ticket text overlapping the
+       status pill). Only .list is meant to flex/scroll - everything else
+       around it needs to hold its natural size no matter how little room
+       is left, so the list is what gives way (via its own overflow-y:auto)
+       instead of every child getting silently crushed.
+    */
+    .wrap > .card > .row,
+    .wrap > .card > .workloadBox,
+    .wrap > .card > .muted{ flex-shrink:0; }
+
+    .title{ font-family:var(--font-display); font-weight:800; font-size:16px; margin:0 0 10px; color:var(--navy); letter-spacing:-.01em; display:flex; align-items:center; gap:9px; }
+    .muted{ color:var(--muted); font-size:12px; font-weight:600; }
+    .small{ font-size:12px; }
+    .ok{ color:var(--green-dark); font-weight:700; }
+
+    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    @media (max-width: 980px){ .grid2{ grid-template-columns:1fr; } }
+
+    /* ---------- icon chips (section headers, titles, stat tiles) ---------- */
+    .iconChip{ display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:9px; color:#fff; flex:0 0 auto; box-shadow:0 4px 10px rgba(15,23,42,.14); }
+    .iconChip .icon{ width:15px; height:15px; }
+    .iconChip.chip-indigo{ background:linear-gradient(135deg,var(--indigo),#818cf8); }
+    .iconChip.chip-teal{ background:linear-gradient(135deg,var(--teal),#2dd4bf); }
+    .iconChip.chip-amber{ background:linear-gradient(135deg,var(--amber),#fbbf24); }
+    .iconChip.chip-blue{ background:linear-gradient(135deg,var(--blue),#60a5fa); }
+    .iconChip.chip-pink{ background:linear-gradient(135deg,var(--accent),#f472b6); }
+    .iconChip.chip-red{ background:linear-gradient(135deg,var(--red),#fb7185); }
+
+    /* ---------- buttons & inputs ---------- */
+    button{
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      padding:10px 16px; min-height:42px;
+      border:1px solid var(--line); border-radius:999px;
+      background:var(--card); color:var(--navy); font-weight:750; font-size:13px;
+      cursor:pointer; box-shadow:var(--shadow-sm);
+      transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease, background .15s ease, color .15s ease;
+    }
+    button .btnIcon{ width:15px; height:15px; stroke-width:2.3; }
+    button:hover:not(:disabled){ transform:translateY(-2px); border-color:var(--primary); color:var(--primary-dark); background:#fff; box-shadow:0 10px 22px rgba(79,70,229,.18); }
+    button:active:not(:disabled){ transform:translateY(0); }
+    button:disabled{ opacity:.55; cursor:not-allowed; }
+    button.primary{
+      background:var(--grad-primary); background-size:160% 160%;
+      border-color:transparent; color:#fff;
+      box-shadow:var(--shadow-glow);
+    }
+    button.primary:hover:not(:disabled){ transform:translateY(-2px); background-position:100% 0; color:#fff; box-shadow:0 16px 34px rgba(124,58,237,.38); }
+    button#tlsBtn{
+      border-color:rgba(225,29,72,.28); color:var(--red-dark);
+      background:linear-gradient(135deg,#fff,#fff1f4);
+    }
+    button#tlsBtn:hover{ color:var(--red-dark); border-color:var(--red); box-shadow:0 10px 22px rgba(225,29,72,.18); }
+
+    select, input, textarea{
+      width:100%; box-sizing:border-box;
+      padding:10px 12px; font-size:14px; color:var(--ink);
+      border:1px solid #d8d4f5; border-radius:var(--radius-sm);
+      background:#fff; outline:none;
+      transition:border-color .14s ease, box-shadow .14s ease;
+    }
+    textarea{ min-height:70px; resize:vertical; font-family:inherit; }
+    select:focus, input:focus, textarea:focus{ border-color:var(--primary); box-shadow:var(--focus); }
+    select.nfaNoTimeRequired{ opacity:.7; background:var(--card-soft); }
+    textarea[readonly]{ background:var(--card-soft); color:#334155; }
+
+    label.muted{ display:block; margin-bottom:5px; }
+
+    code{ background:var(--card-soft); border:1px solid var(--line); padding:2px 6px; border-radius:6px; font-size:12px; }
+    a{ color:var(--primary-dark); }
+    a:hover{ opacity:.85; }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+    /* ---------- pills, badges, tags ---------- */
+    .pill, .badge, .miniPill{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:5px 11px; border-radius:999px;
+      border:1px solid var(--line); background:#fff;
+      font-size:12px; font-weight:750; color:var(--ink);
+      box-shadow:var(--shadow-sm); white-space:nowrap;
+    }
+    .pill strong{ font-weight:850; }
+    .miniOk{ border-color:var(--green-line); background:var(--green-soft); color:var(--green-dark); font-weight:850; }
+    .miniBad{ border-color:var(--red-line); background:var(--red-soft); color:var(--red-dark); font-weight:850; }
+
+    .needTag, .linkedMiniTag, .ticketTinyPill, .ticketStatusPill, .ticketOpenHint{
+      display:inline-flex; align-items:center; gap:5px;
+      padding:5px 10px; border-radius:999px; font-size:11px; font-weight:850;
+      border:1px solid var(--line); background:#fff; color:#334155;
+      box-shadow:var(--shadow-sm); white-space:nowrap; line-height:1.1;
+    }
+    .needTag{ position:relative; padding-left:19px; border-color:var(--amber-line); background:var(--amber-soft); color:var(--amber-dark); }
+    .needTag::before{ content:""; position:absolute; left:9px; top:50%; width:6px; height:6px; margin-top:-3px; border-radius:999px; background:var(--amber-dark); animation:pulseDot 1.8s infinite; }
+    .linkedMiniTag{ border-color:var(--blue-line); background:var(--blue-soft); color:#1e3a8a; word-break:break-word; white-space:normal; }
+    .ticketOpenHint{ color:var(--blue-dark); background:var(--blue-soft); border-color:var(--blue-line); }
+    .proofYes{ color:var(--green-dark); background:var(--green-soft); border-color:var(--green-line); }
+    .proofNo{ color:var(--amber-dark); background:var(--amber-soft); border-color:var(--amber-line); }
+
+    .ticketStatusPill{ flex:0 0 auto; max-width:150px; text-align:center; }
+    .ticketStatusPill[data-status="finalised"]{ background:var(--green-soft); border-color:var(--green-line); color:var(--green-dark); }
+    .ticketStatusPill[data-status="in-review"]{ background:var(--indigo-soft); border-color:var(--indigo-line); color:var(--indigo-dark); }
+    .ticketStatusPill[data-status="ready-to-publish"]{ background:var(--teal-soft); border-color:var(--teal-line); color:var(--teal-dark); }
+    .ticketStatusPill[data-status="awaiting-review"],
+    .ticketStatusPill[data-status="under-review"],
+    .ticketStatusPill[data-status=""]{ background:var(--amber-soft); border-color:var(--amber-line); color:var(--amber-dark); }
+
+    .stmtTag, .delibTag{
+      padding:9px 10px; border-radius:var(--radius-sm); font-size:12px; font-weight:850; line-height:1.25;
+      border:1px solid var(--line); background:var(--card-soft); color:var(--ink);
+    }
+    .stmtTag small, .delibTag small{ display:block; margin-top:4px; font-weight:750; opacity:.9; }
+    .stmtOk, .delibOk{ border-color:var(--green-line); background:var(--green-soft); color:var(--green-dark); }
+    .stmtBad, .delibBad{ border-color:var(--red-line); background:var(--red-soft); color:var(--red-dark); }
+
+    /* ---------- top stat bar (NEW) ---------- */
+    .statBar{ display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:12px; }
+    .statTile{
+      position:relative; overflow:hidden;
+      background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+      padding:15px 16px; display:flex; align-items:center; gap:13px;
+      box-shadow:var(--shadow-sm);
+      animation:fadeSlideIn .3s ease both;
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+    .statTile:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+    .statTile::after{ content:""; position:absolute; right:-26px; top:-26px; width:84px; height:84px; border-radius:999px; opacity:.10; }
+    .statTileIcon{ position:relative; z-index:1; width:44px; height:44px; border-radius:13px; display:flex; align-items:center; justify-content:center; color:#fff; flex:0 0 auto; box-shadow:0 8px 18px rgba(15,23,42,.16); }
+    .statTileIcon .icon{ width:21px; height:21px; }
+    .statTileBody{ position:relative; z-index:1; min-width:0; }
+    .statTileNum{ font-family:var(--font-display); font-size:23px; font-weight:800; color:var(--navy); line-height:1.15; }
+    .statTileLabel{ font-size:11px; font-weight:750; color:var(--muted); text-transform:uppercase; letter-spacing:.045em; margin-top:2px; }
+    .statTile.tone-indigo .statTileIcon{ background:linear-gradient(135deg,#4f46e5,#818cf8); }
+    .statTile.tone-indigo::after{ background:#4f46e5; }
+    .statTile.tone-amber .statTileIcon{ background:linear-gradient(135deg,#d97706,#fbbf24); }
+    .statTile.tone-amber::after{ background:#d97706; }
+    .statTile.tone-pink .statTileIcon{ background:linear-gradient(135deg,#db2777,#f472b6); }
+    .statTile.tone-pink::after{ background:#db2777; }
+    .statTile.tone-teal .statTileIcon{ background:linear-gradient(135deg,#0d9488,#2dd4bf); }
+    .statTile.tone-teal::after{ background:#0d9488; }
+
+    /* ---------- workload box ---------- */
+    .workloadBox{ position:relative; overflow:hidden; border:1px solid var(--indigo-line); border-radius:var(--radius-sm); padding:13px 15px; background:linear-gradient(135deg,var(--indigo-soft),#fff); margin:10px 0 12px; }
+    .workloadBox::after{ content:""; position:absolute; right:-22px; top:-22px; width:80px; height:80px; border-radius:999px; background:var(--indigo); opacity:.08; }
+    .workloadTop{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; position:relative; z-index:1; }
+    .workloadTitle{ font-weight:800; font-size:13px; margin:0; color:var(--navy); display:flex; align-items:center; gap:8px; }
+    .workloadSub{ margin-top:6px; font-size:12px; color:var(--muted); line-height:1.3; position:relative; z-index:1; }
+
+    /* ---------- ticket list ---------- */
+    .list{
+      flex:1; min-height:0; overflow-y:auto; overflow-x:hidden;
+      display:flex; flex-direction:column; gap:12px;
+      padding:2px 6px 14px 2px; margin-right:-4px;
+      scrollbar-width:thin; scrollbar-color:#c7bdf5 transparent;
+    }
+    .list::-webkit-scrollbar{ width:9px; }
+    .list::-webkit-scrollbar-thumb{ background:#c7bdf5; border-radius:999px; border:3px solid transparent; background-clip:content-box; }
+    @media (max-width: 980px){ .list{ max-height:62vh; min-height:280px; } }
+
+    .ticket{
+      position:relative; cursor:pointer; border-radius:var(--radius); overflow:hidden;
+      border:1px solid var(--line); background:linear-gradient(180deg,#fff,#fbfbff);
+      box-shadow:var(--shadow-sm);
+      animation:fadeSlideIn .28s ease both;
+      transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+      /* ✅ FIXED: same flex-shrink issue as the card's own children (see
+         .wrap > .card comment above) one level deeper - .list is itself a
+         column flexbox, so each .ticket card defaulted to shrinking below
+         its real content height (and, with overflow:hidden here, silently
+         clipping everything past the title line - the id/people/info/
+         incident/footer rows, and the second line of the subtitle) rather
+         than letting .list's own overflow-y:auto scroll to show every card
+         at full size. Cards now always render full height; .list scrolls. */
+      flex-shrink:0;
+    }
+    .ticket::before{ content:""; position:absolute; inset:0 auto 0 0; width:5px; background:var(--grad-primary); opacity:.35; transition:opacity .16s ease, width .16s ease; }
+    .ticket:hover{ transform:translateY(-2px); box-shadow:0 16px 32px rgba(79,70,229,.16); border-color:var(--indigo-line); background:#fff; }
+    .ticket:hover::before{ opacity:.85; width:6px; }
+    .ticket.active{ border-color:var(--primary); box-shadow:0 0 0 3px rgba(79,70,229,.14), var(--shadow); background:linear-gradient(135deg,#fff,var(--indigo-soft)); }
+    .ticket.active::before{ width:6px; opacity:1; }
+    .ticket .id{ font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; color:var(--navy); font-weight:750; }
+    .ticket .status{ font-size:12px; color:#334155; margin-top:3px; }
+
+    .ticketCardInner, .ticketCardInner.compactTicketCard{ position:relative; z-index:1; padding:14px 14px 13px 18px; }
+    .ticketHeadLine{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; min-width:0; }
+    .ticketHeadText{ min-width:0; flex:1; }
+    .ticketEvent{ font-size:14px; font-weight:850; color:var(--navy); line-height:1.25; white-space:normal; word-break:break-word; }
+    .ticketCompetition{ margin-top:3px; font-size:12px; font-weight:700; color:var(--muted); line-height:1.25; white-space:normal; word-break:break-word; }
+
+    .ticketIdLine{
+      margin-top:9px; display:flex; gap:8px; align-items:center; min-width:0;
+      border:1px solid var(--line); background:var(--card-soft); border-radius:var(--radius-sm); padding:7px 9px;
+    }
+    .ticketIdLine span, .ticketPeopleLine span, .ticketInfoLine span{
+      display:block; color:var(--muted-2); font-size:10px; text-transform:uppercase; letter-spacing:.07em; font-weight:850;
+    }
+    .ticketIdLine strong{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--navy); font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; }
+
+    .ticketPeopleLine, .ticketInfoLine{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
+    .ticketPeopleLine > div, .ticketInfoLine > div{ min-width:0; border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; padding:8px 9px; }
+    .ticketPeopleLine strong, .ticketInfoLine strong{ display:block; margin-top:3px; color:var(--navy); font-size:12px; line-height:1.25; font-weight:800; white-space:normal; word-break:break-word; }
+    .ticketPeopleLine > div:first-child{ background:#fff8f9; border-color:var(--red-line); }
+    .ticketPeopleLine > div:last-child{ background:#f7f7fe; border-color:var(--indigo-line); }
+    @media (max-width: 560px){ .ticketPeopleLine, .ticketInfoLine{ grid-template-columns:1fr; } }
+
+    .ticketIncidentLine{
+      margin-top:8px; color:#334155; font-size:12px; line-height:1.35; font-weight:650;
+      background:var(--card-soft); border:1px solid var(--line); border-radius:var(--radius-sm); padding:8px 9px;
+      white-space:normal; word-break:break-word;
+    }
+
+    .compactFooter{ margin-top:9px; display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+    .compactFooter .ticketOpenHint{ margin-left:auto; }
+    .compactChecklist{ margin-top:8px; display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+    @media (max-width: 980px){ .compactChecklist{ grid-template-columns:1fr; } }
+
+    /* ---------- section blocks ---------- */
+    .sec{ border:1px solid var(--line); border-left:4px solid var(--line); border-radius:var(--radius); padding:15px; background:var(--card-soft); margin-top:13px; transition:box-shadow .18s ease, border-color .18s ease; }
+    .sec:hover{ box-shadow:var(--shadow-sm); }
+    .sec h3{ margin:0 0 9px; font-size:14.5px; font-family:var(--font-display); font-weight:800; color:var(--navy); display:flex; align-items:center; gap:9px; }
+    #statementsSec{ border-left-color:var(--teal); }
+    #discussionSec{ border-left-color:var(--indigo); }
+    #driverHistorySec{ border-left-color:var(--amber); }
+    #linkedIncidentSec{ border-left-color:var(--blue); }
+
+    #selTitle{ font-size:19px; }
+    #selTitle::after{ content:""; display:block; width:60px; height:3px; margin-top:8px; border-radius:999px; background:var(--grad-primary); }
+
+    #sumCompetition, #sumEvent, #sumRule, #sumProof{ font-weight:750; color:#172033; word-break:break-word; }
+
+    .redBox{
+      border:1px solid var(--red-line); background:var(--red-soft); color:var(--red-dark);
+      border-radius:var(--radius-sm); padding:10px 12px 10px 40px; margin-top:10px;
+      font-size:13px; line-height:1.3; font-weight:700; position:relative;
+    }
+    .redBox::before{
+      content:"!"; position:absolute; left:12px; top:50%; transform:translateY(-50%);
+      width:20px; height:20px; display:grid; place-items:center; border-radius:999px;
+      color:#fff; background:var(--red); font-weight:900; font-size:12px;
+    }
+
+    .bannerBox{ border-radius:var(--radius-sm); padding:12px 14px; font-size:13px; font-weight:800; line-height:1.3; }
+    .bannerBox small{ display:block; margin-top:6px; font-weight:700; opacity:.95; }
+    .bannerRed{ border:1px solid var(--red-line); background:var(--red-soft); color:var(--red-dark); }
+    .bannerAmber{ border:1px solid var(--amber-line); background:var(--amber-soft); color:var(--amber-dark); }
+    .bannerGreen{ border:1px solid var(--green-line); background:var(--green-soft); color:var(--green-dark); }
+
+    .videoWrap{ position:relative; width:100%; padding-top:56.25%; background:#000; border-radius:var(--radius-sm); overflow:hidden; border:1px solid var(--line); margin-top:10px; box-shadow:var(--shadow-sm); }
+    .videoWrap iframe, .videoWrap video{ position:absolute; top:0; left:0; width:100%; height:100%; border:0; }
+
+    .commentBox{
+      position:relative; border:1px solid var(--line); border-radius:var(--radius-sm);
+      padding:12px 12px 12px 16px; background:#fff;
+      transition:box-shadow .15s ease, transform .15s ease;
+    }
+    .commentBox:hover{ transform:translateY(-1px); box-shadow:var(--shadow-sm); }
+    .commentBox::before{ content:""; position:absolute; left:0; top:12px; bottom:12px; width:4px; border-radius:999px; background:var(--grad-primary); opacity:.55; }
+    .commentMeta{ font-size:12px; color:var(--muted); margin-top:4px; font-weight:650; }
+
+    .timePenaltyRow{ margin-top:10px; }
+    .nfaNoTimeNote{ margin-top:6px; font-size:12px; font-weight:800; color:var(--green-dark); display:none; }
+
+    .penPreview{ margin-top:10px; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; color:var(--ink); font-size:13px; line-height:1.3; }
+    .penPreview .mutedLine{ color:var(--muted); font-size:12px; margin-top:6px; }
+    .penPreview .k{ font-weight:900; }
+    .penPreview pre{ margin:8px 0 0; white-space:pre-wrap; font-family:inherit; background:transparent; }
+
+    .voteSummaryBox{ margin-top:12px; border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; padding:12px; }
+    .voteSummaryTitle{ font-weight:850; font-size:14px; margin-bottom:8px; color:var(--navy); display:flex; align-items:center; gap:8px; }
+    .voteSummaryGrid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px; }
+    @media (max-width: 980px){ .voteSummaryGrid{ grid-template-columns:1fr; } }
+    .voteSummaryPanel{ border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card-soft); padding:10px 12px; }
+    .voteSummaryPanelTitle{ font-size:12px; font-weight:850; color:var(--navy); margin-bottom:6px; }
+    .voteLine{ display:flex; justify-content:space-between; gap:10px; border-top:1px solid var(--line-soft); padding:6px 0; font-size:12px; line-height:1.25; }
+    .voteLine:first-of-type{ border-top:0; }
+    .voteLine strong{ font-weight:850; }
+    .recommendationBox{ margin-top:10px; border:1px solid var(--green-line); background:var(--green-soft); color:var(--green-dark); border-radius:var(--radius-sm); padding:10px 12px; font-size:13px; font-weight:850; line-height:1.3; }
+    .recommendationBox small{ display:block; margin-top:5px; font-weight:750; opacity:.95; }
+
+    .linkedMiniTag{ margin-top:8px; display:inline-block; }
+    .linkedIncidentBox{ border:1px solid var(--blue-line); border-radius:var(--radius-sm); background:linear-gradient(135deg,var(--blue-soft),#fff); padding:12px; margin-top:10px; }
+    .linkedIncidentTitle{ font-size:14px; font-weight:850; color:var(--navy); margin-bottom:6px; }
+    .linkedTicketGrid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+    @media (max-width: 980px){ .linkedTicketGrid{ grid-template-columns:1fr; } }
+    .linkedTicketCard{ border:1px solid var(--line); border-radius:var(--radius-sm); background:linear-gradient(180deg,#fff,#f8f7fe); padding:10px 12px; font-size:13px; line-height:1.35; cursor:pointer; box-shadow:var(--shadow-sm); transition:transform .14s ease, box-shadow .14s ease; }
+    .linkedTicketCard:hover{ transform:translateY(-2px); box-shadow:0 12px 24px rgba(37,99,235,.14); }
+    .linkedTicketCard .mono{ word-break:break-all; font-size:12px; }
+    .linkedDriverList{ border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; padding:10px 12px; margin-top:10px; font-size:13px; line-height:1.35; }
+    .linkedDriverList ol{ margin:6px 0 0 20px; padding:0; }
+    .linkedDriverList li{ margin:3px 0; }
+
+    /* ---------- driver history ---------- */
+    .driverHistoryGrid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px; }
+    @media (max-width: 640px){ .driverHistoryGrid{ grid-template-columns:1fr; } }
+    .driverHistoryCol{ min-width:0; }
+    .driverHistoryLabel{ font-size:12px; font-weight:800; color:var(--navy); margin-bottom:6px; }
+    .driverHistoryList{ display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto; padding-right:2px; }
+    .driverHistoryItem{
+      border:1px solid var(--line); border-radius:var(--radius-sm); background:linear-gradient(180deg,#fff,#f8f7fe);
+      padding:9px 11px; font-size:12px; line-height:1.35; cursor:pointer; box-shadow:var(--shadow-sm);
+      transition:transform .14s ease, box-shadow .14s ease;
+    }
+    .driverHistoryItem:hover{ transform:translateY(-2px); box-shadow:0 12px 24px rgba(79,70,229,.14); }
+    .driverHistoryItem .roleTag{ font-weight:850; color:var(--navy); }
+    .driverHistoryItem .muted{ margin-top:2px; }
+    .driverHistoryEmpty{ font-size:12px; color:var(--muted); font-weight:650; padding:6px 2px; }
+
+    /* ---------- driver identity cards (licence-card styling) ---------- */
+    .driverCardRow{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+    @media (max-width: 640px){ .driverCardRow{ grid-template-columns:1fr; } }
+
+    .driverIdCard{
+      position:relative; border-radius:18px; padding:3px;
+      background:linear-gradient(135deg, var(--muted-2), #cbd5e1);
+      box-shadow:var(--shadow-sm);
+      transition:box-shadow .18s ease, transform .18s ease;
+    }
+    .driverIdCard.role-accused{ background:linear-gradient(135deg,#fca5a5,var(--red)); }
+    .driverIdCard.role-reporter{ background:linear-gradient(135deg,var(--indigo-line),var(--indigo)); }
+    .driverIdCard:not(.unlinked):hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+
+    .driverIdCardInner{
+      border-radius:15px; background:#11151b; padding:12px 13px 13px;
+      position:relative; min-height:96px; background-size:cover; background-position:center;
+      display:flex; gap:11px; align-items:center;
+    }
+    .driverIdCardInner::before{
+      content:""; position:absolute; inset:0; border-radius:15px;
+      background:linear-gradient(180deg, rgba(8,10,13,.15), rgba(8,10,13,.82)); pointer-events:none;
+    }
+    .driverIdCard.unlinked .driverIdCardInner{ background:#1f2937; }
+
+    .driverCardRole{
+      position:absolute; top:8px; left:13px; z-index:1;
+      font-size:9px; font-weight:900; letter-spacing:.09em; text-transform:uppercase; color:rgba(255,255,255,.75);
+    }
+    .driverCardPhoto{
+      position:relative; z-index:1; width:52px; height:52px; border-radius:12px; object-fit:cover; flex:0 0 auto;
+      border:2px solid rgba(255,255,255,.25); background:#1a2027;
+    }
+    .driverCardBody{ position:relative; z-index:1; min-width:0; flex:1; padding-top:8px; }
+    .driverCardName{ font-size:14px; font-weight:800; color:#fff; line-height:1.2; word-break:break-word; }
+    .driverCardNumber{ font-size:10.5px; color:rgba(255,255,255,.62); font-family:ui-monospace, SFMono-Regular, Menlo, monospace; margin-top:2px; }
+    .driverCardMetaRow{ display:flex; align-items:center; gap:6px; margin-top:6px; flex-wrap:wrap; }
+    .driverCardTierPill{ display:inline-block; padding:3px 9px; border-radius:999px; font-size:9.5px; font-weight:900; text-transform:uppercase; letter-spacing:.03em; }
+    .driverCardPoints{ font-size:10.5px; font-weight:850; padding:2px 8px; border-radius:999px; background:rgba(255,255,255,.12); }
+    .driverCardPoints.pts-green{ color:#6ee7b7; }
+    .driverCardPoints.pts-orange{ color:#fcd34d; }
+    .driverCardPoints.pts-red{ color:#fca5a5; }
+    .driverIdCard.unlinked .driverCardName{ color:#e5e7eb; }
+    .driverIdCard.unlinked .driverCardNumber{ color:rgba(255,255,255,.5); }
+
+    /* ---------- toast ---------- */
+    .toast{
+      position:fixed; right:16px; bottom:16px; z-index:9999;
+      background:var(--grad-primary); color:#fff;
+      padding:11px 16px; border-radius:999px;
+      box-shadow:0 16px 32px rgba(79,70,229,.30); font-weight:750; font-size:13px;
+      opacity:0; transform:translateY(8px); transition:all .18s ease;
+    }
+    .toast.show{ opacity:1; transform:translateY(0); }
+
+    /* ---------- misc small-screen guards ---------- */
+    @media (max-width: 980px){
+      #refreshStatementsBtn, #refreshTicketsBtn, #refreshDiscussionBtn, #postDiscussionBtn{ width:100%; }
+      #filter{ font-size:16px; }
+      .statBar{ grid-template-columns:repeat(2, 1fr); }
+    }
+
+    /* ============================================================
+       ITS OWNERS SETUP — supplemental styling (its-owner-setup.html only)
+       Shared IFWL design system copied verbatim from steward.html above;
+       these rules theme the wizard-specific components.
+       ============================================================ */
+    .setupWrap{ width:min(880px, calc(100% - 28px)); margin:0 auto; padding:24px 0 40px; }
+    .setupIntro{ text-align:center; margin-bottom:20px; }
+    .setupIntro h1{ font-family:var(--font-display); font-size:26px; font-weight:800; color:var(--navy); margin:0 0 8px; }
+    .setupIntro p{ color:var(--muted); font-size:14px; max-width:560px; margin:0 auto; }
+
+    .stepSec{ border:1px solid var(--line); border-left:4px solid var(--indigo); border-radius:var(--radius); padding:18px; background:var(--card-soft); margin-top:16px; }
+    .stepSec h2{ margin:0 0 4px; font-size:16px; font-family:var(--font-display); font-weight:800; color:var(--navy); }
+    .stepSec .stepHint{ color:var(--muted); font-size:12.5px; margin-bottom:12px; }
+    .stepGrid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:6px; }
+    @media (max-width: 700px){ .stepGrid{ grid-template-columns:1fr; } }
+    .stepGrid label.muted{ margin-bottom:5px; }
+    .stepFull{ grid-column:1 / -1; }
+
+    .logoPreviewRow{ display:flex; align-items:center; gap:12px; margin-top:8px; }
+    .logoPreviewRow img{ width:52px; height:52px; border-radius:12px; object-fit:contain; background:#fff; border:1px solid var(--line); }
+
+    .subscriptionNote{
+      border:1px solid var(--amber-line); background:var(--amber-soft); color:var(--amber-dark);
+      border-radius:var(--radius-sm); padding:10px 12px; margin-top:10px; font-size:13px; line-height:1.35; font-weight:700;
+    }
+
+    .authPanel{ max-width:420px; margin:40px auto 0; }
+    .authPanel .row{ margin-top:10px; }
+    .authSwitch{ text-align:center; margin-top:10px; font-size:13px; }
+    .authSwitch a{ cursor:pointer; }
+
+    .successBox{
+      border:1px solid var(--green-line); background:var(--green-soft); color:var(--green-dark);
+      border-radius:var(--radius-sm); padding:16px; margin-top:16px; font-size:14px; line-height:1.4;
+    }
+    .successBox .mono{ display:block; margin-top:6px; font-size:13px; }
+  
+    /* ============================================================
+       ITS OWNER DASHBOARD — supplemental styling (owner.html only)
+       Shared IFWL ticket-system design system above, unchanged.
+       ============================================================ */
+    .ownerWrap{ width:min(1180px, calc(100% - 28px)); margin:0 auto; padding:16px 0 48px; }
+    .gateCard{ max-width:520px; margin:40px auto 0; }
+
+    .tabs{
+      position:sticky; top:86px; z-index:40;
+      display:flex; gap:6px; flex-wrap:wrap; margin:16px 0 4px; padding:6px;
+      background:rgba(255,255,255,.92); border:1px solid var(--line); border-radius:999px;
+      box-shadow:var(--shadow-sm); backdrop-filter:blur(12px);
+    }
+    .tabBtn{ min-height:36px; padding:8px 15px; border:0; box-shadow:none; background:transparent; }
+    .tabBtn:hover:not(:disabled){ transform:none; box-shadow:none; background:var(--indigo-soft); }
+    .tabBtn.active, .tabBtn.active:hover{ background:var(--grad-primary); color:#fff; }
+    @media (max-width: 980px){ .tabs{ position:relative; top:auto; border-radius:var(--radius); } .tabBtn{ flex:1 1 auto; } }
+
+    .panel{ display:none; }
+    .panel.active{ display:block; animation:fadeSlideIn .25s ease both; }
+    .panel > .card{ margin-top:14px; }
+    .cardHead{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap; }
+    .cardHead .muted{ max-width:760px; }
+
+    /* field-level feedback */
+    .fieldMsg{ font-size:12px; margin-top:5px; font-weight:700; min-height:0; }
+    .fieldMsg.bad{ color:var(--red-dark); }
+    .fieldMsg.ok{ color:var(--green-dark); }
+    .fieldMsg.warn{ color:var(--amber-dark); }
+    input.bad, select.bad{ border-color:var(--red); box-shadow:0 0 0 3px rgba(225,29,72,.10); }
+    input.good{ border-color:var(--green); }
+    .req{ color:var(--red); font-weight:900; }
+    .opt{ color:var(--muted-2); font-weight:700; }
+
+    details.howTo{ margin-top:10px; border:1px solid var(--blue-line); background:var(--blue-soft); border-radius:var(--radius-sm); padding:10px 12px; font-size:13px; color:#1e3a8a; }
+    details.howTo summary{ cursor:pointer; font-weight:800; }
+    details.howTo ol{ margin:8px 0 2px 18px; padding:0; line-height:1.5; }
+
+    /* getting-started checklist */
+    .checkList{ display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+    .checkItem{ display:flex; align-items:center; gap:12px; border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; padding:10px 12px; }
+    .checkDot{ width:26px; height:26px; border-radius:999px; display:grid; place-items:center; flex:0 0 auto; font-weight:900; font-size:13px; }
+    .checkItem.done .checkDot{ background:var(--green-soft); color:var(--green-dark); border:1px solid var(--green-line); }
+    .checkItem.todo .checkDot{ background:var(--amber-soft); color:var(--amber-dark); border:1px solid var(--amber-line); }
+    .checkItem.optional .checkDot{ background:var(--card-soft); color:var(--muted); border:1px solid var(--line); }
+    .checkText{ flex:1; min-width:0; font-size:13px; font-weight:750; color:var(--navy); }
+    .checkText small{ display:block; color:var(--muted); font-weight:650; margin-top:2px; }
+
+    .kv{ display:grid; grid-template-columns:160px 1fr; gap:6px 12px; font-size:13px; margin-top:8px; }
+    .kv div:nth-child(odd){ color:var(--muted); font-weight:700; }
+    @media (max-width:560px){ .kv{ grid-template-columns:1fr; } }
+
+    /* tables */
+    .tableWrap{ overflow:auto; border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; margin-top:10px; }
+    table.dataTable{ width:100%; border-collapse:collapse; font-size:13px; }
+    .dataTable th{ position:sticky; top:0; background:var(--card-soft); text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); padding:9px 10px; border-bottom:1px solid var(--line); white-space:nowrap; z-index:1; }
+    .dataTable td{ padding:7px 10px; border-bottom:1px solid var(--line-soft); vertical-align:top; }
+    .dataTable tr:last-child td{ border-bottom:0; }
+    .dataTable input, .dataTable select{ padding:6px 8px; font-size:13px; border-radius:8px; min-width:110px; }
+    .dataTable td.statusCell{ min-width:220px; font-size:12px; font-weight:700; line-height:1.35; }
+    tr.rowErr td{ background:#fff6f8; }
+    tr.rowWarn td{ background:#fffdf3; }
+    tr.rowOk td.statusCell{ color:var(--green-dark); }
+    tr.rowErr td.statusCell{ color:var(--red-dark); }
+    tr.rowWarn td.statusCell{ color:var(--amber-dark); }
+    .impTableWrap{ max-height:60vh; }
+    .impTable.problemsOnly tr.rowOk{ display:none; }
+
+    /* import steps */
+    .stepBadge{ display:inline-grid; place-items:center; width:24px; height:24px; border-radius:999px; background:var(--grad-primary); color:#fff; font-size:12px; font-weight:900; margin-right:8px; flex:0 0 auto; }
+    .impStep{ border:1px solid var(--line); border-left:4px solid var(--indigo); border-radius:var(--radius); padding:15px; background:var(--card-soft); margin-top:13px; }
+    .impStep h3{ margin:0 0 6px; font-size:14.5px; font-family:var(--font-display); font-weight:800; color:var(--navy); display:flex; align-items:center; }
+    .impStep.locked{ opacity:.5; pointer-events:none; }
+    .dropZone{ border:2px dashed #c7bdf5; border-radius:var(--radius); background:#fff; padding:22px; text-align:center; cursor:pointer; transition:border-color .15s ease, background .15s ease; }
+    .dropZone:hover, .dropZone.drag{ border-color:var(--primary); background:var(--indigo-soft); }
+    .dropZone strong{ display:block; font-size:14px; color:var(--navy); }
+    .orLine{ text-align:center; color:var(--muted-2); font-size:12px; font-weight:800; margin:12px 0; }
+    .mapGrid{ display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px; margin-top:8px; }
+    @media (max-width:900px){ .mapGrid{ grid-template-columns:1fr 1fr; } }
+    @media (max-width:560px){ .mapGrid{ grid-template-columns:1fr; } }
+    .summaryRow{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px; }
+    .progressOuter{ height:10px; border-radius:999px; background:var(--line-soft); overflow:hidden; margin-top:10px; display:none; }
+    .progressInner{ height:100%; width:0; background:var(--grad-primary); transition:width .2s ease; }
+    .bannerBlue{ border:1px solid var(--blue-line); background:var(--blue-soft); color:#1e3a8a; }
+
+    button.danger{ border-color:var(--red-line); color:var(--red-dark); background:#fff; }
+    button.danger:hover:not(:disabled){ border-color:var(--red); color:var(--red-dark); box-shadow:0 10px 22px rgba(225,29,72,.16); }
+    button.small{ min-height:32px; padding:6px 12px; font-size:12px; white-space:nowrap; flex:0 0 auto; }
+    .roleHint{ font-size:12px; color:var(--muted); margin-top:5px; font-weight:650; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img id="leagueLogo" src="" alt="" style="display:none;">
+      <div class="brandText">
+        <div class="brandTitle" id="brandTitle">ITS — Owner Dashboard</div>
+        <div class="welcomeLine" id="welcomeLine">Run your league's Ticket System.</div>
+        <div class="small" id="who"></div>
+      </div>
+    </div>
+    <div class="row">
+      <span class="pill" id="statusPill" style="display:none;"></span>
+      <button id="logoutBtn" style="display:none;">Sign out</button>
+    </div>
+  </header>
+
+  <div class="ownerWrap">
+
+    <!-- ---------- gates ---------- -->
+    <div class="card gateCard" id="authPanel" style="display:none;">
+      <div class="title" style="margin:0;">Sign in to your Owner Dashboard</div>
+      <div class="muted">Use the Google account you set your league up with.</div>
+      <div class="bannerBox bannerAmber" id="inAppWarning" style="display:none; margin-top:12px;">
+        You're in an in-app browser (e.g. Discord). Google blocks sign-in here.
+        <small>Tap the ⋯ menu and choose "Open in browser" (Chrome or Safari), then sign in.</small>
+      </div>
+      <div class="row" style="justify-content:center; margin-top:16px;">
+        <button class="primary" id="authGoogleBtn">Continue with Google</button>
+      </div>
+      <div class="muted" id="authError" style="margin-top:10px; color:var(--red-dark); text-align:center;"></div>
+    </div>
+
+    <div class="card gateCard" id="gateMsg" style="display:none;">
+      <div class="title" style="margin:0;" id="gateTitle"></div>
+      <div class="muted" id="gateText" style="margin-top:6px;"></div>
+      <div class="row" style="margin-top:14px;" id="gateActions"></div>
+    </div>
+
+    <div class="muted" id="loadingMsg" style="text-align:center; margin-top:60px;">Loading…</div>
+
+    <!-- ---------- the dashboard ---------- -->
+    <div id="app" style="display:none;">
+      <div id="leagueBanner"></div>
+      <div id="clauseBannerTop" style="margin-top:10px;"></div>
+
+      <div class="statBar" style="margin-top:14px;">
+        <div class="statTile tone-indigo">
+          <div class="statTileIcon"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg></div>
+          <div class="statTileBody"><div class="statTileNum" id="statStatus">—</div><div class="statTileLabel">League status</div></div>
+        </div>
+        <div class="statTile tone-teal">
+          <div class="statTileIcon"><svg class="icon" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.4 3.2-5.5 6.5-5.5s5.9 2.1 6.5 5.5"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16 14.6c2.8.2 4.8 2.1 5.4 5.4"/></svg></div>
+          <div class="statTileBody"><div class="statTileNum" id="statStaff">—</div><div class="statTileLabel">Staff</div></div>
+        </div>
+        <div class="statTile tone-amber">
+          <div class="statTileIcon"><svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 9v11"/></svg></div>
+          <div class="statTileBody"><div class="statTileNum" id="statHistory">—</div><div class="statTileLabel">Imported records</div></div>
+        </div>
+        <div class="statTile tone-pink">
+          <div class="statTileIcon"><svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16v10H4z"/><path d="M9 7v10M15 7v10"/></svg></div>
+          <div class="statTileBody"><div class="statTileNum" id="statTickets">—</div><div class="statTileLabel">Open tickets</div></div>
+        </div>
+      </div>
+
+      <nav class="tabs" id="tabs">
+        <button class="tabBtn" data-tab="overview">Overview</button>
+        <button class="tabBtn" data-tab="settings">League Settings</button>
+        <button class="tabBtn" data-tab="staff">Staff</button>
+        <button class="tabBtn" data-tab="import">Import History</button>
+        <button class="tabBtn" data-tab="standards">Standards</button>
+      </nav>
+
+      <!-- ===== OVERVIEW ===== -->
+      <section class="panel" id="panel-overview">
+        <div class="card">
+          <div class="title"><span class="iconChip chip-indigo"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></svg></span>Getting started</div>
+          <div class="muted">Work down this list once. Anything amber still needs doing — click the button next to it.</div>
+          <div class="checkList" id="checkList"></div>
+        </div>
+        <div class="card">
+          <div class="title"><span class="iconChip chip-teal"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg></span>Your league</div>
+          <div class="kv" id="leagueSummary"></div>
+          <div class="row" style="margin-top:12px;">
+            <button id="copyLeagueIdBtn" class="small">Copy league ID</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== SETTINGS ===== -->
+      <section class="panel" id="panel-settings">
+        <div class="card">
+          <div class="cardHead">
+            <div>
+              <div class="title" style="margin:0;"><span class="iconChip chip-indigo"><svg class="icon" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></span>League details</div>
+              <div class="muted">Shown on your dashboards and on the pages drivers use to submit tickets.</div>
+            </div>
+          </div>
+          <div class="stepGrid" style="margin-top:12px;">
+            <div>
+              <label class="muted">League name <span class="req">*</span></label>
+              <input type="text" id="setName" maxlength="80">
+              <div class="fieldMsg" id="setNameMsg"></div>
+            </div>
+            <div>
+              <label class="muted">Game <span class="opt">(optional)</span></label>
+              <select id="setGame"></select>
+              <input type="text" id="setGameOther" placeholder="Type the game name" maxlength="80" style="display:none; margin-top:8px;">
+            </div>
+            <div>
+              <label class="muted">Timezone <span class="opt">(optional)</span></label>
+              <select id="setTimezone"></select>
+            </div>
+            <div class="stepFull">
+              <label class="muted">Logo image link <span class="opt">(optional)</span></label>
+              <input type="text" id="setLogo" placeholder="https://…/logo.png">
+              <div class="logoPreviewRow">
+                <img id="setLogoPreview" alt="" style="display:none;">
+                <div class="fieldMsg" id="setLogoMsg">Paste a direct link to your logo image.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="title" style="margin:0;"><span class="iconChip chip-blue"><svg class="icon" viewBox="0 0 24 24"><path d="M7 8h10M7 12h6"/><path d="M4 5h16v11H9l-5 4z"/></svg></span>Discord server &amp; roles</div>
+          <div class="muted">Paste <strong>IDs</strong>, not names. Leave anything blank you don't use yet.</div>
+          <details class="howTo">
+            <summary>How do I get a Discord ID? (30 seconds)</summary>
+            <ol>
+              <li>In Discord: <strong>User Settings → Advanced → Developer Mode</strong> → turn it on.</li>
+              <li><strong>Server ID:</strong> right-click your server icon → <strong>Copy Server ID</strong>.</li>
+              <li><strong>Role ID:</strong> Server Settings → Roles → right-click the role → <strong>Copy Role ID</strong>.</li>
+              <li>Paste it here. It's a long number like <code>123456789012345678</code>.</li>
+            </ol>
+          </details>
+          <div class="stepGrid" style="margin-top:12px;">
+            <div class="stepFull">
+              <label class="muted">Discord server ID</label>
+              <input type="text" id="setGuild" inputmode="numeric" data-discord-id placeholder="e.g. 123456789012345678">
+              <div class="fieldMsg"></div>
+            </div>
+            <div>
+              <label class="muted">Head Steward role ID</label>
+              <input type="text" id="setRoleHead" inputmode="numeric" data-discord-id placeholder="Discord role ID">
+              <div class="fieldMsg"></div>
+            </div>
+            <div>
+              <label class="muted">Steward role ID</label>
+              <input type="text" id="setRoleSteward" inputmode="numeric" data-discord-id placeholder="Discord role ID">
+              <div class="fieldMsg"></div>
+            </div>
+            <div>
+              <label class="muted">Senior Steward role ID</label>
+              <input type="text" id="setRoleSenior" inputmode="numeric" data-discord-id placeholder="Discord role ID">
+              <div class="fieldMsg"></div>
+            </div>
+            <div>
+              <label class="muted">Moderator role ID</label>
+              <input type="text" id="setRoleMod" inputmode="numeric" data-discord-id placeholder="Discord role ID">
+              <div class="fieldMsg"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row" style="justify-content:flex-end; margin-top:14px;">
+          <span class="muted" id="settingsDirty" style="display:none; color:var(--amber-dark);">You have unsaved changes</span>
+          <button class="primary" id="saveSettingsBtn">Save league details</button>
+        </div>
+
+        <div class="card">
+          <div class="title" style="margin:0;"><span class="iconChip chip-pink"><svg class="icon" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 1 0-5.7l2.3-2.3a4 4 0 0 1 5.7 5.7l-1.2 1.2"/><path d="M14 10a4 4 0 0 1 0 5.7l-2.3 2.3a4 4 0 0 1-5.7-5.7l1.2-1.2"/></svg></span>Discord webhooks</div>
+          <div class="muted">Where ticket discussions and final results get posted. Only you and your Head Stewards can see these links.</div>
+          <details class="howTo">
+            <summary>How do I make a webhook?</summary>
+            <ol>
+              <li>In Discord, open the channel → <strong>Edit Channel → Integrations → Webhooks → New Webhook</strong>.</li>
+              <li>Click <strong>Copy Webhook URL</strong> and paste it below.</li>
+              <li>Press <strong>Send test</strong> — a message should appear in that channel.</li>
+            </ol>
+          </details>
+          <div class="stepGrid" style="margin-top:12px;">
+            <div class="stepFull">
+              <label class="muted">Ticket discussion webhook</label>
+              <div class="row" style="flex-wrap:nowrap;">
+                <input type="text" id="setHookTicket" data-webhook placeholder="https://discord.com/api/webhooks/…">
+                <button class="small" data-test-hook="setHookTicket">Send test</button>
+              </div>
+              <div class="fieldMsg"></div>
+            </div>
+            <div class="stepFull">
+              <label class="muted">Finalisation (results) webhook</label>
+              <div class="row" style="flex-wrap:nowrap;">
+                <input type="text" id="setHookFinal" data-webhook placeholder="https://discord.com/api/webhooks/…">
+                <button class="small" data-test-hook="setHookFinal">Send test</button>
+              </div>
+              <div class="fieldMsg"></div>
+            </div>
+          </div>
+          <div class="row" style="justify-content:flex-end; margin-top:12px;">
+            <button class="primary" id="saveHooksBtn">Save webhooks</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== STAFF ===== -->
+      <section class="panel" id="panel-staff">
+        <div class="card">
+          <div class="title" style="margin:0;"><span class="iconChip chip-teal"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>Add a staff member</div>
+          <div class="muted">They sign in with this <strong>Google account</strong> — it must be the exact email they'll use, or they won't get access.</div>
+          <div class="stepGrid" style="margin-top:12px;">
+            <div>
+              <label class="muted">Google email <span class="req">*</span></label>
+              <input type="email" id="staffEmail" placeholder="name@gmail.com" autocomplete="off">
+              <div class="fieldMsg" id="staffEmailMsg"></div>
+            </div>
+            <div>
+              <label class="muted">Role <span class="req">*</span></label>
+              <select id="staffRole"></select>
+              <div class="roleHint" id="staffRoleHint"></div>
+            </div>
+            <div>
+              <label class="muted">Discord username <span class="opt">(optional)</span></label>
+              <input type="text" id="staffDiscord" placeholder="e.g. speedy_dave" autocomplete="off">
+              <div class="fieldMsg" id="staffDiscordMsg"></div>
+            </div>
+          </div>
+          <div class="row" style="justify-content:flex-end; margin-top:12px;">
+            <button class="primary" id="addStaffBtn">Add staff member</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="cardHead">
+            <div class="title" style="margin:0;"><span class="iconChip chip-indigo"><svg class="icon" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.4 3.2-5.5 6.5-5.5s5.9 2.1 6.5 5.5"/></svg></span>Your staff</div>
+            <button class="small" id="refreshStaffBtn">Refresh</button>
+          </div>
+          <div class="tableWrap">
+            <table class="dataTable">
+              <thead><tr><th>Google email</th><th>Role</th><th>Discord</th><th>Added</th><th></th></tr></thead>
+              <tbody id="staffBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== IMPORT ===== -->
+      <section class="panel" id="panel-import">
+        <div class="card">
+          <div class="title" style="margin:0;"><span class="iconChip chip-amber"><svg class="icon" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></span>Import your old ticket records</div>
+          <div class="muted">Moving from an Excel or Google Sheets system? Bring your past outcomes into ITS so your stewards can see each driver's history.</div>
+          <div class="bannerBox bannerBlue" style="margin-top:12px;">
+            We only need 4 columns: <strong>Driver name</strong> · <strong>Discord username</strong> · <strong>Outcome</strong> · <strong>Comments</strong>
+            <small>The <u>Discord username</u> is what links a driver across the whole of ITS, so it must be their real, current username — not their nickname or display name. Find it on their Discord profile, under their display name (all lowercase, no spaces, no @).</small>
+          </div>
+          <div class="row" style="margin-top:12px;">
+            <button class="small" id="downloadTemplateBtn">Download a template</button>
+          </div>
+
+          <div class="impStep" id="impStep1">
+            <h3><span class="stepBadge">1</span>Add your spreadsheet</h3>
+            <div class="dropZone" id="dropZone">
+              <strong>Drop your file here, or click to choose</strong>
+              <span class="muted">Excel (.xlsx), Google Sheets download (.csv) or .tsv</span>
+            </div>
+            <input type="file" id="impFile" accept=".csv,.tsv,.txt,.xlsx,.xls,.ods" style="display:none;">
+            <div class="row" id="sheetPickRow" style="display:none; margin-top:10px;">
+              <label class="muted" style="margin:0;">Which sheet?</label>
+              <select id="sheetPick" style="max-width:300px;"></select>
+            </div>
+            <div class="orLine">— OR —</div>
+            <label class="muted">Copy the cells in your spreadsheet (including the heading row) and paste them here</label>
+            <textarea id="impPaste" rows="5" placeholder="Driver name	Discord username	Outcome	Comments"></textarea>
+            <div class="row" style="justify-content:flex-end; margin-top:8px;">
+              <button id="impPasteBtn">Use pasted data</button>
+            </div>
+            <div class="fieldMsg" id="impLoadMsg"></div>
+          </div>
+
+          <div class="impStep locked" id="impStep2">
+            <h3><span class="stepBadge">2</span>Match your columns</h3>
+            <div class="muted">We've guessed which of your columns is which. Check each one is right.</div>
+            <label class="row" style="margin-top:10px; gap:8px; font-size:13px; font-weight:700;">
+              <input type="checkbox" id="impHasHeader" style="width:auto;"> My first row is headings (not a driver)
+            </label>
+            <div class="mapGrid">
+              <div><label class="muted">Driver name <span class="req">*</span></label><select id="mapDriverName"></select></div>
+              <div><label class="muted">Discord username <span class="req">*</span></label><select id="mapDiscordName"></select></div>
+              <div><label class="muted">Outcome</label><select id="mapOutcome"></select></div>
+              <div><label class="muted">Comments</label><select id="mapComments"></select></div>
+            </div>
+            <div class="fieldMsg" id="mapMsg"></div>
+          </div>
+
+          <div class="impStep locked" id="impStep3">
+            <h3><span class="stepBadge">3</span>Check &amp; fix</h3>
+            <div class="muted">Fix anything red right here in the table (or in your spreadsheet and load it again). Red rows won't be imported. Amber rows will — but have a look.</div>
+            <div class="summaryRow" id="impSummary"></div>
+            <label class="row" style="margin-top:8px; gap:8px; font-size:13px; font-weight:700;">
+              <input type="checkbox" id="impProblemsOnly" style="width:auto;"> Only show rows with problems
+            </label>
+            <div class="tableWrap impTableWrap">
+              <table class="dataTable impTable" id="impTable">
+                <thead><tr><th>Row</th><th>Driver name</th><th>Discord username</th><th>Outcome</th><th>Comments</th><th>Check</th></tr></thead>
+                <tbody id="impBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="impStep locked" id="impStep4">
+            <h3><span class="stepBadge">4</span>Import</h3>
+            <div class="muted" id="impReadyText">Nothing to import yet.</div>
+            <div class="progressOuter" id="impProgress"><div class="progressInner" id="impProgressBar"></div></div>
+            <div class="row" style="justify-content:flex-end; margin-top:10px;">
+              <button id="impResetBtn">Start again</button>
+              <button class="primary" id="impGoBtn" disabled>Import</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="cardHead">
+            <div>
+              <div class="title" style="margin:0;"><span class="iconChip chip-indigo"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>Previous imports</div>
+              <div class="muted">Imported the wrong file? Undo removes every record from that import.</div>
+            </div>
+          </div>
+          <div class="tableWrap">
+            <table class="dataTable">
+              <thead><tr><th>When</th><th>File</th><th>Records</th><th>By</th><th>Status</th><th></th></tr></thead>
+              <tbody id="importsBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== STANDARDS (ported from IFWL headsteward.html) ===== -->
+      <section class="panel" id="panel-standards">
+        <div class="card" id="ownerClauseCard">
+          <div class="title" style="margin:0;">Owner's Emergency Standards Clause</div>
+          <div class="muted">Owner-only. Invoking this puts the whole league under a temporary heightened-standards period — stewards, drivers, everyone.</div>
+          <div id="ownerClauseBanner" style="margin-top:10px;"></div>
+          <div style="margin-top:12px;">
+            <label class="muted">Reason (shown to stewards and drivers)</label>
+            <textarea id="ownerClauseReason" rows="3">One or more season events have dropped below the league's expected standard.</textarea>
+            <div class="row" style="margin-top:10px;">
+              <button class="primary" id="ownerClauseEnableBtn">Enable Clause (3 weeks)</button>
+              <button id="ownerClauseDisableBtn">Disable Clause Now</button>
+            </div>
+            <div class="muted" id="ownerClauseStatus" style="margin-top:8px;">Loading…</div>
+          </div>
+        </div>
+
+        <div class="card" id="seniorStewardCard">
+          <div class="title" style="margin:0;">Senior Steward Mode</div>
+          <div class="muted">You or any Head Steward can toggle this. Controls whether Senior Stewards get full Head Steward permissions, or standard Steward access only.</div>
+          <div id="seniorStewardBanner" style="margin-top:10px;"></div>
+          <div class="row" style="margin-top:12px;">
+            <button class="primary" id="seniorStewardEnableBtn">Enable Senior Steward</button>
+            <button id="seniorStewardDisableBtn">Disable Senior Steward</button>
+          </div>
+          <div class="muted" id="seniorStewardStatus" style="margin-top:8px;">Loading…</div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Saved</div>
+
+  <!-- Firebase compat (same as the rest of ITS) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
+  <script src="./firebase-init.js"></script>
+
+  <script>
+    // ============================================================
+    // IMPORT CORE — pure functions (no DOM, no Firebase), so they can be
+    // tested on their own. Turns a pasted/uploaded spreadsheet into rows
+    // of { driverName, discordName, outcome, comments } and checks each one.
+    // ============================================================
+    const ImportCore = (() => {
+      const MAX_ROWS = 5000;
+      const LIMITS = { driverName: 80, discordName: 40, outcome: 200, comments: 2000 };
+
+      const SYNONYMS = {
+        discordName: ["discord username", "discord user", "discord name", "discord tag", "discord handle", "discord", "username"],
+        driverName:  ["driver name", "driver", "racer", "player", "member", "in-game name", "in game name", "ign", "gamertag", "psn", "steam name", "name"],
+        outcome:     ["outcome", "penalty", "result", "decision", "verdict", "sanction", "action taken", "action", "punishment", "points"],
+        comments:    ["comments", "comment", "steward notes", "notes", "note", "reason", "details", "description", "remarks", "explanation"]
+      };
+
+      // ---------- parsing ----------
+      function detectDelimiter(text) {
+        const firstLine = (text.split(/\r?\n/).find(l => l.trim()) || "");
+        const counts = { "\t": 0, ",": 0, ";": 0 };
+        let inQ = false;
+        for (const ch of firstLine) {
+          if (ch === '"') inQ = !inQ;
+          else if (!inQ && ch in counts) counts[ch]++;
+        }
+        if (counts["\t"] > 0) return "\t";            // copied straight out of Sheets/Excel
+        if (counts[";"] > counts[","]) return ";";    // European-locale Excel CSV
+        return ",";
+      }
+
+      // RFC-4180-ish: handles quoted cells, "" escapes and newlines inside quotes.
+      function parseDelimited(text) {
+        text = String(text || "").replace(/^﻿/, "");
+        const delim = detectDelimiter(text);
+        const rows = [];
+        let row = [], cell = "", inQ = false;
+        for (let i = 0; i < text.length; i++) {
+          const ch = text[i];
+          if (inQ) {
+            if (ch === '"') {
+              if (text[i + 1] === '"') { cell += '"'; i++; }
+              else inQ = false;
+            } else cell += ch;
+          } else if (ch === '"' && cell === "") {
+            inQ = true;
+          } else if (ch === delim) {
+            row.push(cell); cell = "";
+          } else if (ch === "\n" || ch === "\r") {
+            if (ch === "\r" && text[i + 1] === "\n") i++;
+            row.push(cell); rows.push(row); row = []; cell = "";
+          } else cell += ch;
+        }
+        if (cell !== "" || row.length) { row.push(cell); rows.push(row); }
+        return cleanGrid(rows);
+      }
+
+      // Trim cells and drop completely empty rows/trailing empty columns.
+      function cleanGrid(grid) {
+        const out = grid
+          .map(r => (r || []).map(c => String(c == null ? "" : c).replace(/[​-‍﻿]/g, "").trim()))
+          .filter(r => r.some(c => c !== ""));
+        let width = 0;
+        out.forEach(r => { for (let i = r.length - 1; i >= 0; i--) if (r[i] !== "") { width = Math.max(width, i + 1); break; } });
+        return out.map(r => { const x = r.slice(0, width); while (x.length < width) x.push(""); return x; });
+      }
+
+      // ---------- column matching ----------
+      function norm(h) { return String(h || "").toLowerCase().replace(/[_\-]+/g, " ").replace(/\s+/g, " ").trim(); }
+
+      function scoreHeader(h, field) {
+        const n = norm(h);
+        if (!n) return 0;
+        let best = 0;
+        SYNONYMS[field].forEach((syn, idx) => {
+          const weight = SYNONYMS[field].length - idx;           // earlier synonyms are stronger
+          if (n === syn) best = Math.max(best, 100 + weight);
+          else if (n.includes(syn)) best = Math.max(best, 50 + weight);
+        });
+        // "Discord Name" must never be taken as the driver's name.
+        if (field === "driverName" && n.includes("discord")) return 0;
+        return best;
+      }
+
+      // Returns { hasHeader, map: { driverName: colIndex|-1, ... } }
+      function guessColumns(grid) {
+        const first = grid[0] || [];
+        const fields = ["discordName", "driverName", "outcome", "comments"];
+        const map = { driverName: -1, discordName: -1, outcome: -1, comments: -1 };
+        const used = new Set();
+        let matched = 0;
+        fields.forEach(f => {
+          let bestCol = -1, bestScore = 0;
+          first.forEach((h, i) => {
+            if (used.has(i)) return;
+            const s = scoreHeader(h, f);
+            if (s > bestScore) { bestScore = s; bestCol = i; }
+          });
+          if (bestCol >= 0) { map[f] = bestCol; used.add(bestCol); matched++; }
+        });
+        if (matched >= 2) return { hasHeader: true, map };
+        // No recognisable headings: assume the template order.
+        const width = first.length;
+        return {
+          hasHeader: false,
+          map: {
+            driverName: width > 0 ? 0 : -1,
+            discordName: width > 1 ? 1 : -1,
+            outcome: width > 2 ? 2 : -1,
+            comments: width > 3 ? 3 : -1
+          }
+        };
+      }
+
+      function buildRows(grid, hasHeader, map) {
+        const body = hasHeader ? grid.slice(1) : grid;
+        const pick = (r, i) => (i >= 0 && i < r.length ? r[i] : "");
+        return body.slice(0, MAX_ROWS).map((r, idx) => ({
+          sourceRow: idx + (hasHeader ? 2 : 1),          // spreadsheet row number, for error messages
+          driverName: pick(r, map.driverName),
+          discordName: pick(r, map.discordName),
+          outcome: pick(r, map.outcome),
+          comments: pick(r, map.comments)
+        }));
+      }
+
+      // ---------- Discord usernames ----------
+      // Current Discord usernames: 2–32 chars, lowercase a–z 0–9 _ . and no "..".
+      function checkDiscord(raw) {
+        let s = String(raw || "").replace(/[​-‍﻿]/g, "").trim();
+        if (!s) return { key: "", error: "Missing Discord username." };
+        if (s.startsWith("@")) s = s.slice(1).trim();
+        if (/^<@!?\d+>$/.test(s) || /^\d{17,20}$/.test(s)) {
+          return { key: "", error: "That's a Discord user ID/mention, not a username. Enter their username (e.g. speedy_dave)." };
+        }
+        if (/#\d{4}$/.test(s)) {
+          return { key: "", error: "Old-style Discord tag (name#1234). Discord replaced these in 2023 — enter their current username." };
+        }
+        if (/\s/.test(s)) {
+          return { key: "", error: "Has spaces — that looks like a display name or nickname. Usernames have no spaces." };
+        }
+        const key = s.toLowerCase();
+        if (key.length < 2 || key.length > 32) return { key: "", error: "Discord usernames are 2–32 characters." };
+        if (!/^[a-z0-9_.]+$/.test(key)) return { key: "", error: "Discord usernames only use letters, numbers, _ and . (no other symbols)." };
+        if (key.includes("..")) return { key: "", error: "Discord usernames can't contain two dots in a row." };
+        return { key, error: "" };
+      }
+
+      // ---------- whole-sheet validation ----------
+      // Adds { discordKey, errors[], warnings[] } to every row.
+      function validateRows(rows) {
+        rows.forEach(r => {
+          r.errors = []; r.warnings = [];
+          ["driverName", "outcome", "comments", "discordName"].forEach(f => {
+            r[f] = String(r[f] == null ? "" : r[f]).trim();
+            if (r[f].length > LIMITS[f]) {
+              r[f] = r[f].slice(0, LIMITS[f]);
+              r.warnings.push(`${label(f)} was too long and has been cut to ${LIMITS[f]} characters.`);
+            }
+          });
+          const d = checkDiscord(r.discordName);
+          r.discordKey = d.key;
+          if (d.error) r.errors.push(d.error);
+          if (!r.driverName) r.errors.push("Missing driver name.");
+          if (!r.outcome) r.warnings.push("No outcome — it will import with a blank outcome.");
+        });
+
+        // Cross-row checks — Discord username is the link across ITS, so
+        // inconsistencies here are worth flagging even when each row is valid.
+        const namesByKey = new Map(), keysByName = new Map(), seen = new Map();
+        rows.forEach((r, i) => {
+          if (!r.discordKey) return;
+          const nameN = r.driverName.toLowerCase();
+          if (!namesByKey.has(r.discordKey)) namesByKey.set(r.discordKey, new Map());
+          namesByKey.get(r.discordKey).set(nameN, r.driverName);
+          if (nameN) {
+            if (!keysByName.has(nameN)) keysByName.set(nameN, new Set());
+            keysByName.get(nameN).add(r.discordKey);
+          }
+          const sig = [r.discordKey, nameN, r.outcome.toLowerCase(), r.comments.toLowerCase()].join("\u0001");
+          if (seen.has(sig)) r.warnings.push(`Exact duplicate of row ${rows[seen.get(sig)].sourceRow}.`);
+          else seen.set(sig, i);
+        });
+        rows.forEach(r => {
+          if (!r.discordKey) return;
+          const names = namesByKey.get(r.discordKey);
+          if (names && names.size > 1) {
+            r.warnings.push(`@${r.discordKey} appears under different driver names (${[...names.values()].join(", ")}). Check it's the same person.`);
+          }
+          const keys = keysByName.get(r.driverName.toLowerCase());
+          if (keys && keys.size > 1) {
+            r.warnings.push(`"${r.driverName}" appears with different Discord usernames (${[...keys].map(k => "@" + k).join(", ")}). Possible typo.`);
+          }
+        });
+        return summarise(rows);
+      }
+
+      function summarise(rows) {
+        const errors = rows.filter(r => r.errors.length).length;
+        const warnings = rows.filter(r => !r.errors.length && r.warnings.length).length;
+        return { total: rows.length, errors, warnings, ready: rows.length - errors };
+      }
+
+      function label(f) {
+        return { driverName: "Driver name", discordName: "Discord username", outcome: "Outcome", comments: "Comments" }[f] || f;
+      }
+
+      const TEMPLATE_CSV = "Driver name,Discord username,Outcome,Comments\r\n" +
+        "Dave Smith,speedy_dave,5 second penalty,Turn 1 divebomb on lap 1\r\n" +
+        "Jo Bloggs,jo.bloggs,No further action,Racing incident\r\n";
+
+      return { MAX_ROWS, parseDelimited, cleanGrid, guessColumns, buildRows, checkDiscord, validateRows, summarise, label, TEMPLATE_CSV };
+    })();
+
+    // ============================================================
+    // ITS OWNER DASHBOARD
+    // Built on the IFWL ticket system (design system + the Owner's
+    // Emergency Standards Clause / Senior Steward Mode logic from
+    // headsteward.html), re-pointed at the multi-league ITS layout:
+    //   leagues/{lid}, leagues/{lid}/private/config, leagues/{lid}/staff,
+    //   leagues/{lid}/meta, leagues/{lid}/driverHistory, leagues/{lid}/imports
+    // ============================================================
+
+    // ---------- helpers ----------
+    const $ = (id) => document.getElementById(id);
+    const toastEl = $("toast");
+    let toastTimer = null;
+    function toast(msg, ms = 2600) {
+      toastEl.textContent = msg;
+      toastEl.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.remove("show"), ms);
+    }
+    function esc(s) {
+      return String(s == null ? "" : s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+    }
+    function fmtDate(v) {
+      if (!v) return "—";
+      const d = v.toDate ? v.toDate() : (typeof v === "number" ? new Date(v) : new Date(v));
+      return isNaN(d) ? "—" : d.toLocaleString(undefined, { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+    }
+    function friendlyError(e) {
+      const code = e && e.code ? String(e.code) : "";
+      if (code.includes("permission-denied")) return "You don't have permission to do that. If you think you should, refresh the page and try again.";
+      if (code.includes("unavailable")) return "Can't reach ITS right now — check your internet connection and try again.";
+      if (code.includes("not-found")) return "That item no longer exists. Refresh the page.";
+      return (e && e.message) ? e.message.replace(/^Firebase:\s*/, "") : String(e);
+    }
+    function setMsg(el, kind, text) {
+      if (!el) return;
+      el.className = "fieldMsg" + (kind ? " " + kind : "");
+      el.textContent = text || "";
+    }
+    function markInput(input, kind) {
+      input.classList.toggle("bad", kind === "bad");
+      input.classList.toggle("good", kind === "ok");
+    }
+    const FV = () => firebase.firestore.FieldValue;
+
+    const ROLES = {
+      headsteward:   { label: "Head Steward",   hint: "Runs stewarding: finalises tickets, links incidents and can switch Senior Steward Mode." },
+      seniorsteward: { label: "Senior Steward", hint: "A steward who gets Head Steward powers while Senior Steward Mode is on." },
+      steward:       { label: "Steward",        hint: "Reviews tickets, reads statements and gives a penalty opinion." },
+      moderator:     { label: "Moderator",      hint: "Moderation access only — no stewarding." }
+    };
+    const GAMES = [
+      "Assetto Corsa Competizione", "Assetto Corsa EVO", "Assetto Corsa", "Assetto Corsa Rally",
+      "Le Mans Ultimate", "iRacing", "rFactor 2", "RaceRoom", "Automobilista 2",
+      "F1 25", "Gran Turismo 7", "Forza Motorsport", "EA SPORTS WRC", "Rocket League"
+    ];
+    const DISCORD_ID = /^\d{17,20}$/;
+    const WEBHOOK = /^https:\/\/(discord\.com|discordapp\.com|ptb\.discord\.com|canary\.discord\.com)\/api\/webhooks\/\d+\/[\w-]+$/;
+
+    // ---------- state ----------
+    let currentUser = null, currentEmail = "";
+    let lid = null, league = null, privateCfg = {}, staffList = [], importsList = [];
+    let leagueRef = null;
+    let savedSettingsSnapshot = "";
+
+    // ============================================================
+    // AUTH + LOADING
+    // ============================================================
+    function isInAppBrowser() {
+      const ua = navigator.userAgent || "";
+      return /Discord|FBAN|FBAV|Instagram|Line\/|Twitter|Snapchat|; wv\)/i.test(ua);
+    }
+
+    function showGate(title, text, actions = []) {
+      $("loadingMsg").style.display = "none";
+      $("app").style.display = "none";
+      $("authPanel").style.display = "none";
+      $("gateTitle").textContent = title;
+      $("gateText").innerHTML = text;
+      const box = $("gateActions");
+      box.innerHTML = "";
+      actions.forEach(a => {
+        const b = document.createElement("button");
+        b.textContent = a.label;
+        if (a.primary) b.className = "primary";
+        b.onclick = a.onClick;
+        box.appendChild(b);
+      });
+      $("gateMsg").style.display = "block";
+    }
+
+    async function waitForFirebaseReady(maxMs = 8000) {
+      const start = Date.now();
+      while (Date.now() - start < maxMs) {
+        if (typeof auth !== "undefined" && typeof db !== "undefined" && auth && db) return true;
+        await new Promise(r => setTimeout(r, 80));
+      }
+      return false;
+    }
+
+    $("authGoogleBtn").onclick = async () => {
+      $("authError").textContent = "";
+      const provider = new firebase.auth.GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: "select_account" });
+      try {
+        await auth.signInWithPopup(provider);
+      } catch (e) {
+        if (e && (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment")) {
+          try { await auth.signInWithRedirect(provider); return; } catch (e2) { e = e2; }
+        }
+        if (e && e.code === "auth/popup-closed-by-user") return;
+        $("authError").textContent = friendlyError(e);
+      }
+    };
+    $("logoutBtn").onclick = async () => { await auth.signOut(); window.location.reload(); };
+
+    (async () => {
+      if (!(await waitForFirebaseReady())) {
+        showGate("ITS couldn't start", "The page couldn't load its connection to ITS. Refresh the page — if it keeps happening, tell the ITS team.");
+        return;
+      }
+      auth.onAuthStateChanged(async (user) => {
+        if (!user) {
+          currentUser = null; currentEmail = "";
+          $("loadingMsg").style.display = "none";
+          $("app").style.display = "none";
+          $("gateMsg").style.display = "none";
+          $("logoutBtn").style.display = "none";
+          $("statusPill").style.display = "none";
+          $("authPanel").style.display = "block";
+          $("inAppWarning").style.display = isInAppBrowser() ? "block" : "none";
+          return;
+        }
+        currentUser = user;
+        currentEmail = (user.email || "").toLowerCase().trim();
+        $("authPanel").style.display = "none";
+        $("logoutBtn").style.display = "inline-flex";
+        $("who").textContent = `Signed in as ${currentEmail}`;
+        await loadLeague();
+      });
+    })();
+
+    async function loadLeague() {
+      $("loadingMsg").style.display = "block";
+      try {
+        const userSnap = await db.collection("users").doc(currentEmail).get();
+        const leagues = (userSnap.exists && userSnap.data().leagues) || {};
+        const owned = Object.keys(leagues).filter(id => leagues[id] === "owner");
+        const wanted = new URLSearchParams(location.search).get("league");
+        lid = (wanted && owned.includes(wanted)) ? wanted : owned[0];
+
+        if (!lid) {
+          const other = Object.keys(leagues);
+          if (other.length) {
+            showGate("This page is for league owners",
+              `Your account is staff in <strong>${esc(other.join(", "))}</strong>, not an owner. Staff dashboards are coming soon.`,
+              [{ label: "Sign out", onClick: () => $("logoutBtn").click() }]);
+          } else {
+            showGate("No league on this account",
+              `<strong>${esc(currentEmail)}</strong> doesn't own a league in ITS yet. If you set one up with a different Google account, sign out and use that one.`,
+              [{ label: "Set up a league", primary: true, onClick: () => location.href = "index.html" },
+               { label: "Use a different account", onClick: () => $("logoutBtn").click() }]);
+          }
+          return;
+        }
+
+        leagueRef = db.collection("leagues").doc(lid);
+        const snap = await leagueRef.get();
+        if (!snap.exists) { showGate("League not found", `We couldn't find league <code>${esc(lid)}</code>. Contact the ITS team.`); return; }
+        league = snap.data();
+
+        try {
+          const p = await leagueRef.collection("private").doc("config").get();
+          privateCfg = p.exists ? p.data() : {};
+        } catch (e) { privateCfg = {}; console.warn("private/config:", e); }
+
+        $("loadingMsg").style.display = "none";
+        $("gateMsg").style.display = "none";
+        $("app").style.display = "block";
+
+        renderHeader();
+        fillSettingsForm();
+        initTabs();
+        await Promise.all([loadStaff(), loadImports(), loadTicketCount(), initOwnerClauseUI(), initSeniorStewardUI()]);
+        renderOverview();
+      } catch (e) {
+        console.error(e);
+        showGate("Couldn't load your league", esc(friendlyError(e)),
+          [{ label: "Try again", primary: true, onClick: () => location.reload() }]);
+      }
+    }
+
+    // ============================================================
+    // HEADER / OVERVIEW
+    // ============================================================
+    function isActive() { return league && (league.status === "active" || league.status === "approved"); }
+    function statusInfo() {
+      const s = (league && league.status) || "pending";
+      if (s === "active" || s === "approved") return { label: "Active", cls: "miniOk" };
+      if (s === "pending") return { label: "Pending approval", cls: "" };
+      return { label: s.charAt(0).toUpperCase() + s.slice(1), cls: "miniBad" };
+    }
+
+    function renderHeader() {
+      document.title = `${league.name} — ITS Owner Dashboard`;
+      $("brandTitle").textContent = `${league.name} — Owner Dashboard`;
+      $("welcomeLine").textContent = "Set up and run your league's Ticket System.";
+      const logo = $("leagueLogo");
+      if (league.logoUrl) {
+        logo.onerror = () => { logo.style.display = "none"; };
+        logo.src = league.logoUrl; logo.alt = league.name; logo.style.display = "block";
+      } else logo.style.display = "none";
+
+      const si = statusInfo();
+      const pill = $("statusPill");
+      pill.className = "pill " + si.cls;
+      pill.textContent = si.label;
+      pill.style.display = "inline-flex";
+      $("statStatus").textContent = si.label;
+
+      const s = league.status || "pending";
+      $("leagueBanner").innerHTML =
+        s === "pending" ? `<div class="bannerBox bannerAmber">Your league is waiting for approval.<small>You can set everything up now — settings, staff and imports all work. Your staff dashboards switch on once ITS approves your league.</small></div>`
+        : (s === "active" || s === "approved") ? ""
+        : `<div class="bannerBox bannerRed">Your league is currently <strong>${esc(s)}</strong>.<small>Your staff can't use ITS until this is resolved. Contact the ITS team.</small></div>`;
+    }
+
+    function renderOverview() {
+      const d = league.discord || {}, roles = d.roles || {};
+      const headCount = staffList.filter(x => x.role === "headsteward").length;
+      const importedCount = importsList.filter(i => i.status !== "undone").reduce((n, i) => n + (Number(i.imported) || 0), 0);
+      const items = [
+        { done: isActive(), title: "League approved by ITS", sub: isActive() ? "You're live." : "Nothing to do — we'll approve you shortly." },
+        { done: !!league.logoUrl, title: "Add your league logo", sub: "Shown on dashboards and ticket pages.", tab: "settings" },
+        { done: !!(d.guildId && roles.headsteward && roles.steward), title: "Add your Discord server and role IDs", sub: "At least the server, Head Steward and Steward IDs.", tab: "settings" },
+        { done: !!(privateCfg.ticketWebhookUrl && privateCfg.finalisationWebhookUrl), title: "Connect your Discord webhooks", sub: "So discussions and results post to Discord.", tab: "settings" },
+        { done: headCount > 0, title: "Add at least one Head Steward", sub: headCount ? `${headCount} Head Steward${headCount === 1 ? "" : "s"} added.` : "Someone needs to run stewarding.", tab: "staff" },
+        { done: importedCount > 0, optional: true, title: "Import your old ticket records (optional)", sub: importedCount ? `${importedCount} records imported.` : "Only if you're moving from a spreadsheet.", tab: "import" }
+      ];
+      $("checkList").innerHTML = items.map((it, i) => `
+        <div class="checkItem ${it.done ? "done" : (it.optional ? "optional" : "todo")}">
+          <div class="checkDot">${it.done ? "✓" : (i + 1)}</div>
+          <div class="checkText">${esc(it.title)}<small>${esc(it.sub)}</small></div>
+          ${!it.done && it.tab ? `<button class="small" data-go="${it.tab}">Do this</button>` : ""}
+        </div>`).join("");
+      $("checkList").querySelectorAll("[data-go]").forEach(b => b.onclick = () => switchTab(b.dataset.go));
+
+      $("leagueSummary").innerHTML = [
+        ["League ID", `<code>${esc(lid)}</code>`],
+        ["Status", esc(statusInfo().label)],
+        ["Owner", esc(league.ownerEmail || currentEmail)],
+        ["Game", esc(league.game || "—")],
+        ["Timezone", esc(league.timezone || "—")],
+        ["Created", esc(fmtDate(league.createdAt))]
+      ].map(([k, v]) => `<div>${k}</div><div>${v}</div>`).join("");
+
+      $("statHistory").textContent = importedCount;
+      $("statStaff").textContent = staffList.length;
+    }
+
+    $("copyLeagueIdBtn").onclick = async () => {
+      try { await navigator.clipboard.writeText(lid); toast("League ID copied."); }
+      catch { toast(`League ID: ${lid}`); }
+    };
+
+    async function loadTicketCount() {
+      if (!isActive()) { $("statTickets").textContent = "—"; return; }
+      try {
+        const snap = await leagueRef.collection("tickets").limit(1000).get();
+        let open = 0;
+        snap.forEach(doc => { if (String(doc.data().status || "").trim().toLowerCase() !== "finalised") open++; });
+        $("statTickets").textContent = snap.size >= 1000 ? `${open}+` : open;
+      } catch (e) { console.warn("tickets:", e); $("statTickets").textContent = "—"; }
+    }
+
+    // ============================================================
+    // TABS
+    // ============================================================
+    const TAB_IDS = ["overview", "settings", "staff", "import", "standards"];
+    function switchTab(id) {
+      if (!TAB_IDS.includes(id)) id = "overview";
+      document.querySelectorAll(".tabBtn").forEach(b => b.classList.toggle("active", b.dataset.tab === id));
+      document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.id === "panel-" + id));
+      if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    function initTabs() {
+      document.querySelectorAll(".tabBtn").forEach(b => b.onclick = () => switchTab(b.dataset.tab));
+      switchTab((location.hash || "#overview").slice(1));
+    }
+
+    // ============================================================
+    // LEAGUE SETTINGS
+    // ============================================================
+    function fillSelect(sel, options, value) {
+      sel.innerHTML = options.map(o => `<option value="${esc(o.value)}">${esc(o.label)}</option>`).join("");
+      sel.value = value;
+    }
+
+    function timezoneList() {
+      let zones = [];
+      try { zones = Intl.supportedValuesOf("timeZone"); } catch { /* older browsers */ }
+      if (!zones.length) zones = ["Europe/London", "Europe/Dublin", "Europe/Paris", "Europe/Berlin", "Europe/Madrid", "Europe/Amsterdam", "America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles", "Australia/Sydney", "Asia/Tokyo", "UTC"];
+      return zones;
+    }
+
+    function fillSettingsForm() {
+      $("setName").value = league.name || "";
+      const game = league.game || "";
+      const gameOpts = [{ value: "", label: "— Choose a game —" }, ...GAMES.map(g => ({ value: g, label: g })), { value: "__other", label: "Other…" }];
+      const inList = !game || GAMES.includes(game);
+      fillSelect($("setGame"), gameOpts, inList ? game : "__other");
+      $("setGameOther").value = inList ? "" : game;
+      $("setGameOther").style.display = inList ? "none" : "block";
+
+      const zones = timezoneList();
+      let tz = league.timezone || "";
+      if (!tz) { try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch { tz = ""; } }
+      if (tz && !zones.includes(tz)) zones.unshift(tz);
+      fillSelect($("setTimezone"), [{ value: "", label: "— Choose a timezone —" }, ...zones.map(z => ({ value: z, label: z.replaceAll("_", " ") }))], tz);
+
+      $("setLogo").value = league.logoUrl || "";
+      const d = league.discord || {}, r = d.roles || {};
+      $("setGuild").value = d.guildId || "";
+      $("setRoleHead").value = r.headsteward || "";
+      $("setRoleSteward").value = r.steward || "";
+      $("setRoleSenior").value = r.seniorsteward || "";
+      $("setRoleMod").value = r.moderator || "";
+      $("setHookTicket").value = privateCfg.ticketWebhookUrl || "";
+      $("setHookFinal").value = privateCfg.finalisationWebhookUrl || "";
+
+      document.querySelectorAll("[data-discord-id]").forEach(i => checkDiscordIdInput(i, false));
+      document.querySelectorAll("[data-webhook]").forEach(i => checkWebhookInput(i));
+      checkName();
+      checkLogo();
+      savedSettingsSnapshot = settingsSnapshot();
+      updateDirty();
+    }
+
+    function readSettings() {
+      const gameSel = $("setGame").value;
+      return {
+        name: $("setName").value.trim(),
+        game: gameSel === "__other" ? $("setGameOther").value.trim() : gameSel,
+        timezone: $("setTimezone").value,
+        logoUrl: $("setLogo").value.trim(),
+        discord: {
+          guildId: $("setGuild").value.trim(),
+          roles: {
+            headsteward: $("setRoleHead").value.trim(),
+            steward: $("setRoleSteward").value.trim(),
+            seniorsteward: $("setRoleSenior").value.trim(),
+            moderator: $("setRoleMod").value.trim()
+          }
+        }
+      };
+    }
+    function settingsSnapshot() { return JSON.stringify(readSettings()); }
+    function updateDirty() { $("settingsDirty").style.display = settingsSnapshot() !== savedSettingsSnapshot ? "inline" : "none"; }
+
+    function checkName() {
+      const v = $("setName").value.trim();
+      const bad = v.length < 2;
+      markInput($("setName"), bad ? "bad" : "");
+      setMsg($("setNameMsg"), bad ? "bad" : "", bad ? "Your league needs a name (at least 2 characters)." : "");
+      return !bad;
+    }
+
+    // Strips anything that isn't a digit (so "<@&1234…>" or spaces just work)
+    // and explains clearly when someone pastes a role *name* instead.
+    function checkDiscordIdInput(input, fromTyping = true) {
+      const msg = input.parentElement.querySelector(".fieldMsg");
+      const raw = input.value;
+      const digits = raw.replace(/\D/g, "");
+      if (fromTyping && raw !== digits) input.value = digits;
+      if (!raw.trim()) { markInput(input, ""); setMsg(msg, "", ""); return true; }
+      if (!digits) {
+        markInput(input, "bad");
+        setMsg(msg, "bad", "That's a name, not an ID. IDs are long numbers — see “How do I get a Discord ID?” above.");
+        return false;
+      }
+      if (!DISCORD_ID.test(digits)) {
+        markInput(input, "bad");
+        setMsg(msg, "bad", `Discord IDs are 17–20 digits long — this one is ${digits.length}. Copy it again.`);
+        return false;
+      }
+      markInput(input, "ok");
+      setMsg(msg, "ok", "✓ Looks right");
+      return true;
+    }
+
+    function checkWebhookInput(input) {
+      const msg = input.closest(".stepFull").querySelector(".fieldMsg");
+      const v = input.value.trim();
+      if (input.value !== v) input.value = v;
+      if (!v) { markInput(input, ""); setMsg(msg, "", ""); return true; }
+      if (!WEBHOOK.test(v)) {
+        markInput(input, "bad");
+        setMsg(msg, "bad", "That isn't a Discord webhook link. It should start https://discord.com/api/webhooks/ — see “How do I make a webhook?”.");
+        return false;
+      }
+      markInput(input, "ok");
+      setMsg(msg, "ok", "✓ Valid webhook link — press Send test to be sure");
+      return true;
+    }
+
+    let logoState = "empty"; // empty | checking | ok | bad
+    let logoTimer = null;
+    function checkLogo() {
+      const v = $("setLogo").value.trim();
+      const prev = $("setLogoPreview"), msg = $("setLogoMsg"), input = $("setLogo");
+      clearTimeout(logoTimer);
+      if (!v) { logoState = "empty"; prev.style.display = "none"; markInput(input, ""); setMsg(msg, "", "Paste a direct link to your logo image."); return; }
+      if (!/^https:\/\//i.test(v)) { logoState = "bad"; prev.style.display = "none"; markInput(input, "bad"); setMsg(msg, "bad", "The link must start with https://"); return; }
+      logoState = "checking";
+      setMsg(msg, "", "Checking image…");
+      logoTimer = setTimeout(() => {
+        prev.onload = () => {
+          logoState = "ok";
+          prev.style.display = "block";
+          markInput(input, "ok");
+          if (/cdn\.discordapp\.com|media\.discordapp\.net/i.test(v)) {
+            setMsg(msg, "warn", "This works now, but Discord image links expire after a while. Upload it to a site like Imgur and use that link instead.");
+          } else setMsg(msg, "ok", "✓ Looks good");
+        };
+        prev.onerror = () => {
+          logoState = "bad";
+          prev.style.display = "none";
+          markInput(input, "bad");
+          setMsg(msg, "bad", "That link isn't an image we can load. Right-click your logo → “Copy image address” and paste that (it usually ends .png or .jpg). Google Drive links won't work.");
+        };
+        prev.src = v;
+      }, 350);
+    }
+
+    $("setName").addEventListener("input", () => { checkName(); updateDirty(); });
+    $("setGame").addEventListener("change", () => {
+      const other = $("setGame").value === "__other";
+      $("setGameOther").style.display = other ? "block" : "none";
+      if (other) $("setGameOther").focus();
+      updateDirty();
+    });
+    $("setGameOther").addEventListener("input", updateDirty);
+    $("setTimezone").addEventListener("change", updateDirty);
+    $("setLogo").addEventListener("input", () => { checkLogo(); updateDirty(); });
+    document.querySelectorAll("[data-discord-id]").forEach(i => i.addEventListener("input", () => { checkDiscordIdInput(i); updateDirty(); }));
+    document.querySelectorAll("[data-webhook]").forEach(i => i.addEventListener("input", () => checkWebhookInput(i)));
+    window.addEventListener("beforeunload", (e) => {
+      if (league && settingsSnapshot() !== savedSettingsSnapshot) { e.preventDefault(); e.returnValue = ""; }
+    });
+
+    function focusFirstBad(scope) {
+      const bad = scope.querySelector("input.bad, select.bad");
+      if (bad) { bad.scrollIntoView({ behavior: "smooth", block: "center" }); bad.focus(); }
+    }
+
+    $("saveSettingsBtn").onclick = async () => {
+      let ok = checkName();
+      document.querySelectorAll("[data-discord-id]").forEach(i => { if (!checkDiscordIdInput(i, false)) ok = false; });
+      if (logoState === "bad") ok = false;
+      if (!ok) { toast("Fix the boxes marked in red first."); focusFirstBad($("panel-settings")); return; }
+      if (logoState === "checking") { toast("Still checking your logo — try again in a second."); return; }
+
+      const data = readSettings();
+      const btn = $("saveSettingsBtn");
+      btn.disabled = true; btn.textContent = "Saving…";
+      try {
+        await leagueRef.update(data);
+        Object.assign(league, data);
+        savedSettingsSnapshot = settingsSnapshot();
+        updateDirty();
+        renderHeader();
+        renderOverview();
+        toast("League details saved.");
+      } catch (e) {
+        toast("Couldn't save: " + friendlyError(e), 5000);
+      } finally {
+        btn.disabled = false; btn.textContent = "Save league details";
+      }
+    };
+
+    // ---------- webhooks ----------
+    document.querySelectorAll("[data-test-hook]").forEach(btn => {
+      btn.onclick = async () => {
+        const input = $(btn.dataset.testHook);
+        if (!input.value.trim()) { toast("Paste a webhook link first."); input.focus(); return; }
+        if (!checkWebhookInput(input)) { input.focus(); return; }
+        btn.disabled = true; btn.textContent = "Sending…";
+        const msg = input.closest(".stepFull").querySelector(".fieldMsg");
+        try {
+          const res = await fetch(input.value.trim(), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: "ITS", content: `✅ ITS test message for **${league.name}** — this webhook is connected.` })
+          });
+          if (res.ok) setMsg(msg, "ok", "✓ Test sent — check that Discord channel for the message.");
+          else if (res.status === 404 || res.status === 401) setMsg(msg, "bad", "Discord says this webhook doesn't exist (it may have been deleted). Make a new one and paste it again.");
+          else setMsg(msg, "bad", `Discord rejected the test (error ${res.status}). Try making a new webhook.`);
+        } catch (e) {
+          setMsg(msg, "warn", "Couldn't send a test from this browser (an ad-blocker can cause this). The link looks valid, so you can still save it.");
+        } finally {
+          btn.disabled = false; btn.textContent = "Send test";
+        }
+      };
+    });
+
+    $("saveHooksBtn").onclick = async () => {
+      let ok = true;
+      document.querySelectorAll("[data-webhook]").forEach(i => { if (!checkWebhookInput(i)) ok = false; });
+      if (!ok) { toast("Fix the webhook links marked in red first."); focusFirstBad($("panel-settings")); return; }
+      const data = { ticketWebhookUrl: $("setHookTicket").value.trim(), finalisationWebhookUrl: $("setHookFinal").value.trim() };
+      const btn = $("saveHooksBtn");
+      btn.disabled = true; btn.textContent = "Saving…";
+      try {
+        await leagueRef.collection("private").doc("config").set(data, { merge: true });
+        Object.assign(privateCfg, data);
+        renderOverview();
+        toast("Webhooks saved.");
+      } catch (e) {
+        toast("Couldn't save: " + friendlyError(e), 5000);
+      } finally {
+        btn.disabled = false; btn.textContent = "Save webhooks";
+      }
+    };
+
+    // ============================================================
+    // STAFF
+    // ============================================================
+    const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    fillSelect($("staffRole"), Object.entries(ROLES).map(([v, r]) => ({ value: v, label: r.label })), "steward");
+    const roleHint = () => { $("staffRoleHint").textContent = ROLES[$("staffRole").value].hint; };
+    $("staffRole").addEventListener("change", roleHint);
+    roleHint();
+
+    function checkStaffEmail() {
+      const input = $("staffEmail"), msg = $("staffEmailMsg");
+      const v = input.value.trim().toLowerCase();
+      if (!v) { markInput(input, ""); setMsg(msg, "", ""); return null; }
+      if (!EMAIL.test(v)) { markInput(input, "bad"); setMsg(msg, "bad", "That doesn't look like an email address."); return null; }
+      if (v === currentEmail) { markInput(input, "bad"); setMsg(msg, "bad", "That's you — you're already the Owner."); return null; }
+      const existing = staffList.find(s => s.email === v);
+      if (existing) { markInput(input, "ok"); setMsg(msg, "warn", `Already staff as ${ROLES[existing.role]?.label || existing.role} — adding again will change their role.`); return v; }
+      if (!/@(gmail|googlemail)\.com$/.test(v)) { markInput(input, "ok"); setMsg(msg, "warn", "Not a Gmail address — that's fine only if it's a Google account (e.g. Google Workspace)."); return v; }
+      markInput(input, "ok"); setMsg(msg, "ok", "✓"); return v;
+    }
+    function checkStaffDiscord() {
+      const input = $("staffDiscord"), msg = $("staffDiscordMsg");
+      if (!input.value.trim()) { markInput(input, ""); setMsg(msg, "", ""); return { key: "", ok: true }; }
+      const r = ImportCore.checkDiscord(input.value);
+      if (r.error) { markInput(input, "bad"); setMsg(msg, "bad", r.error); return { key: "", ok: false }; }
+      markInput(input, "ok"); setMsg(msg, "ok", `✓ @${r.key}`); return { key: r.key, ok: true };
+    }
+    $("staffEmail").addEventListener("input", checkStaffEmail);
+    $("staffDiscord").addEventListener("input", checkStaffDiscord);
+
+    async function loadStaff() {
+      try {
+        const snap = await leagueRef.collection("staff").get();
+        staffList = snap.docs.map(d => ({ email: d.id, ...d.data() }));
+        const order = { owner: 0, headsteward: 1, seniorsteward: 2, steward: 3, moderator: 4 };
+        staffList.sort((a, b) => (order[a.role] ?? 9) - (order[b.role] ?? 9) || a.email.localeCompare(b.email));
+      } catch (e) {
+        staffList = [];
+        $("staffBody").innerHTML = `<tr><td colspan="5"><div class="redBox">Couldn't load staff: ${esc(friendlyError(e))}</div></td></tr>`;
+        return;
+      }
+      renderStaff();
+    }
+
+    function renderStaff() {
+      $("statStaff").textContent = staffList.length;
+      if (!staffList.length) { $("staffBody").innerHTML = `<tr><td colspan="5" class="muted">No staff yet.</td></tr>`; return; }
+      $("staffBody").innerHTML = staffList.map(s => {
+        const isOwnerRow = s.role === "owner";
+        const roleCell = isOwnerRow
+          ? `<span class="pill miniOk">Owner${s.email === currentEmail ? " (you)" : ""}</span>`
+          : `<select data-role-email="${esc(s.email)}">${Object.entries(ROLES).map(([v, r]) => `<option value="${v}" ${v === s.role ? "selected" : ""}>${r.label}</option>`).join("")}</select>`;
+        return `<tr>
+          <td><strong>${esc(s.email)}</strong></td>
+          <td>${roleCell}</td>
+          <td>${s.discordKey ? "@" + esc(s.discordKey) : '<span class="muted">—</span>'}</td>
+          <td>${esc(fmtDate(s.addedAt))}</td>
+          <td style="text-align:right;">${isOwnerRow ? "" : `<button class="small danger" data-remove-email="${esc(s.email)}">Remove</button>`}</td>
+        </tr>`;
+      }).join("");
+
+      $("staffBody").querySelectorAll("[data-role-email]").forEach(sel => {
+        sel.onchange = async () => {
+          const email = sel.dataset.roleEmail;
+          const before = staffList.find(s => s.email === email)?.role;
+          if (!confirm(`Change ${email} to ${ROLES[sel.value].label}?`)) { sel.value = before; return; }
+          sel.disabled = true;
+          try {
+            await leagueRef.collection("staff").doc(email).update({ role: sel.value, updatedAt: FV().serverTimestamp(), updatedBy: currentEmail });
+            toast("Role updated.");
+            await loadStaff(); renderOverview();
+          } catch (e) { sel.value = before; toast("Couldn't change role: " + friendlyError(e), 5000); }
+          finally { sel.disabled = false; }
+        };
+      });
+      $("staffBody").querySelectorAll("[data-remove-email]").forEach(btn => {
+        btn.onclick = async () => {
+          const email = btn.dataset.removeEmail;
+          if (!confirm(`Remove ${email} from your staff? They'll lose access straight away.`)) return;
+          btn.disabled = true;
+          try {
+            await leagueRef.collection("staff").doc(email).delete();
+            toast("Staff member removed.");
+            await loadStaff(); renderOverview();
+          } catch (e) { btn.disabled = false; toast("Couldn't remove: " + friendlyError(e), 5000); }
+        };
+      });
+    }
+
+    $("refreshStaffBtn").onclick = loadStaff;
+
+    $("addStaffBtn").onclick = async () => {
+      const email = checkStaffEmail();
+      const disc = checkStaffDiscord();
+      if (!email) { if (!$("staffEmail").value.trim()) { markInput($("staffEmail"), "bad"); setMsg($("staffEmailMsg"), "bad", "Enter their Google email."); } $("staffEmail").focus(); return; }
+      if (!disc.ok) { $("staffDiscord").focus(); return; }
+      const role = $("staffRole").value;
+      const existing = staffList.find(s => s.email === email);
+      if (existing && !confirm(`${email} is already a ${ROLES[existing.role]?.label || existing.role}. Change them to ${ROLES[role].label}?`)) return;
+
+      const btn = $("addStaffBtn");
+      btn.disabled = true; btn.textContent = "Adding…";
+      try {
+        const data = { role, discordKey: disc.key, updatedAt: FV().serverTimestamp(), updatedBy: currentEmail };
+        if (!existing) { data.addedAt = FV().serverTimestamp(); data.addedBy = currentEmail; }
+        await leagueRef.collection("staff").doc(email).set(data, { merge: true });
+        toast(`${email} added as ${ROLES[role].label}. They can sign in with that Google account.`, 4000);
+        $("staffEmail").value = ""; $("staffDiscord").value = "";
+        checkStaffEmail(); checkStaffDiscord();
+        await loadStaff(); renderOverview();
+      } catch (e) {
+        toast("Couldn't add: " + friendlyError(e), 5000);
+      } finally {
+        btn.disabled = false; btn.textContent = "Add staff member";
+      }
+    };
+
+    // ============================================================
+    // IMPORT HISTORY
+    // ============================================================
+    const imp = { grid: null, fileName: "", workbook: null, rows: [], hasHeader: true, map: null };
+    const MAP_SELECTS = { driverName: "mapDriverName", discordName: "mapDiscordName", outcome: "mapOutcome", comments: "mapComments" };
+
+    $("downloadTemplateBtn").onclick = () => {
+      const blob = new Blob([ImportCore.TEMPLATE_CSV], { type: "text/csv;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "ITS-import-template.csv";
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    };
+
+    // ---------- step 1: getting the data ----------
+    const dz = $("dropZone");
+    dz.onclick = () => $("impFile").click();
+    dz.addEventListener("dragover", e => { e.preventDefault(); dz.classList.add("drag"); });
+    dz.addEventListener("dragleave", () => dz.classList.remove("drag"));
+    dz.addEventListener("drop", e => { e.preventDefault(); dz.classList.remove("drag"); if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]); });
+    $("impFile").addEventListener("change", e => { if (e.target.files[0]) loadFile(e.target.files[0]); e.target.value = ""; });
+
+    let sheetJsPromise = null;
+    function loadSheetJs() {
+      if (window.XLSX) return Promise.resolve();
+      if (!sheetJsPromise) {
+        sheetJsPromise = new Promise((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src = "https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js";
+          s.onload = resolve;
+          s.onerror = () => { sheetJsPromise = null; reject(new Error("Couldn't load the Excel reader. Save your sheet as CSV and try that instead.")); };
+          document.head.appendChild(s);
+        });
+      }
+      return sheetJsPromise;
+    }
+
+    async function loadFile(file) {
+      const msg = $("impLoadMsg");
+      const ext = (file.name.split(".").pop() || "").toLowerCase();
+      $("sheetPickRow").style.display = "none";
+      imp.workbook = null;
+      if (file.size > 15 * 1024 * 1024) { setMsg(msg, "bad", "That file is over 15 MB — it's probably not the right file."); return; }
+      setMsg(msg, "", `Reading ${file.name}…`);
+      try {
+        if (["xlsx", "xls", "ods"].includes(ext)) {
+          await loadSheetJs();
+          const wb = XLSX.read(await file.arrayBuffer(), { type: "array" });
+          imp.workbook = wb;
+          const names = wb.SheetNames.filter(n => sheetGrid(wb, n).length);
+          if (!names.length) { setMsg(msg, "bad", "That workbook looks empty."); return; }
+          if (names.length > 1) {
+            fillSelect($("sheetPick"), names.map(n => ({ value: n, label: n })), names[0]);
+            $("sheetPickRow").style.display = "flex";
+            $("sheetPick").onchange = () => setGrid(sheetGrid(wb, $("sheetPick").value), `${file.name} › ${$("sheetPick").value}`);
+          }
+          setGrid(sheetGrid(wb, names[0]), names.length > 1 ? `${file.name} › ${names[0]}` : file.name);
+        } else if (["csv", "tsv", "txt"].includes(ext)) {
+          setGrid(ImportCore.parseDelimited(await file.text()), file.name);
+        } else {
+          setMsg(msg, "bad", "That file type isn't supported. Use Excel (.xlsx), CSV or TSV — in Google Sheets: File → Download → CSV.");
+        }
+      } catch (e) {
+        console.error(e);
+        setMsg(msg, "bad", friendlyError(e));
+      }
+    }
+
+    function sheetGrid(wb, name) {
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, raw: false, defval: "" });
+      return ImportCore.cleanGrid(rows);
+    }
+
+    $("impPasteBtn").onclick = () => {
+      const text = $("impPaste").value;
+      if (!text.trim()) { setMsg($("impLoadMsg"), "bad", "Paste your rows into the box first."); $("impPaste").focus(); return; }
+      $("sheetPickRow").style.display = "none";
+      setGrid(ImportCore.parseDelimited(text), "Pasted data");
+    };
+
+    function setGrid(grid, name) {
+      const msg = $("impLoadMsg");
+      if (!grid.length) { setMsg(msg, "bad", "We couldn't find any rows in that."); return; }
+      if (grid[0].length < 2) {
+        setMsg(msg, "bad", "We only found one column. Make sure you copied all four columns (driver name, Discord username, outcome, comments) — or check the file is the right one.");
+        return;
+      }
+      imp.grid = grid; imp.fileName = name;
+      const guess = ImportCore.guessColumns(grid);
+      imp.hasHeader = guess.hasHeader; imp.map = guess.map;
+      const bodyRows = grid.length - (guess.hasHeader ? 1 : 0);
+      const capped = bodyRows > ImportCore.MAX_ROWS;
+      setMsg(msg, capped ? "warn" : "ok", capped
+        ? `Loaded ${name}, but it has ${bodyRows} rows — only the first ${ImportCore.MAX_ROWS} will be used. Split it into smaller files for the rest.`
+        : `✓ Loaded ${name} — ${bodyRows} row${bodyRows === 1 ? "" : "s"} found.`);
+      $("impHasHeader").checked = guess.hasHeader;
+      fillMappingSelects();
+      ["impStep2", "impStep3", "impStep4"].forEach(id => $(id).classList.remove("locked"));
+      rebuildRows();
+      $("impStep2").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    // ---------- step 2: matching columns ----------
+    function colName(i) { let s = "", n = i + 1; while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; }
+
+    function fillMappingSelects() {
+      const width = imp.grid[0].length;
+      const opts = [{ value: "-1", label: "— Not in my sheet —" }];
+      for (let i = 0; i < width; i++) {
+        const sample = imp.hasHeader ? imp.grid[0][i] : imp.grid[0][i];
+        opts.push({ value: String(i), label: `Column ${colName(i)}${sample ? " — " + String(sample).slice(0, 30) : ""}` });
+      }
+      Object.entries(MAP_SELECTS).forEach(([f, id]) => fillSelect($(id), opts, String(imp.map[f])));
+    }
+
+    Object.entries(MAP_SELECTS).forEach(([f, id]) => $(id).addEventListener("change", () => { imp.map[f] = Number($(id).value); rebuildRows(); }));
+    $("impHasHeader").addEventListener("change", () => { imp.hasHeader = $("impHasHeader").checked; fillMappingSelects(); rebuildRows(); });
+
+    function checkMapping() {
+      const msg = $("mapMsg");
+      const m = imp.map;
+      const chosen = Object.values(m).filter(v => v >= 0);
+      if (new Set(chosen).size !== chosen.length) { setMsg(msg, "bad", "You've picked the same column twice. Each column can only be used once."); return false; }
+      const missing = [];
+      if (m.driverName < 0) missing.push("Driver name");
+      if (m.discordName < 0) missing.push("Discord username");
+      if (missing.length) { setMsg(msg, "bad", `Choose which column is the ${missing.join(" and ")}. ${missing.includes("Discord username") ? "If your sheet has no Discord usernames, add a column for them first — ITS needs them to link drivers." : ""}`); return false; }
+      setMsg(msg, "ok", "✓ Columns matched");
+      return true;
+    }
+
+    // ---------- step 3: checking ----------
+    function rebuildRows() {
+      ["mapDriverName", "mapDiscordName"].forEach(id => $(id).classList.toggle("bad", Number($(id).value) < 0));
+      const mappingOk = checkMapping();
+      imp.rows = mappingOk ? ImportCore.buildRows(imp.grid, imp.hasHeader, imp.map) : [];
+      ImportCore.validateRows(imp.rows);
+      renderImpTable();
+      refreshImpStatus();
+    }
+
+    function renderImpTable() {
+      if (!imp.rows.length) { $("impBody").innerHTML = `<tr><td colspan="6" class="muted">Match your columns above to see your rows here.</td></tr>`; return; }
+      const cell = (i, f, w) => `<input data-i="${i}" data-f="${f}" value="${esc(imp.rows[i][f])}" style="min-width:${w}px;">`;
+      $("impBody").innerHTML = imp.rows.map((r, i) => `
+        <tr data-row="${i}">
+          <td class="muted">${r.sourceRow}</td>
+          <td>${cell(i, "driverName", 140)}</td>
+          <td>${cell(i, "discordName", 150)}</td>
+          <td>${cell(i, "outcome", 140)}</td>
+          <td>${cell(i, "comments", 200)}</td>
+          <td class="statusCell"></td>
+        </tr>`).join("");
+    }
+
+    $("impBody").addEventListener("change", e => {
+      const t = e.target;
+      if (!t.matches("input[data-i]")) return;
+      imp.rows[Number(t.dataset.i)][t.dataset.f] = t.value;
+      ImportCore.validateRows(imp.rows);
+      // Show the cleaned value back (e.g. trimmed)
+      t.value = imp.rows[Number(t.dataset.i)][t.dataset.f];
+      refreshImpStatus();
+    });
+    $("impProblemsOnly").addEventListener("change", () => $("impTable").classList.toggle("problemsOnly", $("impProblemsOnly").checked));
+
+    function refreshImpStatus() {
+      const s = ImportCore.summarise(imp.rows);
+      $("impBody").querySelectorAll("tr[data-row]").forEach(tr => {
+        const r = imp.rows[Number(tr.dataset.row)];
+        tr.className = r.errors.length ? "rowErr" : (r.warnings.length ? "rowWarn" : "rowOk");
+        const st = tr.querySelector(".statusCell");
+        st.innerHTML = r.errors.length
+          ? r.errors.map(x => "✗ " + esc(x)).join("<br>") + (r.warnings.length ? "<br>" + r.warnings.map(x => "! " + esc(x)).join("<br>") : "")
+          : r.warnings.length ? r.warnings.map(x => "! " + esc(x)).join("<br>")
+          : `✓ Ready${r.discordKey ? " — @" + esc(r.discordKey) : ""}`;
+      });
+      $("impSummary").innerHTML = imp.rows.length ? `
+        <span class="pill">${s.total} rows</span>
+        <span class="pill miniOk">✓ ${s.ready} ready to import</span>
+        ${s.errors ? `<span class="pill miniBad">✗ ${s.errors} need fixing</span>` : ""}
+        ${s.warnings ? `<span class="pill" style="border-color:var(--amber-line);background:var(--amber-soft);color:var(--amber-dark);">! ${s.warnings} worth checking</span>` : ""}` : "";
+      const go = $("impGoBtn");
+      go.disabled = s.ready === 0;
+      go.textContent = s.ready ? `Import ${s.ready} record${s.ready === 1 ? "" : "s"}` : "Import";
+      $("impReadyText").innerHTML = !imp.rows.length ? "Nothing to import yet."
+        : s.ready === 0 ? "Every row has a problem — fix the red rows above first."
+        : `<strong>${s.ready}</strong> record${s.ready === 1 ? "" : "s"} will be added to <strong>${esc(league.name)}</strong>${s.errors ? `. <strong>${s.errors}</strong> red row${s.errors === 1 ? "" : "s"} will be skipped` : ""}. You can undo this afterwards.`;
+    }
+
+    // ---------- step 4: importing ----------
+    function resetImport() {
+      imp.grid = null; imp.rows = []; imp.fileName = ""; imp.workbook = null;
+      $("impPaste").value = "";
+      setMsg($("impLoadMsg"), "", "");
+      setMsg($("mapMsg"), "", "");
+      $("sheetPickRow").style.display = "none";
+      ["impStep2", "impStep3", "impStep4"].forEach(id => $(id).classList.add("locked"));
+      $("impBody").innerHTML = "";
+      $("impSummary").innerHTML = "";
+      $("impProgress").style.display = "none";
+      $("impProgressBar").style.width = "0";
+      $("impGoBtn").disabled = true; $("impGoBtn").textContent = "Import";
+      $("impReadyText").textContent = "Nothing to import yet.";
+    }
+    $("impResetBtn").onclick = () => { if (!imp.rows.length || confirm("Clear this import and start again?")) resetImport(); };
+
+    $("impGoBtn").onclick = async () => {
+      const ready = imp.rows.filter(r => !r.errors.length);
+      if (!ready.length) return;
+      const s = ImportCore.summarise(imp.rows);
+      const sameName = importsList.find(i => i.fileName === imp.fileName && i.status !== "undone" && imp.fileName !== "Pasted data");
+      if (sameName && !confirm(`You already imported “${imp.fileName}” on ${fmtDate(sameName.importedAt)}. Importing it again will create duplicates. Carry on anyway?`)) return;
+      if (!confirm(`Import ${ready.length} records into ${league.name}?${s.errors ? `\n\n${s.errors} red row(s) will be skipped.` : ""}`)) return;
+
+      const go = $("impGoBtn"), resetBtn = $("impResetBtn");
+      go.disabled = true; resetBtn.disabled = true;
+      $("impProgress").style.display = "block";
+      const importRef = leagueRef.collection("imports").doc();
+      let written = 0;
+      try {
+        await importRef.set({
+          fileName: imp.fileName, total: ready.length, imported: 0, skipped: s.errors,
+          status: "in-progress", importedBy: currentEmail, importedAt: FV().serverTimestamp()
+        });
+        const BATCH = 400;
+        for (let i = 0; i < ready.length; i += BATCH) {
+          const batch = db.batch();
+          ready.slice(i, i + BATCH).forEach(r => {
+            batch.set(leagueRef.collection("driverHistory").doc(), {
+              driverName: r.driverName,
+              discordName: r.discordName.replace(/^@/, ""),
+              discordKey: r.discordKey,
+              outcome: r.outcome,
+              comments: r.comments,
+              sourceRow: r.sourceRow,
+              source: "import",
+              importId: importRef.id,
+              importedBy: currentEmail,
+              importedAt: FV().serverTimestamp()
+            });
+          });
+          await batch.commit();
+          written += Math.min(BATCH, ready.length - i);
+          $("impProgressBar").style.width = `${Math.round(written / ready.length * 100)}%`;
+          go.textContent = `Importing… ${written}/${ready.length}`;
+        }
+        await importRef.update({ status: "complete", imported: written, completedAt: FV().serverTimestamp() });
+        toast(`✓ Imported ${written} records.`, 4000);
+        resetImport();
+        await loadImports();
+        renderOverview();
+      } catch (e) {
+        console.error(e);
+        try { await importRef.update({ status: written ? "partial" : "failed", imported: written }); } catch { /* ignore */ }
+        toast(`Import stopped after ${written} records: ${friendlyError(e)} You can undo it under “Previous imports”.`, 7000);
+        await loadImports();
+        renderOverview();
+      } finally {
+        go.disabled = false; resetBtn.disabled = false;
+        refreshImpStatus();
+      }
+    };
+
+    async function loadImports() {
+      try {
+        const snap = await leagueRef.collection("imports").orderBy("importedAt", "desc").limit(50).get();
+        importsList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      } catch (e) {
+        importsList = [];
+        $("importsBody").innerHTML = `<tr><td colspan="6"><div class="redBox">Couldn't load previous imports: ${esc(friendlyError(e))}</div></td></tr>`;
+        return;
+      }
+      renderImports();
+    }
+
+    function renderImports() {
+      if (!importsList.length) { $("importsBody").innerHTML = `<tr><td colspan="6" class="muted">No imports yet.</td></tr>`; return; }
+      const label = { complete: ["Complete", "miniOk"], partial: ["Partly imported", "miniBad"], failed: ["Failed", "miniBad"], "in-progress": ["In progress", ""], undone: ["Undone", ""] };
+      $("importsBody").innerHTML = importsList.map(i => {
+        const [txt, cls] = label[i.status] || [i.status, ""];
+        return `<tr>
+          <td>${esc(fmtDate(i.importedAt))}</td>
+          <td>${esc(i.fileName || "—")}</td>
+          <td>${Number(i.imported) || 0}${i.skipped ? ` <span class="muted">(${i.skipped} skipped)</span>` : ""}</td>
+          <td>${esc(i.importedBy || "—")}</td>
+          <td><span class="pill ${cls}">${esc(txt)}</span></td>
+          <td style="text-align:right;">${i.status !== "undone" ? `<button class="small danger" data-undo="${esc(i.id)}">Undo</button>` : ""}</td>
+        </tr>`;
+      }).join("");
+      $("importsBody").querySelectorAll("[data-undo]").forEach(btn => btn.onclick = () => undoImport(btn.dataset.undo, btn));
+    }
+
+    async function undoImport(importId, btn) {
+      const rec = importsList.find(i => i.id === importId);
+      if (!confirm(`Undo the import of “${rec?.fileName || importId}”? This deletes the ${Number(rec?.imported) || 0} records it added.`)) return;
+      btn.disabled = true; btn.textContent = "Undoing…";
+      let removed = 0;
+      try {
+        while (true) {
+          const snap = await leagueRef.collection("driverHistory").where("importId", "==", importId).limit(400).get();
+          if (snap.empty) break;
+          const batch = db.batch();
+          snap.docs.forEach(d => batch.delete(d.ref));
+          await batch.commit();
+          removed += snap.size;
+          btn.textContent = `Undoing… ${removed}`;
+        }
+        await leagueRef.collection("imports").doc(importId).update({ status: "undone", undoneAt: FV().serverTimestamp(), undoneBy: currentEmail });
+        toast(`Import undone — ${removed} records removed.`);
+      } catch (e) {
+        toast(`Undo stopped after removing ${removed}: ${friendlyError(e)} Press Undo again to finish.`, 6000);
+      }
+      await loadImports();
+      renderOverview();
+    }
+
+    // ============================================================
+    // STANDARDS — ported from IFWL headsteward.html
+    // league_meta/ownerClause        -> leagues/{lid}/meta/ownerClause
+    // league_meta/seniorStewardMode  -> leagues/{lid}/meta/seniorStewardMode
+    // Same fields as IFWL, so the ported steward pages read them unchanged.
+    // ============================================================
+    const OWNER_CLAUSE_DURATION_MS = 21 * 24 * 60 * 60 * 1000; // 3 weeks, fixed
+    const metaRef = (id) => leagueRef.collection("meta").doc(id);
+
+    async function refreshOwnerClauseCard() {
+      const banner = $("ownerClauseBanner"), statusEl = $("ownerClauseStatus");
+      let d = null;
+      try {
+        const snap = await metaRef("ownerClause").get();
+        d = snap.exists ? snap.data() : null;
+      } catch (e) {
+        banner.innerHTML = `<div class="redBox">Could not load the Emergency Standards Clause status: ${esc(friendlyError(e))}. The clause itself has NOT been changed.</div>`;
+        statusEl.textContent = "Load failed — see message above.";
+        $("clauseBannerTop").innerHTML = "";
+        return;
+      }
+      const nowMs = Date.now();
+      const active = !!(d && d.enabled === true && Number(d.expiresAtMs) > nowMs);
+      if (active) {
+        const daysLeft = Math.max(1, Math.ceil((Number(d.expiresAtMs) - nowMs) / 86400000));
+        const reason = esc(String(d.reasonText || "one or more season events have dropped below the league's expected standard").trim().replace(/[.\s]+$/, ""));
+        const html = `<div class="redBox"><strong>${esc(d.name || "Emergency Standards Clause")} IN EFFECT</strong> — invoked by the League Owner. Reason: ${reason}.
+          Active for about ${daysLeft} more day${daysLeft === 1 ? "" : "s"} (expires ${new Date(Number(d.expiresAtMs)).toLocaleString()}).
+          <div style="margin-top:8px;">While in effect, all penalties are to be <strong>doubled at the Head Steward's discretion</strong> (not automatic).</div></div>`;
+        banner.innerHTML = html;
+        $("clauseBannerTop").innerHTML = html;
+        statusEl.textContent = `Active — enabled ${new Date(Number(d.enabledAtMs)).toLocaleString()} by ${d.updatedBy || "Owner"}. Auto-expires ${new Date(Number(d.expiresAtMs)).toLocaleString()}.`;
+      } else {
+        banner.innerHTML = "";
+        $("clauseBannerTop").innerHTML = "";
+        statusEl.textContent = (d && d.enabled === true)
+          ? `Not currently active — last run expired ${new Date(Number(d.expiresAtMs)).toLocaleString()}.`
+          : "Not currently active.";
+      }
+      $("ownerClauseDisableBtn").disabled = !active;
+    }
+
+    function initOwnerClauseUI() {
+      $("ownerClauseEnableBtn").onclick = async () => {
+        const reasonText = $("ownerClauseReason").value.trim() || "One or more season events have dropped below the league's expected standard.";
+        if (!confirm("Enable the Emergency Standards Clause for the next 3 weeks? This shows a red notice to every steward and driver immediately, and can only be undone by disabling it manually.")) return;
+        const btn = $("ownerClauseEnableBtn");
+        btn.disabled = true;
+        try {
+          const nowMs = Date.now();
+          await metaRef("ownerClause").set({
+            enabled: true, name: "Emergency Standards Clause", reasonText,
+            enabledAtMs: nowMs, expiresAtMs: nowMs + OWNER_CLAUSE_DURATION_MS,
+            updatedBy: currentEmail, updatedAtMs: nowMs
+          }, { merge: true });
+          toast("Emergency Standards Clause enabled.");
+        } catch (e) { toast("Could not enable: " + friendlyError(e), 5000); }
+        finally { btn.disabled = false; await refreshOwnerClauseCard(); }
+      };
+      $("ownerClauseDisableBtn").onclick = async () => {
+        if (!confirm("Disable the Emergency Standards Clause now?")) return;
+        const btn = $("ownerClauseDisableBtn");
+        btn.disabled = true;
+        try {
+          await metaRef("ownerClause").set({ enabled: false, updatedBy: currentEmail, updatedAtMs: Date.now() }, { merge: true });
+          toast("Emergency Standards Clause disabled.");
+        } catch (e) { toast("Could not disable: " + friendlyError(e), 5000); }
+        finally { await refreshOwnerClauseCard(); }
+      };
+      return refreshOwnerClauseCard();
+    }
+
+    async function refreshSeniorStewardCard() {
+      const banner = $("seniorStewardBanner"), statusEl = $("seniorStewardStatus");
+      let d = null;
+      try {
+        const snap = await metaRef("seniorStewardMode").get();
+        d = snap.exists ? snap.data() : null;
+      } catch (e) {
+        banner.innerHTML = `<div class="redBox">Could not load Senior Steward Mode status: ${esc(friendlyError(e))}. The mode itself has NOT been changed.</div>`;
+        statusEl.textContent = "Load failed — see message above.";
+        return;
+      }
+      const active = !!(d && d.enabled === true);
+      banner.innerHTML = active
+        ? `<div class="bannerBox bannerGreen">Senior Steward Mode is <strong>ON</strong> — Senior Stewards currently have full Head Steward permissions.</div>`
+        : `<div class="bannerBox bannerAmber">Senior Steward Mode is <strong>OFF</strong> — Senior Stewards currently have standard Steward access only.</div>`;
+      statusEl.textContent = active
+        ? `Enabled ${d.enabledAtMs ? new Date(Number(d.enabledAtMs)).toLocaleString() : "—"} by ${d.updatedBy || "a Head Steward"}.`
+        : (d && d.updatedAtMs) ? `Disabled ${new Date(Number(d.updatedAtMs)).toLocaleString()} by ${d.updatedBy || "a Head Steward"}.` : "Never enabled.";
+      $("seniorStewardEnableBtn").disabled = active;
+      $("seniorStewardDisableBtn").disabled = !active;
+    }
+
+    function initSeniorStewardUI() {
+      $("seniorStewardEnableBtn").onclick = async () => {
+        if (!confirm("Enable Senior Steward Mode? Everyone with the Senior Steward role immediately gets full Head Steward permissions.")) return;
+        try {
+          await metaRef("seniorStewardMode").set({ enabled: true, updatedBy: currentEmail, enabledAtMs: Date.now(), updatedAtMs: Date.now() }, { merge: true });
+          toast("Senior Steward Mode enabled.");
+        } catch (e) { toast("Could not enable: " + friendlyError(e), 5000); }
+        await refreshSeniorStewardCard();
+      };
+      $("seniorStewardDisableBtn").onclick = async () => {
+        if (!confirm("Disable Senior Steward Mode now? Senior Stewards drop back to standard Steward access on their next page load.")) return;
+        try {
+          await metaRef("seniorStewardMode").set({ enabled: false, updatedBy: currentEmail, updatedAtMs: Date.now() }, { merge: true });
+          toast("Senior Steward Mode disabled.");
+        } catch (e) { toast("Could not disable: " + friendlyError(e), 5000); }
+        await refreshSeniorStewardCard();
+      };
+      return refreshSeniorStewardCard();
+    }
+
+  </script>
+</body>
+</html>

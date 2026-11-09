@@ -726,7 +726,7 @@
     <div class="successBox" id="successBox" style="display:none;">
       <strong>Application received — your league is pending approval.</strong>
       <div style="margin-top:6px;">League ID: <span class="mono" id="successLeagueId"></span></div>
-      <div style="margin-top:10px;">You'll be able to use your Head Steward dashboard with this same Google account once your league is approved.</div>
+      <div style="margin-top:10px;">You can start setting up your league (staff, Discord, importing old records) on your Owner Dashboard right now. Your staff dashboards switch on once your league is approved.</div>
       <div class="row" style="margin-top:12px;">
         <button class="primary" id="successDashboardBtn">Go to my dashboard</button>
       </div>
@@ -827,7 +827,11 @@
             const summary = ids.map(id => `${id} (${leagues[id]})`).join(", ");
             $("alreadySetupText").textContent = `This account is already part of ITS: ${summary}.`;
             $("alreadySetupCard").style.display = "block";
-            $("goToDashboardBtn").onclick = () => toast("ITS dashboards are coming soon — we'll let you know when yours is ready.");
+            const ownsOne = ids.some(id => leagues[id] === "owner");
+            $("goToDashboardBtn").textContent = ownsOne ? "Go to my Owner Dashboard" : "Go to my dashboard";
+            $("goToDashboardBtn").onclick = () => ownsOne
+              ? window.location.href = "owner.html"
+              : toast("Staff dashboards are coming soon — we'll let you know when yours is ready.");
             $("wizard").style.display = "none";
           } else {
             $("alreadySetupCard").style.display = "none";
@@ -891,7 +895,8 @@
         $("wizard").style.display = "none";
         $("successLeagueId").textContent = leagueId;
         $("successBox").style.display = "block";
-        $("successDashboardBtn").onclick = () => toast("ITS dashboards are coming soon — we'll let you know when yours is ready.");
+        $("successDashboardBtn").textContent = "Go to my Owner Dashboard";
+        $("successDashboardBtn").onclick = () => window.location.href = "owner.html";
       } catch (e) {
         console.error("provisionLeagueOwner failed:", e);
         showWizardError(e?.message || String(e));
