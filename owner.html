@@ -731,6 +731,10 @@
     .saveBar{ position:sticky; bottom:12px; z-index:30; border-color:var(--indigo-line); }
     .saveBar.dirty{ border-color:var(--amber); box-shadow:0 0 0 4px rgba(217,119,6,.12), var(--shadow); }
 
+    .gamePicker{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+    .gameChip{ display:inline-flex; align-items:center; gap:7px; padding:7px 12px; border:1px solid var(--line); border-radius:999px; background:#fff; font-size:13px; font-weight:650; cursor:pointer; user-select:none; }
+    .gameChip input{ width:auto; margin:0; accent-color:var(--primary); }
+    .gameChip:has(input:checked){ border-color:var(--primary); background:var(--indigo-soft); color:var(--primary-dark); }
   </style>
 </head>
 <body>
@@ -869,10 +873,10 @@
               <input type="text" id="setName" maxlength="80">
               <div class="fieldMsg" id="setNameMsg"></div>
             </div>
-            <div>
-              <label class="muted">Game <span class="opt">(optional)</span></label>
-              <select id="setGame"></select>
-              <input type="text" id="setGameOther" placeholder="Type the game name" maxlength="80" style="display:none; margin-top:8px;">
+            <div style="grid-column:1 / -1;">
+              <label class="muted">Games <span class="opt">(tick every game your league runs)</span></label>
+              <div class="gamePicker" id="setGames"></div>
+              <input type="text" id="setGamesOther" placeholder="Other games, separated by commas (optional)" maxlength="200" style="margin-top:8px;">
             </div>
             <div>
               <label class="muted">Timezone <span class="opt">(optional)</span></label>
@@ -1686,11 +1690,26 @@
       steward:       { label: "Steward",        hint: "Reviews tickets, reads statements and gives a penalty opinion." },
       moderator:     { label: "Moderator",      hint: "Moderation access only — no stewarding." }
     };
-    const GAMES = [
+const ITS_GAMES = [
       "Assetto Corsa Competizione", "Assetto Corsa EVO", "Assetto Corsa", "Assetto Corsa Rally",
       "Le Mans Ultimate", "iRacing", "rFactor 2", "RaceRoom", "Automobilista 2",
       "F1 25", "Gran Turismo 7", "Forza Motorsport", "EA SPORTS WRC", "Rocket League"
     ];
+    // Multi-game picker: tick boxes for known games + a free-text "other games" box.
+    function renderGamePicker(boxId, otherId, selected) {
+      const sel = (selected || []).map(String);
+      const known = sel.filter(g => ITS_GAMES.includes(g)), extra = sel.filter(g => !ITS_GAMES.includes(g));
+      document.getElementById(boxId).innerHTML = ITS_GAMES.map((g, i) => `<label class="gameChip"><input type="checkbox" value="${g.replace(/"/g, "&quot;")}" ${known.includes(g) ? "checked" : ""}><span>${g}</span></label>`).join("");
+      document.getElementById(otherId).value = extra.join(", ");
+    }
+    function readGamePicker(boxId, otherId) {
+      const picked = [...document.querySelectorAll(`#${boxId} input:checked`)].map(i => i.value);
+      const extra = (document.getElementById(otherId).value || "").split(",").map(s => s.trim()).filter(Boolean);
+      const seen = new Set(), out = [];
+      [...picked, ...extra].forEach(g => { const k = g.toLowerCase(); if (!seen.has(k) && out.length < 10) { seen.add(k); out.push(g.slice(0, 60)); } });
+      return out;
+    }
+    const leagueGames = (L) => Array.isArray(L.games) && L.games.length ? L.games : (L.game ? String(L.game).split(/\s*,\s*/).filter(Boolean) : []);
     const DISCORD_ID = /^\d{17,20}$/;
     const WEBHOOK = /^https:\/\/(discord\.com|discordapp\.com|ptb\.discord\.com|canary\.discord\.com)\/api\/webhooks\/\d+\/[\w-]+$/;
 
@@ -1938,7 +1957,7 @@
         ["League ID", `<code>${esc(lid)}</code>`],
         ["Status", esc(statusInfo().label)],
         ["Owner", esc(league.ownerEmail || currentEmail)],
-        ["Game", esc(league.game || "—")],
+        [leagueGames(league).length > 1 ? "Games" : "Game", esc(leagueGames(league).join(", ") || "—")],
         ["Timezone", esc(league.timezone || "—")],
         ["Created", esc(fmtDate(league.createdAt))]
       ].map(([k, v]) => `<div>${k}</div><div>${v}</div>`).join("");
@@ -2008,12 +2027,7 @@
 
     function fillSettingsForm() {
       $("setName").value = league.name || "";
-      const game = league.game || "";
-      const gameOpts = [{ value: "", label: "— Choose a game —" }, ...GAMES.map(g => ({ value: g, label: g })), { value: "__other", label: "Other…" }];
-      const inList = !game || GAMES.includes(game);
-      fillSelect($("setGame"), gameOpts, inList ? game : "__other");
-      $("setGameOther").value = inList ? "" : game;
-      $("setGameOther").style.display = inList ? "none" : "block";
+      renderGamePicker("setGames", "setGamesOther", leagueGames(league));
 
       const zones = timezoneList();
       let tz = league.timezone || "";
@@ -2040,10 +2054,10 @@
     }
 
     function readSettings() {
-      const gameSel = $("setGame").value;
+      const games = readGamePicker("setGames", "setGamesOther");
       return {
         name: $("setName").value.trim(),
-        game: gameSel === "__other" ? $("setGameOther").value.trim() : gameSel,
+        games, game: games.join(", "),
         timezone: $("setTimezone").value,
         logoUrl: $("setLogo").value.trim(),
         discord: {
@@ -2136,13 +2150,8 @@
     }
 
     $("setName").addEventListener("input", () => { checkName(); updateDirty(); });
-    $("setGame").addEventListener("change", () => {
-      const other = $("setGame").value === "__other";
-      $("setGameOther").style.display = other ? "block" : "none";
-      if (other) $("setGameOther").focus();
-      updateDirty();
-    });
-    $("setGameOther").addEventListener("input", updateDirty);
+    $("setGames").addEventListener("change", updateDirty);
+    $("setGamesOther").addEventListener("input", updateDirty);
     $("setTimezone").addEventListener("change", updateDirty);
     $("setLogo").addEventListener("input", () => { checkLogo(); updateDirty(); });
     document.querySelectorAll("[data-discord-id]").forEach(i => i.addEventListener("input", () => { checkDiscordIdInput(i); updateDirty(); }));
