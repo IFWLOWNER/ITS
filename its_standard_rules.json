@@ -1,0 +1,454 @@
+{
+  "name": "ITS Standard Ticket Rules",
+  "version": "1.1",
+  "updated": "2026-11-09",
+  "notes": "Maintained by ITS. Every rule has three severity levels: mild, standard and severe. Leagues can use these as-is, add their own on top, or replace them.",
+  "nfa": {
+    "code": "NFA",
+    "title": "No Further Action",
+    "description": "Incident reviewed, no further action required.",
+    "example": "Used when no driver is deemed predominantly at fault or the incident is considered a racing incident."
+  },
+  "rules": [
+    {
+      "group": "RP1",
+      "title": "Unsafe Track Rejoin",
+      "who": "Rejoining driver",
+      "levels": {
+        "mild": {
+          "penalty": "5s",
+          "description": "Driver rejoined the track unsafely but caused minimal effect to others. Only slight disruption, minimal time loss, and no damage to surrounding cars.",
+          "example": "Driver spins at a corner, rejoins slowly and cleanly, causing a car behind to slightly lift but no loss of position."
+        },
+        "standard": {
+          "penalty": "20s",
+          "description": "Driver rejoined the track unsafely, forcing other drivers to take avoiding action and/or causing noticeable time loss or a lost position. May include minor car damage.",
+          "example": "Driver rejoins at racing speed into a corner, forcing two cars behind to brake heavily and one loses a position avoiding contact."
+        },
+        "severe": {
+          "penalty": "45s",
+          "description": "Driver rejoined dangerously into traffic, causing a collision, spin, or significant damage to one or more cars. Major time loss or multi-car incident. The Head Steward may issue a DQ if the stewards request it.",
+          "example": "Driver rejoins onto racing line blindly and is hit by oncoming traffic, causing a major collision and multiple damaged cars."
+        }
+      }
+    },
+    {
+      "group": "RP2",
+      "title": "Unsafe Pit Exit (Crossing the Pit Exit Line)",
+      "who": "Exiting driver",
+      "levels": {
+        "mild": {
+          "penalty": "5s",
+          "description": "Driver exited the pit lane unsafely but caused minimal effect to others. No avoidance required, minimal time loss, and no damage to surrounding cars.",
+          "example": "Driver crosses the pit exit line but no cars are nearby and no impact occurs."
+        },
+        "standard": {
+          "penalty": "20s",
+          "description": "Driver exited the pit lane unsafely, forcing other drivers to take avoiding action and/or causing noticeable time loss or a lost position. May include minor car damage.",
+          "example": "Driver exits pit lane into side-by-side traffic at Turn 1, forcing another car onto the curb and losing time."
+        },
+        "severe": {
+          "penalty": "45s",
+          "description": "Driver exited the pit lane dangerously into oncoming traffic, causing a collision, spin, or significant damage to one or more cars. Major time loss or multi-car involvement. The Head Steward may issue a DQ if the stewards request it.",
+          "example": "Driver merges directly into the racing line with a car fully alongside, causing a crash and severe damage."
+        }
+      }
+    },
+    {
+      "group": "RP3",
+      "title": "Blue Flag Abuse / Blocking While Lapped",
+      "who": "Lapped driver",
+      "levels": {
+        "mild": {
+          "penalty": "5s",
+          "description": "Driver did not yield within specified time frame under blue flags but caused minimal delay and no competitive impact.",
+          "example": "Lapped car hesitates to move aside for a faster car despite having multiple opportunities but only delays by half a small amount."
+        },
+        "standard": {
+          "penalty": "20s",
+          "description": "Driver ignored blue flags for an extended time, blocking faster cars and causing notable time loss or affecting battles.",
+          "example": "Lapped car doesn’t yield within the specified time frame, holding up a lead-lap driver and costing them multiple seconds."
+        },
+        "severe": {
+          "penalty": "45s",
+          "description": "Deliberate blocking or interference under blue flags causing contact, damage, or major positional or time impact. The Head Steward may issue a DQ if the stewards request it.",
+          "example": "Lapped car aggressively defends/attacks or causes contact, ruining a race for driver(s) on the lead lap."
+        }
+      }
+    },
+    {
+      "group": "RP4",
+      "title": "Formation Lap / Start Infringement",
+      "who": "Driver out of position",
+      "levels": {
+        "mild": {
+          "penalty": "30s",
+          "description": "Minor formation lap or start infringement. Driver was briefly out of position but corrected it before the lights, gaining no advantage.",
+          "example": ""
+        },
+        "standard": {
+          "penalty": "30s",
+          "description": "Clear formation lap or start infringement. Driver was out of position at the start, overtook on the formation lap, or jumped the start and gained an advantage.",
+          "example": ""
+        },
+        "severe": {
+          "penalty": "DQ",
+          "description": "Deliberate or dangerous formation lap or start infringement, such as a deliberate jump start or causing contact before the lights.",
+          "example": ""
+        }
+      }
+    },
+    {
+      "group": "RP5",
+      "title": "Illegal Overtake (Off-Track or Gained Advantage)",
+      "who": "Overtaking driver",
+      "levels": {
+        "mild": {
+          "penalty": "5s",
+          "description": "Driver left the track and gained a small advantage (time or momentum) but returned the position immediately and safely after the incident. Little to no impact on the affected driver’s race.",
+          "example": "Driver cuts Turn 1 chicane and overtakes but gives the place back immediately."
+        },
+        "standard": {
+          "penalty": "20s",
+          "description": "Driver left the track to complete or defend an overtake and did not give the position back, resulting in a noticeable time or position disadvantage to another driver.",
+          "example": "Driver runs wide off-track to complete a pass and keeps the position."
+        },
+        "severe": {
+          "penalty": "45s",
+          "description": "Driver left track limits to gain a major advantage or complete an overtake that results in a collision, spin, heavy damage, or has a major impact on multiple competitors. Advantage deliberately taken or significantly alters race outcome. The Head Steward may issue a DQ if the stewards request it.",
+          "example": "Driver cuts a corner(s), passes multiple cars and gains unfair advantage or affects another drivers race."
+        }
+      }
+    },
+    {
+      "group": "RP6",
+      "title": "Late Blocking / Moving Under Braking (multiple defensive moves)",
+      "who": "Defending driver",
+      "levels": {
+        "mild": {
+          "penalty": "10s",
+          "description": "Driver made a late defensive move under braking that caused minor disruption but did not cause significant time loss, position change, or damage. Other driver was able to continue safely with only slight avoidance required.",
+          "example": ""
+        },
+        "standard": {
+          "penalty": "20s",
+          "description": "Driver made a late defensive move under braking that forced another competitor to take significant avoiding action, leave the track, lose time, or lose a position. May include minor contact or minor damage.",
+          "example": ""
+        },
+        "severe": {
+          "penalty": "45s",
+          "description": "Driver unjustifiably moved under braking in a dangerous or reckless manner, causing a collision, heavy damage, spin, or multi-car incident. Highly unsafe defensive driving with major race impact. The Head Steward may issue a DQ if the stewards request it.",
+          "example": ""
+        }
+      }
+    },
+    {
+      "group": "RP7",
+      "title": "Divebomb / Overly Ambitious Lunge",
+      "who": "Overtaking driver",
+      "levels": {
+        "mild": {
+          "penalty": "5s",
+          "description": "Driver attempted a lunge from too far back but made only light contact, and the affected driver experienced minimal time loss or impact. No damage and both cars continued safely.",
+          "example": "Driver lunges late into a corner, lightly bumps rear bumper, both continue safe."
+        },
+        "standard": {
+          "penalty": "15s",
+          "description": "Driver attempted an unrealistic overtake from too far back, forcing the other driver off-line, off track, or resulting in noticeable time loss or a lost position(s). May include minor contact or minor damage.",
+          "example": "Divebomb into hairpin forces other car wide, losing multiple positions."
+        },
+        "severe": {
+          "penalty": "45s",
+          "description": "Reckless or dangerous overtake attempt from an unreasonable distance resulting in heavy contact, a spin, severe damage, or a multi-car incident. Major disruption to other competitors’ races.",
+          "example": "Lunge from multiple car lengths back causes a full spin and multi-car crash."
+        }
+      }
+    },
+    {
+      "group": "RP8",
+      "title": "Rear-End Collision",
+      "who": "Driver behind",
+      "levels": {
+        "mild": {
+          "penalty": "5s",
+          "description": "Driver made light rear contact under braking or on corner entry/exit, causing minimal effect to the car ahead. No position change, minimal time lost, and no damage.",
+          "example": "Light tap in braking zone due to misjudged distance, no harm done."
+        },
+        "standard": {
+          "penalty": "20s",
+          "description": "Driver misjudged braking or attempted an unrealistic move, causing the car ahead to leave the racing line, lose time, or lose position(s). May cause minor damage.",
+          "example": "Driver brakes late and pushes car ahead wide, losing time and position(s)."
+        },
+        "severe": {
+          "penalty": "45s",
+          "description": "Driver caused a heavy contact from behind resulting in a spin, crash, significant damage, or multi-car involvement. Major race impact or DNF-level damage.",
+          "example": "Heavy contact at braking zone causing spin and major damage."
+        }
+      }
+    },
+    {
+      "group": "RP9",
+      "title": "Squeezing Off Track / Not Leaving Room",
+      "who": "Defending driver",
+      "levels": {
+        "mild": {
+          "penalty": "5s",
+          "description": "Driver failed to leave adequate racing room, causing the other car to place wheels off track but resulting in minimal time loss and no contact or damage. Both drivers continue safely and positions remain unchanged.",
+          "example": "Driver edges competitor to outer curb forcing 2 wheels off track, battle continues clean."
+        },
+        "standard": {
+          "penalty": "20s",
+          "description": "Driver forced another car fully off track or onto runoff, causing noticeable time loss or a position loss, or minor contact/damage. Clear failure to allow a car with racing overlap space to compete fairly.",
+          "example": "Driver pushes competitor fully off track causing time and position loss."
+        },
+        "severe": {
+          "penalty": "45s",
+          "description": "Driver aggressively or dangerously forced another car off track, causing a spin, heavy damage, collision, or multi-car incident. Highly unsafe and significantly affects race outcome.",
+          "example": "Driver squeezes another into wall/grass causing severe damage or crash."
+        }
+      }
+    },
+    {
+      "group": "RP10",
+      "title": "Excessive flashing",
+      "who": "Overtaking Driver",
+      "levels": {
+        "mild": {
+          "penalty": "15s",
+          "description": "Occasional headlight flashing that briefly distracted another driver with no effect on their driving.",
+          "example": ""
+        },
+        "standard": {
+          "penalty": "15s",
+          "description": "Repeated or sustained headlight flashing that distracted another driver, influenced their driving line, or affected a battle on track.",
+          "example": ""
+        },
+        "severe": {
+          "penalty": "15s",
+          "description": "Aggressive, sustained headlight flashing used to intimidate another driver, clearly affecting their race.",
+          "example": ""
+        }
+      }
+    },
+    {
+      "group": "RP11",
+      "title": "Intentional Ramming",
+      "who": "Driver at fault",
+      "levels": {
+        "mild": {
+          "penalty": "DQ",
+          "description": "Deliberate contact used to intimidate or retaliate, even where little or no damage was caused.",
+          "example": ""
+        },
+        "standard": {
+          "penalty": "DQ",
+          "description": "Driver deliberately used their car to make contact with another competitor, causing a spin, damage or lost positions. Dangerous and unsportsmanlike conduct.",
+          "example": ""
+        },
+        "severe": {
+          "penalty": "DQ",
+          "description": "Deliberate ramming causing a major crash or multi-car incident, or repeated deliberate contact during the same event.",
+          "example": ""
+        }
+      }
+    },
+    {
+      "group": "RP12",
+      "title": "Driver Connection issue",
+      "who": "Driver",
+      "levels": {
+        "mild": {
+          "penalty": "10s",
+          "description": "Driver experienced temporary connection instability causing brief lag or car warping, but with minimal impact to other drivers. No avoidance required, no damage, and racing continued safely.",
+          "example": "Car warps slightly on straight but no one nearby is affected."
+        },
+        "standard": {
+          "penalty": "20s",
+          "description": "Driver’s unstable connection interfered with another car’s race, forcing avoidance, causing time loss, or making racing unsafe. Driver did not attempt to resolve or ignored requests to pit/retire.",
+          "example": "Warping car in a battle causes other drivers to react and lose time."
+        },
+        "severe": {
+          "penalty": "30s",
+          "description": "Driver’s connection repeatedly caused major incidents, collision risk, or contact due to warping, making racing unsafe for the field.",
+          "example": "Car teleports into another causing major crash and safety concern."
+        }
+      }
+    },
+    {
+      "group": "RP13",
+      "title": "Reckless Driving",
+      "who": "Driver",
+      "levels": {
+        "mild": {
+          "penalty": "10s",
+          "description": "Driver displayed unsafe driving behavior or poor control that created minor unnecessary risk, but resulted in minimal impact and no time loss or damage to others.",
+          "example": ""
+        },
+        "standard": {
+          "penalty": "30s",
+          "description": "Driver engaged in unsafe, unpredictable, or aggressive actions that impacted another driver’s race, forcing avoidance, causing noticeable time loss, or minor damage.",
+          "example": ""
+        },
+        "severe": {
+          "penalty": "DQ",
+          "description": "Highly dangerous driving, or a driver who has collected multiple penalties from separate incidents in the same race.",
+          "example": ""
+        }
+      }
+    },
+    {
+      "group": "RP14",
+      "title": "Split Qualification – Racing Outside Qualification Window",
+      "who": "Driver",
+      "levels": {
+        "mild": {
+          "penalty": "15s",
+          "description": "Driver raced in a split they hadn't qualified for, but by genuine mistake (e.g. joined the wrong server) and with little or no impact on the drivers in that split.",
+          "example": "A driver joins the wrong split's server by mistake and races at the back without affecting anyone."
+        },
+        "standard": {
+          "penalty": "30s",
+          "description": "Driver raced outside their qualification window, in a split they hadn't qualified for. Standard 30 second time penalty.",
+          "example": "A driver from a lower split races in a higher split's race."
+        },
+        "severe": {
+          "penalty": "DQ",
+          "description": "Driver deliberately raced outside their qualification window, repeatedly ignored their split allocation, or affected the results of the split they wrongly entered.",
+          "example": "A driver knowingly enters a lower split to gain an easy result, or does it again after being warned."
+        }
+      }
+    },
+    {
+      "group": "RP15",
+      "title": "In game chat",
+      "who": "Driver",
+      "levels": {
+        "mild": {
+          "penalty": "10s",
+          "description": "Drivers using the in game chat feature in Qualification that causes a distraction to other racers. minimal impact to racing. Excludes GL, GG, GLHF or players warning others of using chat etc.",
+          "example": "Whilst in Q session - drivers use the chat feature to converse with one another."
+        },
+        "standard": {
+          "penalty": "15s",
+          "description": "Drivers using the in game chat feature in Qualification / Race that causes a distraction to other racers. Excludes GL, GG, GLHF or players warning others of using chat etc.",
+          "example": "Whilst in Q or R - a driver uses the in game chat feature to vent their frustration at any incident, or uses the in game feature to converse."
+        },
+        "severe": {
+          "penalty": "DQ",
+          "description": "Drivers using Foul and abusive language in the in game chat feature in Qualification / Race that causes a distraction to other racers.",
+          "example": "Drivers use the in game chat feature to use foul and abusive language towards a situation or racer."
+        }
+      }
+    },
+    {
+      "group": "RP16",
+      "title": "Stewards discovery",
+      "who": "Driver",
+      "levels": {
+        "mild": {
+          "penalty": "15s",
+          "description": "A steward - whilst performing their role - discovers an incident that requires a new ticket to be submitted to action an offence.",
+          "example": "A mild offence noted by stewards whilst performing their role."
+        },
+        "standard": {
+          "penalty": "30s",
+          "description": "A steward - whilst performing their role - discovers an incident that requires a new ticket to be submitted to action an offence.",
+          "example": "A standard offence noted by stewards whilst performing their role."
+        },
+        "severe": {
+          "penalty": "DQ",
+          "description": "A steward - whilst performing their role - discovers an incident that requires a new ticket to be submitted to action an offence.",
+          "example": "A severe offence noted by stewards whilst performing their role."
+        }
+      }
+    },
+    {
+      "group": "RP17",
+      "title": "Failure to follow yellow flags",
+      "who": "Driver",
+      "levels": {
+        "mild": {
+          "penalty": "15s",
+          "description": "A driver fails to adequately respond to yellow flag conditions, including not sufficiently reducing speed or preparing for an incident ahead.",
+          "example": "A mild failure to lift or show caution under yellow flag conditions - To be investigated on individual merit."
+        },
+        "standard": {
+          "penalty": "30s",
+          "description": "A driver fails to adequately respond to yellow flag conditions, including not sufficiently reducing speed or preparing for an incident ahead.",
+          "example": "A standard failure to slow down or anticipate hazards under yellow flag conditions - To be investigated on individual merit."
+        },
+        "severe": {
+          "penalty": "DQ",
+          "description": "A driver fails to adequately respond to yellow flag conditions, including not sufficiently reducing speed or preparing for an incident ahead.",
+          "example": "A severe disregard for yellow flags, such as maintaining full speed or causing further incidents - To be investigated on individual merit."
+        }
+      }
+    },
+    {
+      "group": "RP18",
+      "title": "Qualifying Infringement",
+      "who": "Driver committing the qualifying infringement",
+      "levels": {
+        "mild": {
+          "penalty": "20s",
+          "description": "A driver commits an infringement during qualifying, including overtaking, racing another car or causing a rear-end collision, with a limited but clear impact on another competitor.",
+          "example": "A driver unnecessarily races or overtakes another car during qualifying, causing minor disruption or loss of lap time."
+        },
+        "standard": {
+          "penalty": "35s",
+          "description": "A driver commits a significant infringement during qualifying, including overtaking, racing another car or causing a rear-end collision, resulting in clear disruption, loss of lap time or damage.",
+          "example": "A driver races another competitor through multiple corners or rear-ends them during qualifying, ruining or significantly affecting their lap."
+        },
+        "severe": {
+          "penalty": "DQ",
+          "description": "A driver commits a severe or reckless infringement during qualifying, including dangerous racing, overtaking or contact that causes major damage, a serious collision or substantially compromises another driver's session.",
+          "example": "A driver recklessly races or collides with another competitor during qualifying, causing major damage or preventing them from completing the session."
+        }
+      }
+    },
+    {
+      "group": "RP19",
+      "title": "Serious Lap 1 Incident",
+      "who": "Driver causing the Lap 1 incident",
+      "levels": {
+        "mild": {
+          "penalty": "25s",
+          "description": "A driver behaves overly recklessly during Lap 1 and causes an avoidable incident with a limited but clear impact on another competitor.",
+          "example": "A driver takes an unnecessarily aggressive approach on Lap 1, causing contact, loss of time or a lost position."
+        },
+        "standard": {
+          "penalty": "35s",
+          "description": "A driver behaves recklessly during Lap 1 and causes a significant incident involving a spin, notable damage, multiple lost positions or more than one affected competitor.",
+          "example": "A driver makes an overly aggressive Lap 1 move that causes a major collision or significantly disrupts several drivers."
+        },
+        "severe": {
+          "penalty": "DQ",
+          "description": "A driver behaves in a severely reckless manner during Lap 1, causing a major collision, extensive damage, a multi-car incident or substantial disruption to the race.",
+          "example": "A driver charges into a Lap 1 braking zone with little regard for surrounding cars and causes a major multi-car crash."
+        }
+      }
+    },
+    {
+      "group": "RP20",
+      "title": "Failure to Hold Brakes During or After a Spin",
+      "who": "Spinning driver",
+      "levels": {
+        "mild": {
+          "penalty": "10s",
+          "description": "A driver fails to hold the brakes during or after a spin without good reason, causing a minor further incident or creating an avoidable unsafe situation.",
+          "example": "After spinning, the car rolls back or continues across the track and forces another driver to take minor avoiding action."
+        },
+        "standard": {
+          "penalty": "30s",
+          "description": "A driver fails to hold the brakes during or after a spin without good reason, leading to a collision, significant avoiding action, time loss, position loss or another unsafe situation.",
+          "example": "After spinning, the driver allows the car to roll across the racing line and causes contact or substantial disruption."
+        },
+        "severe": {
+          "penalty": "DQ",
+          "description": "A driver fails to hold the brakes during or after a spin without good reason, causing a major collision, severe damage or a multi-car incident.",
+          "example": "After spinning, the car continues uncontrolled across the circuit and causes a serious multi-car crash."
+        }
+      }
+    }
+  ]
+}

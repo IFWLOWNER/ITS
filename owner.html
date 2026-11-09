@@ -676,6 +676,55 @@
     button.danger:hover:not(:disabled){ border-color:var(--red); color:var(--red-dark); box-shadow:0 10px 22px rgba(225,29,72,.16); }
     button.small{ min-height:32px; padding:6px 12px; font-size:12px; white-space:nowrap; flex:0 0 auto; }
     .roleHint{ font-size:12px; color:var(--muted); margin-top:5px; font-weight:650; }
+    /* ---------- ticket rules ---------- */
+    .modeCards{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; margin-top:12px; }
+    @media (max-width:900px){ .modeCards{ grid-template-columns:1fr; } }
+    .modeCard{ display:flex; gap:10px; align-items:flex-start; border:2px solid var(--line); border-radius:var(--radius); padding:14px; cursor:pointer; background:#fff; transition:border-color .15s ease, box-shadow .15s ease, background .15s ease; }
+    .modeCard:hover{ border-color:var(--indigo-line); }
+    .modeCard.selected{ border-color:var(--primary); box-shadow:0 0 0 4px rgba(79,70,229,.12); background:var(--indigo-soft); }
+    .modeCard input{ width:auto; margin-top:3px; accent-color:var(--primary); }
+    .modeCard strong{ display:block; font-size:14px; color:var(--navy); }
+    .modeCard span{ display:block; font-size:12px; color:var(--muted); font-weight:650; margin-top:3px; }
+
+    .sevGrid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; margin-top:10px; }
+    @media (max-width:900px){ .sevGrid{ grid-template-columns:1fr; } }
+    .sevCol{ border:1px solid var(--line); border-radius:var(--radius-sm); padding:10px 11px; font-size:12.5px; line-height:1.4; min-width:0; }
+    .sevCol label.muted{ margin-top:6px; }
+    .sevCol textarea{ min-height:58px; font-size:13px; }
+    .sev-mild{ border-color:var(--amber-line); background:var(--amber-soft); }
+    .sev-standard{ border-color:#fdba74; background:#fff7ed; }
+    .sev-severe{ border-color:var(--red-line); background:var(--red-soft); }
+    a.btnLink{ display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 16px; min-height:42px; border:1px solid var(--line); border-radius:999px; background:var(--card); color:var(--navy); font-weight:750; font-size:13px; text-decoration:none; box-shadow:var(--shadow-sm); transition:transform .15s ease, box-shadow .15s ease; }
+    a.btnLink:hover{ transform:translateY(-2px); opacity:1; border-color:var(--primary); color:var(--primary-dark); }
+    a.btnLink.primary{ background:var(--grad-primary); border-color:transparent; color:#fff; box-shadow:var(--shadow-glow); }
+    a.btnLink.primary:hover{ color:#fff; }
+    @media (max-width: 980px){ header a.btnLink{ width:100%; } }
+    .sevLabel .codePill{ text-transform:none; letter-spacing:0; }
+    .sevLabel{ font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .sev-mild .sevLabel{ color:var(--amber-dark); }
+    .sev-standard .sevLabel{ color:#9a3412; }
+    .sev-severe .sevLabel{ color:var(--red-dark); }
+    .penPill{ display:inline-block; padding:3px 9px; border-radius:999px; background:#fff; border:1px solid currentColor; font-weight:900; font-size:12px; letter-spacing:0; text-transform:none; }
+    .sevCol .ex{ color:var(--muted); font-style:italic; margin-top:6px; }
+
+    .ruleCard{ border:1px solid var(--line); border-radius:var(--radius); background:var(--card-soft); margin-top:10px; overflow:hidden; }
+    .ruleCard.invalid{ border-color:var(--red); box-shadow:0 0 0 3px rgba(225,29,72,.08); }
+    .ruleHead{ display:flex; align-items:center; gap:10px; padding:12px 14px; cursor:pointer; }
+    .ruleHead .ruleTitle{ flex:1; min-width:0; font-weight:800; color:var(--navy); font-size:14px; }
+    .ruleHead .ruleTitle small{ display:block; font-weight:650; color:var(--muted); font-size:12px; margin-top:2px; }
+    .codePill{ font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; font-weight:800; padding:3px 8px; border-radius:8px; background:#fff; border:1px solid var(--line); color:var(--navy); flex:0 0 auto; }
+    .chev{ transition:transform .15s ease; color:var(--muted); font-weight:900; }
+    .ruleCard.open .chev{ transform:rotate(90deg); }
+    .ruleBody{ display:none; padding:0 14px 14px; }
+    .ruleCard.open .ruleBody{ display:block; }
+    .ruleErrs{ margin-top:10px; }
+    .stdRule{ border:1px solid var(--line); border-radius:var(--radius); background:#fff; padding:12px 14px; margin-top:10px; }
+    .stdRuleHead{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .stdRuleHead .ruleTitle{ flex:1; min-width:180px; font-weight:800; color:var(--navy); font-size:14px; }
+    .stdRuleHead .ruleTitle small{ display:block; font-weight:650; color:var(--muted); font-size:12px; margin-top:2px; }
+    .saveBar{ position:sticky; bottom:12px; z-index:30; border-color:var(--indigo-line); }
+    .saveBar.dirty{ border-color:var(--amber); box-shadow:0 0 0 4px rgba(217,119,6,.12), var(--shadow); }
+
   </style>
 </head>
 <body>
@@ -690,6 +739,7 @@
     </div>
     <div class="row">
       <span class="pill" id="statusPill" style="display:none;"></span>
+      <a class="btnLink" id="supportHeaderLink" href="https://discord.gg/yVMcCAMJPM" target="_blank" rel="noopener" style="display:none;">ITS Support Discord</a>
       <button id="logoutBtn" style="display:none;">Sign out</button>
     </div>
   </header>
@@ -714,6 +764,27 @@
       <div class="title" style="margin:0;" id="gateTitle"></div>
       <div class="muted" id="gateText" style="margin-top:6px;"></div>
       <div class="row" style="margin-top:14px;" id="gateActions"></div>
+    </div>
+
+    <!-- Mandatory: League Owners must join the ITS Support Discord -->
+    <div class="card gateCard" id="supportGate" style="display:none; max-width:600px;">
+      <div class="title" style="margin:0;"><span class="iconChip chip-blue"><svg class="icon" viewBox="0 0 24 24"><path d="M7 8h10M7 12h6"/><path d="M4 5h16v11H9l-5 4z"/></svg></span>One last step: join the ITS Support Discord</div>
+      <div class="muted" style="margin-top:6px;">Every League Owner must be in the ITS Support Discord. It's where you:</div>
+      <ul style="margin:8px 0 0 18px; padding:0; font-size:13px; line-height:1.6; color:#334155; font-weight:600;">
+        <li>get help and report problems</li>
+        <li>request new features</li>
+        <li>hear about ITS updates and rule changes first</li>
+      </ul>
+      <div class="row" style="margin-top:16px;">
+        <a class="btnLink primary" id="supportJoinLink" href="https://discord.gg/yVMcCAMJPM" target="_blank" rel="noopener">Join the ITS Support Discord</a>
+      </div>
+      <label class="row" style="margin-top:16px; gap:8px; font-size:13px; font-weight:750;">
+        <input type="checkbox" id="supportConfirm" style="width:auto;" disabled> I've joined the ITS Support Discord
+      </label>
+      <div class="muted" id="supportHint" style="margin-top:4px;">Press the button above first — it opens Discord in a new tab.</div>
+      <div class="row" style="justify-content:flex-end; margin-top:14px;">
+        <button class="primary" id="supportContinueBtn" disabled>Continue to my dashboard</button>
+      </div>
     </div>
 
     <div class="muted" id="loadingMsg" style="text-align:center; margin-top:60px;">Loading…</div>
@@ -746,6 +817,7 @@
         <button class="tabBtn" data-tab="overview">Overview</button>
         <button class="tabBtn" data-tab="settings">League Settings</button>
         <button class="tabBtn" data-tab="staff">Staff</button>
+        <button class="tabBtn" data-tab="rules">Ticket Rules</button>
         <button class="tabBtn" data-tab="import">Import History</button>
         <button class="tabBtn" data-tab="standards">Standards</button>
       </nav>
@@ -1013,6 +1085,52 @@
         </div>
       </section>
 
+      <!-- ===== TICKET RULES ===== -->
+      <section class="panel" id="panel-rules">
+        <div class="card">
+          <div class="title" style="margin:0;"><span class="iconChip chip-red"><svg class="icon" viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"/><path d="M9 10h6M9 14h6M9 18h4"/></svg></span>Which ticket rules does your league use?</div>
+          <div class="muted">Every rule has three levels — <strong>Mild</strong>, <strong>Standard</strong> and <strong>Severe</strong> — each with its own penalty. Your stewards pick from these when they decide a ticket.</div>
+          <div class="modeCards" id="modeCards"></div>
+          <div class="muted" id="rulesSavedInfo" style="margin-top:10px;"></div>
+        </div>
+
+        <div class="card" id="ownRulesCard" style="display:none;">
+          <div class="cardHead">
+            <div>
+              <div class="title" style="margin:0;"><span class="iconChip chip-indigo"><svg class="icon" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></span>Your league's own rules</div>
+              <div class="muted" id="ownRulesHint"></div>
+            </div>
+            <div class="row">
+              <button class="small" id="copyStdBtn">Copy the whole ITS Standard</button>
+              <button class="small primary" id="addRuleBtn">+ Add a rule</button>
+            </div>
+          </div>
+          <div id="ownRulesList"></div>
+        </div>
+
+        <div class="card saveBar">
+          <div class="row" style="justify-content:space-between;">
+            <span class="muted" id="rulesStatusText">No changes.</span>
+            <div class="row">
+              <button id="discardRulesBtn">Discard changes</button>
+              <button class="primary" id="saveRulesBtn">Save ticket rules</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="cardHead">
+            <div>
+              <div class="title" style="margin:0;"><span class="iconChip chip-teal"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg></span>ITS Standard Ticket Rules <span class="pill" id="stdVersion" style="margin-left:6px;"></span></div>
+              <div class="muted">Maintained by ITS — the same across every league that uses it. Read-only here.</div>
+            </div>
+            <input type="search" id="stdSearch" placeholder="Search rules…" style="max-width:260px;">
+          </div>
+          <div id="stdList"></div>
+        </div>
+        <datalist id="penaltyList"></datalist>
+      </section>
+
       <!-- ===== STANDARDS (ported from IFWL headsteward.html) ===== -->
       <section class="panel" id="panel-standards">
         <div class="card" id="ownerClauseCard">
@@ -1052,6 +1170,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
   <script src="./firebase-init.js"></script>
+  <script src="./its-rules.js"></script>
 
   <script>
     // ============================================================
@@ -1445,18 +1564,54 @@
 
         $("loadingMsg").style.display = "none";
         $("gateMsg").style.display = "none";
+        $("supportHeaderLink").style.display = "inline-flex";
+
+        if (!(league.supportDiscord && league.supportDiscord.joinedAt)) {
+          await showSupportGate();
+        }
+        $("supportGate").style.display = "none";
         $("app").style.display = "block";
 
         renderHeader();
         fillSettingsForm();
         initTabs();
-        await Promise.all([loadStaff(), loadImports(), loadTicketCount(), initOwnerClauseUI(), initSeniorStewardUI()]);
+        await Promise.all([loadStaff(), loadImports(), loadTicketCount(), loadRules(), initOwnerClauseUI(), initSeniorStewardUI()]);
         renderOverview();
       } catch (e) {
         console.error(e);
         showGate("Couldn't load your league", esc(friendlyError(e)),
           [{ label: "Try again", primary: true, onClick: () => location.reload() }]);
       }
+    }
+
+    // ============================================================
+    // MANDATORY SUPPORT DISCORD
+    // Owners can't use the dashboard until they've joined. (We can't see
+    // Discord membership from here without a Discord bot, so this records
+    // the owner's confirmation on the league: leagues/{lid}.supportDiscord.)
+    // ============================================================
+    function showSupportGate() {
+      return new Promise(resolve => {
+        $("app").style.display = "none";
+        $("supportGate").style.display = "block";
+        const box = $("supportConfirm"), btn = $("supportContinueBtn");
+        $("supportJoinLink").onclick = () => {
+          box.disabled = false;
+          $("supportHint").textContent = "Once you're in the server, tick the box and continue.";
+        };
+        box.onchange = () => { btn.disabled = !box.checked; };
+        btn.onclick = async () => {
+          btn.disabled = true; btn.textContent = "Saving…";
+          try {
+            await leagueRef.update({ supportDiscord: { joinedAt: FV().serverTimestamp(), confirmedBy: currentEmail } });
+            league.supportDiscord = { joinedAt: new Date(), confirmedBy: currentEmail };
+            resolve();
+          } catch (e) {
+            toast("Couldn't save: " + friendlyError(e), 5000);
+            btn.disabled = false; btn.textContent = "Continue to my dashboard";
+          }
+        };
+      });
     }
 
     // ============================================================
@@ -1504,6 +1659,7 @@
         { done: !!(d.guildId && roles.headsteward && roles.steward), title: "Add your Discord server and role IDs", sub: "At least the server, Head Steward and Steward IDs.", tab: "settings" },
         { done: !!(privateCfg.ticketWebhookUrl && privateCfg.finalisationWebhookUrl), title: "Connect your Discord webhooks", sub: "So discussions and results post to Discord.", tab: "settings" },
         { done: headCount > 0, title: "Add at least one Head Steward", sub: headCount ? `${headCount} Head Steward${headCount === 1 ? "" : "s"} added.` : "Someone needs to run stewarding.", tab: "staff" },
+        { done: !!rulesSaved.exists, optional: true, title: "Choose your ticket rules", sub: rulesSaved.exists ? `Using: ${ITSRules.MODES[rulesSaved.mode].label}.` : "You're on the ITS Standard rules by default — have a look they suit you.", tab: "rules" },
         { done: importedCount > 0, optional: true, title: "Import your old ticket records (optional)", sub: importedCount ? `${importedCount} records imported.` : "Only if you're moving from a spreadsheet.", tab: "import" }
       ];
       $("checkList").innerHTML = items.map((it, i) => `
@@ -1545,7 +1701,7 @@
     // ============================================================
     // TABS
     // ============================================================
-    const TAB_IDS = ["overview", "settings", "staff", "import", "standards"];
+    const TAB_IDS = ["overview", "settings", "staff", "rules", "import", "standards"];
     function switchTab(id) {
       if (!TAB_IDS.includes(id)) id = "overview";
       document.querySelectorAll(".tabBtn").forEach(b => b.classList.toggle("active", b.dataset.tab === id));
@@ -1715,7 +1871,7 @@
     document.querySelectorAll("[data-discord-id]").forEach(i => i.addEventListener("input", () => { checkDiscordIdInput(i); updateDirty(); }));
     document.querySelectorAll("[data-webhook]").forEach(i => i.addEventListener("input", () => checkWebhookInput(i)));
     window.addEventListener("beforeunload", (e) => {
-      if (league && settingsSnapshot() !== savedSettingsSnapshot) { e.preventDefault(); e.returnValue = ""; }
+      if (league && (settingsSnapshot() !== savedSettingsSnapshot || rulesDirty())) { e.preventDefault(); e.returnValue = ""; }
     });
 
     function focusFirstBad(scope) {
@@ -2226,6 +2382,286 @@
       await loadImports();
       renderOverview();
     }
+
+    // ============================================================
+    // TICKET RULES — ITS Standard / ITS Standard + own / own only.
+    // Every rule must have Mild, Standard and Severe levels, each with a
+    // penalty and a description. Saved to leagues/{lid}/meta/ticketRules.
+    // ============================================================
+    let rulesStandard = null;
+    let rulesCfg = { mode: "its", rules: [] };     // working copy
+    let rulesSaved = { mode: "its", rules: [] };   // what's in Firestore
+    let rulesSaveAttempted = false;
+    const openRules = new Set();
+
+    $("penaltyList").innerHTML = ITSRules.PENALTY_SUGGESTIONS.map(p => `<option value="${esc(p)}"></option>`).join("");
+
+    function rulesSnapshot(cfg) { return JSON.stringify({ mode: cfg.mode, rules: cfg.rules.map(ITSRules.cleanRule) }); }
+    function rulesDirty() { return rulesSnapshot(rulesCfg) !== rulesSnapshot(rulesSaved); }
+    function clone(x) { return JSON.parse(JSON.stringify(x)); }
+
+    async function loadRules() {
+      try {
+        rulesStandard = await ITSRules.loadStandard();
+      } catch (e) {
+        $("stdList").innerHTML = `<div class="redBox">${esc(friendlyError(e))} Make sure its_standard_rules.json is uploaded next to this page.</div>`;
+        rulesStandard = { rules: [], nfa: null, version: "?" };
+      }
+      const cfg = await ITSRules.loadLeagueConfig(leagueRef);
+      rulesSaved = { mode: cfg.mode, rules: cfg.rules.map(ITSRules.cleanRule), exists: cfg.exists, updatedAt: cfg.updatedAt, updatedBy: cfg.updatedBy };
+      rulesCfg = clone({ mode: rulesSaved.mode, rules: rulesSaved.rules });
+      rulesSaveAttempted = false;
+      if (cfg.loadError) toast("Couldn't load your saved ticket rules: " + friendlyError(cfg.loadError), 5000);
+      renderRules();
+    }
+
+    function renderRules() {
+      renderModeCards();
+      renderOwnRules();
+      renderStdRules();
+      refreshRulesStatus();
+      $("rulesSavedInfo").textContent = rulesSaved.exists
+        ? `Saved: ${ITSRules.MODES[rulesSaved.mode].label}${rulesSaved.updatedAt ? ` — ${fmtDate(rulesSaved.updatedAt)}` : ""}${rulesSaved.updatedBy ? ` by ${rulesSaved.updatedBy}` : ""}.`
+        : "You haven't changed this yet, so your league is using the ITS Standard rules.";
+    }
+
+    function renderModeCards() {
+      $("modeCards").innerHTML = Object.entries(ITSRules.MODES).map(([k, m]) => `
+        <label class="modeCard ${rulesCfg.mode === k ? "selected" : ""}">
+          <input type="radio" name="rulesMode" value="${k}" ${rulesCfg.mode === k ? "checked" : ""}>
+          <div><strong>${esc(m.label)}</strong><span>${esc(m.hint)}</span></div>
+        </label>`).join("");
+      $("modeCards").querySelectorAll("input[name=rulesMode]").forEach(r => r.onchange = () => setMode(r.value));
+    }
+
+    function setMode(mode) {
+      if (mode === "custom" && !rulesCfg.rules.length && rulesStandard.rules.length) {
+        if (confirm("Start your own rulebook from a copy of the ITS Standard? (Recommended — you can then edit, add or remove rules.)\n\nPress Cancel to start from a blank rulebook.")) {
+          rulesCfg.rules = clone(rulesStandard.rules).map(ITSRules.cleanRule);
+        } else {
+          addRule(false);
+        }
+      }
+      rulesCfg.mode = mode;
+      renderRules();
+    }
+
+    function blankRule() {
+      const lv = () => ({ penalty: "", description: "", example: "" });
+      return { group: ITSRules.nextLeagueCode(rulesCfg.rules, rulesCfg.mode === "custom" ? null : rulesStandard), title: "", who: "", levels: { mild: lv(), standard: lv(), severe: lv() } };
+    }
+    function addRule(render = true) {
+      const r = blankRule();
+      rulesCfg.rules.push(r);
+      openRules.add(r.group);
+      if (render) {
+        renderOwnRules(); refreshRulesStatus();
+        const card = $("ownRulesList").querySelector(`[data-rule="${CSS.escape(r.group)}"]`);
+        if (card) { card.scrollIntoView({ behavior: "smooth", block: "center" }); card.querySelector("input[data-f=title]")?.focus(); }
+      }
+    }
+    $("addRuleBtn").onclick = () => addRule();
+
+    $("copyStdBtn").onclick = () => {
+      if (rulesCfg.mode === "its_plus") {
+        toast("You already get every ITS Standard rule in this mode. Use “Copy to my rules” on a single rule to make your own version of it.", 5000);
+        return;
+      }
+      if (rulesCfg.rules.length && !confirm(`Replace your ${rulesCfg.rules.length} rule(s) with a fresh copy of the ITS Standard? Your current rules will be lost when you save.`)) return;
+      rulesCfg.rules = clone(rulesStandard.rules).map(ITSRules.cleanRule);
+      openRules.clear();
+      renderRules();
+      toast("ITS Standard copied — edit anything you like, then Save.");
+    };
+
+    function copyOneStd(group) {
+      const src = rulesStandard.rules.find(r => r.group === group);
+      if (!src) return;
+      const copy = ITSRules.cleanRule(clone(src));
+      const clash = rulesCfg.mode === "its_plus" || rulesCfg.rules.some(r => r.group === copy.group);
+      if (clash) {
+        copy.group = ITSRules.nextLeagueCode(rulesCfg.rules, rulesStandard);
+        copy.title = (copy.title + " (league version)").slice(0, ITSRules.LIMITS.title);
+      }
+      rulesCfg.rules.push(copy);
+      openRules.add(copy.group);
+      renderOwnRules(); refreshRulesStatus();
+      toast(`Copied as ${copy.group} — edit it, then Save.`);
+      $("ownRulesList").querySelector(`[data-rule="${CSS.escape(copy.group)}"]`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    function renderOwnRules() {
+      const mode = rulesCfg.mode;
+      $("ownRulesCard").style.display = mode === "its" ? "none" : "block";
+      $("copyStdBtn").style.display = mode === "custom" ? "inline-flex" : "none";
+      $("ownRulesHint").innerHTML = mode === "its_plus"
+        ? "Extra rules on top of the ITS Standard. They get their own codes (LR1, LR2…) so they never clash."
+        : "This is your league's whole rulebook. Stewards will only see the rules listed here.";
+      if (mode === "its") return;
+      if (!rulesCfg.rules.length) {
+        $("ownRulesList").innerHTML = `<div class="bannerBox bannerBlue" style="margin-top:10px;">No rules yet. Press <strong>+ Add a rule</strong>${mode === "custom" ? " or <strong>Copy the whole ITS Standard</strong>" : ""}.</div>`;
+        return;
+      }
+      const field = (i, f, label, max, req, ph = "") => `
+        <div><label class="muted">${label} ${req ? '<span class="req">*</span>' : '<span class="opt">(optional)</span>'}</label>
+        <input type="text" data-i="${i}" data-f="${f}" maxlength="${max}" value="${esc(rulesCfg.rules[i][f])}" placeholder="${esc(ph)}"></div>`;
+      $("ownRulesList").innerHTML = rulesCfg.rules.map((r, i) => {
+        const errs = ITSRules.validateRule(r);
+        const show = rulesSaveAttempted || r.__touched;
+        const pens = ITSRules.SEVERITIES.map(s => r.levels[s.key].penalty || "—").join(" / ");
+        return `
+        <div class="ruleCard ${openRules.has(r.group) ? "open" : ""} ${show && errs.length ? "invalid" : ""}" data-rule="${esc(r.group)}">
+          <div class="ruleHead" data-toggle="${i}">
+            <span class="chev">›</span>
+            <span class="codePill">${esc(r.group)}</span>
+            <div class="ruleTitle">${esc(r.title || "Untitled rule")}<small>${esc(pens)}${show && errs.length ? ` · <span style="color:var(--red-dark);">${errs.length} thing${errs.length === 1 ? "" : "s"} to fix</span>` : ""}</small></div>
+            <button class="small danger" data-del="${i}">Delete</button>
+          </div>
+          <div class="ruleBody">
+            <div class="stepGrid">
+              ${field(i, "title", "Rule title", ITSRules.LIMITS.title, true, "e.g. Unsafe Track Rejoin")}
+              ${field(i, "who", "Applies to", ITSRules.LIMITS.who, false, "e.g. Rejoining driver")}
+            </div>
+            <div class="sevGrid">
+              ${ITSRules.SEVERITIES.map(s => {
+                const lv = r.levels[s.key];
+                const bad = (v) => show && !String(v || "").trim() ? "bad" : "";
+                return `<div class="sevCol sev-${s.key}">
+                  <div class="sevLabel">${s.label} <span class="codePill">${esc(r.group + s.suffix)}</span></div>
+                  <label class="muted">Penalty <span class="req">*</span></label>
+                  <input type="text" list="penaltyList" class="${bad(lv.penalty)}" data-i="${i}" data-sev="${s.key}" data-f="penalty" maxlength="${ITSRules.LIMITS.penalty}" value="${esc(lv.penalty)}" placeholder="e.g. 10s, Warning, DQ">
+                  <label class="muted">What a ${s.label.toLowerCase()} offence looks like <span class="req">*</span></label>
+                  <textarea class="${bad(lv.description)}" data-i="${i}" data-sev="${s.key}" data-f="description" maxlength="${ITSRules.LIMITS.description}">${esc(lv.description)}</textarea>
+                  <label class="muted">Example <span class="opt">(optional)</span></label>
+                  <textarea data-i="${i}" data-sev="${s.key}" data-f="example" maxlength="${ITSRules.LIMITS.example}" style="min-height:44px;">${esc(lv.example)}</textarea>
+                </div>`;
+              }).join("")}
+            </div>
+            ${show && errs.length ? `<div class="redBox ruleErrs">${errs.map(esc).join("<br>")}</div>` : ""}
+          </div>
+        </div>`;
+      }).join("");
+
+      $("ownRulesList").querySelectorAll("[data-toggle]").forEach(h => h.onclick = (e) => {
+        if (e.target.closest("button")) return;
+        const g = rulesCfg.rules[Number(h.dataset.toggle)].group;
+        openRules.has(g) ? openRules.delete(g) : openRules.add(g);
+        h.parentElement.classList.toggle("open");
+      });
+      $("ownRulesList").querySelectorAll("[data-del]").forEach(b => b.onclick = () => {
+        const r = rulesCfg.rules[Number(b.dataset.del)];
+        if (!confirm(`Delete ${r.group}${r.title ? " — " + r.title : ""}? (Nothing is saved until you press Save.)`)) return;
+        rulesCfg.rules.splice(Number(b.dataset.del), 1);
+        renderOwnRules(); refreshRulesStatus();
+      });
+    }
+
+    // Typing updates the working copy; the card re-checks itself on blur
+    // so the cursor never jumps while someone is typing.
+    $("ownRulesList").addEventListener("input", e => {
+      const t = e.target;
+      if (!t.dataset || t.dataset.i === undefined) return;
+      const r = rulesCfg.rules[Number(t.dataset.i)];
+      if (t.dataset.sev) r.levels[t.dataset.sev][t.dataset.f] = t.value;
+      else r[t.dataset.f] = t.value;
+      r.__touched = true;
+      if (t.classList.contains("bad") && t.value.trim()) t.classList.remove("bad");
+      refreshRulesStatus();
+    });
+    $("ownRulesList").addEventListener("focusout", e => {
+      const t = e.target;
+      if (!t.dataset || t.dataset.i === undefined) return;
+      const card = t.closest(".ruleCard");
+      const i = Number(t.dataset.i);
+      setTimeout(() => {
+        // Only re-render if focus has left this rule card entirely.
+        if (card && !card.contains(document.activeElement)) { renderOwnRules(); }
+      }, 0);
+      void i;
+    });
+
+    function renderStdRules() {
+      const q = ($("stdSearch").value || "").trim().toLowerCase();
+      $("stdVersion").textContent = rulesStandard && rulesStandard.version ? "v" + rulesStandard.version : "";
+      const canCopy = rulesCfg.mode !== "its";
+      const list = (rulesStandard.rules || []).filter(r => !q || JSON.stringify(r).toLowerCase().includes(q));
+      const nfa = rulesStandard.nfa;
+      $("stdList").innerHTML = (nfa && (!q || "nfa no further action".includes(q)) ? `
+        <div class="stdRule"><div class="stdRuleHead"><span class="codePill">NFA</span><div class="ruleTitle">${esc(nfa.title)}<small>${esc(nfa.description)}</small></div></div></div>` : "")
+        + list.map(r => `
+        <div class="stdRule">
+          <div class="stdRuleHead">
+            <span class="codePill">${esc(r.group)}</span>
+            <div class="ruleTitle">${esc(r.title)}<small>${r.who ? "Applies to: " + esc(r.who) : ""}</small></div>
+            ${canCopy ? `<button class="small" data-copy-std="${esc(r.group)}">Copy to my rules</button>` : ""}
+          </div>
+          <div class="sevGrid">
+            ${ITSRules.SEVERITIES.map(s => { const lv = r.levels[s.key]; return `
+              <div class="sevCol sev-${s.key}">
+                <div class="sevLabel">${s.label} <span class="penPill">${esc(lv.penalty)}</span></div>
+                <div style="margin-top:6px;">${esc(lv.description)}</div>
+                ${lv.example ? `<div class="ex">e.g. ${esc(lv.example)}</div>` : ""}
+              </div>`; }).join("")}
+          </div>
+        </div>`).join("")
+        + (!list.length && q ? `<div class="muted" style="margin-top:10px;">No ITS Standard rules match “${esc(q)}”.</div>` : "");
+      $("stdList").querySelectorAll("[data-copy-std]").forEach(b => b.onclick = () => copyOneStd(b.dataset.copyStd));
+    }
+    $("stdSearch").addEventListener("input", renderStdRules);
+
+    function refreshRulesStatus() {
+      const dirty = rulesDirty();
+      const bad = rulesCfg.mode === "its" ? 0 : rulesCfg.rules.filter(r => ITSRules.validateRule(r).length).length;
+      $("rulesStatusText").innerHTML = !dirty ? "No unsaved changes."
+        : `<span style="color:var(--amber-dark);font-weight:800;">You have unsaved changes</span>${bad ? ` · <span style="color:var(--red-dark);font-weight:800;">${bad} rule${bad === 1 ? "" : "s"} still incomplete</span>` : ""}`;
+      document.querySelector(".saveBar").classList.toggle("dirty", dirty);
+      $("discardRulesBtn").disabled = !dirty;
+    }
+
+    $("discardRulesBtn").onclick = () => {
+      if (!confirm("Throw away your unsaved rule changes?")) return;
+      rulesCfg = clone({ mode: rulesSaved.mode, rules: rulesSaved.rules });
+      rulesSaveAttempted = false;
+      renderRules();
+    };
+
+    $("saveRulesBtn").onclick = async () => {
+      rulesSaveAttempted = true;
+      const mode = rulesCfg.mode;
+      if (mode !== "its") {
+        // Duplicate codes would make two rules indistinguishable to stewards.
+        const seen = new Set();
+        for (const r of rulesCfg.rules) {
+          if (seen.has(r.group)) { r.group = ITSRules.nextLeagueCode(rulesCfg.rules, mode === "custom" ? null : rulesStandard); }
+          seen.add(r.group);
+        }
+        const invalid = rulesCfg.rules.filter(r => ITSRules.validateRule(r).length);
+        if (mode === "custom" && !rulesCfg.rules.length) { toast("Add at least one rule, or switch back to the ITS Standard.", 4000); return; }
+        if (invalid.length) {
+          invalid.forEach(r => openRules.add(r.group));
+          renderOwnRules(); refreshRulesStatus();
+          toast(`${invalid.length} rule${invalid.length === 1 ? " needs" : "s need"} finishing — every rule needs a penalty and description for Mild, Standard and Severe.`, 5000);
+          $("ownRulesList").querySelector(".ruleCard.invalid")?.scrollIntoView({ behavior: "smooth", block: "center" });
+          return;
+        }
+      } else if (rulesCfg.rules.some(r => ITSRules.validateRule(r).length)) {
+        // Keep complete drafts for later, drop unfinished ones.
+        rulesCfg.rules = rulesCfg.rules.filter(r => !ITSRules.validateRule(r).length);
+      }
+      const payload = { mode, rules: rulesCfg.rules.map(ITSRules.cleanRule), updatedAt: FV().serverTimestamp(), updatedBy: currentEmail };
+      const btn = $("saveRulesBtn");
+      btn.disabled = true; btn.textContent = "Saving…";
+      try {
+        await leagueRef.collection("meta").doc("ticketRules").set(payload);
+        toast(`Ticket rules saved — your stewards now use: ${ITSRules.MODES[mode].label}.`, 4000);
+        await loadRules();
+        renderOverview();
+      } catch (e) {
+        toast("Couldn't save: " + friendlyError(e), 5000);
+      } finally {
+        btn.disabled = false; btn.textContent = "Save ticket rules";
+      }
+    };
 
     // ============================================================
     // STANDARDS — ported from IFWL headsteward.html
