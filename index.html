@@ -120,9 +120,9 @@
     }
     .brand{ display:flex; gap:12px; align-items:center; min-width:0; }
     .brand img{
-      width:42px; height:42px; object-fit:contain; flex:0 0 auto;
-      padding:6px; border-radius:14px;
-      background:linear-gradient(135deg,#fff,#f1f0fe);
+      width:48px; height:48px; object-fit:contain; flex:0 0 auto;
+      padding:5px; border-radius:14px;
+      background:#fff;
       border:1px solid var(--line);
       box-shadow:0 6px 16px rgba(79,70,229,.18);
     }
@@ -577,7 +577,6 @@
       border-radius:var(--radius-sm); padding:10px 12px; margin-top:10px; font-size:13px; line-height:1.35; font-weight:700;
     }
 
-    .authPanel{ max-width:420px; margin:40px auto 0; }
     .authPanel .row{ margin-top:10px; }
     .authSwitch{ text-align:center; margin-top:10px; font-size:13px; }
     .authSwitch a{ cursor:pointer; }
@@ -587,13 +586,56 @@
       border-radius:var(--radius-sm); padding:16px; margin-top:16px; font-size:14px; line-height:1.4;
     }
     .successBox .mono{ display:block; margin-top:6px; font-size:13px; }
+
+    /* ---------- landing (signed out) ---------- */
+    .landing{ width:min(1120px, calc(100vw - 28px)); position:relative; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; gap:22px; }
+    .hero{ position:relative; overflow:hidden; border-radius:28px; background:#0D0B14; color:#F4F2FA; box-shadow:0 30px 70px rgba(13,11,20,.35); }
+    .checker{ height:22px; background:repeating-conic-gradient(#F4F2FA 0 25%, #0D0B14 0 50%) 0 0 / 22px 22px; }
+    .heroInner{ padding:56px 60px 52px; position:relative; }
+    .heroTop{ display:flex; align-items:center; gap:22px; }
+    .heroLogo{ width:112px; height:112px; flex:0 0 auto; background:#fff; border-radius:22px; padding:10px; box-sizing:border-box; box-shadow:0 14px 34px rgba(0,0,0,.35); }
+    .heroLogo img{ width:100%; height:100%; object-fit:contain; display:block; }
+    .heroKicker{ font-size:13px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:#B9A4FF; }
+    .heroTitle{ margin:14px 0 0; font-family:'Barlow Condensed', 'Manrope', sans-serif; font-style:italic; font-weight:800; font-size:clamp(64px, 11vw, 132px); line-height:.86; letter-spacing:-1px; text-transform:uppercase; }
+    .heroTitle span{ color:#B9A4FF; }
+    .heroSub{ margin:22px 0 0; max-width:640px; font-size:19px; line-height:1.55; color:#D9D5E4; }
+    .heroCtas{ display:flex; flex-wrap:wrap; align-items:center; gap:18px; margin-top:30px; }
+    .heroBtn{ display:inline-flex; align-items:center; gap:12px; min-height:58px; padding:16px 30px; border:0; border-radius:999px; background:#B9A4FF; color:#0D0B14; font-size:18px; font-weight:850; cursor:pointer; box-shadow:0 14px 34px rgba(155,123,255,.45); transition:transform .15s ease, box-shadow .15s ease; }
+    .heroBtn:hover{ transform:translateY(-2px); box-shadow:0 20px 44px rgba(155,123,255,.55); background:#C9B8FF; color:#0D0B14; }
+    .heroBtn svg{ background:#fff; border-radius:50%; padding:4px; width:28px; height:28px; box-sizing:border-box; }
+    .heroLink{ color:#F4F2FA; font-weight:750; font-size:16px; text-decoration:underline; text-underline-offset:4px; }
+    .heroLink:hover{ color:#D6CBFF; }
+    .heroLink.dark{ color:var(--primary-dark); }
+    .heroNote{ margin-top:16px; font-size:13px; color:#A9A3BA; }
+    .feat{ display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:14px; }
+    .featCard{ background:var(--card); border:1px solid var(--line); border-radius:20px; padding:22px; box-shadow:0 8px 24px rgba(79,70,229,.06); }
+    .featCard svg{ width:34px; height:34px; fill:none; stroke:var(--primary-2); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+    .featCard h3{ margin:12px 0 6px; font-size:17px; color:var(--navy); }
+    .featCard p{ margin:0; font-size:14px; line-height:1.5; color:#475569; }
+    .how{ background:var(--card); border:1px solid var(--line); border-radius:22px; padding:30px; }
+    .how h2, .finalCta h2{ margin:0 0 16px; font-family:'Barlow Condensed', 'Manrope', sans-serif; font-style:italic; font-weight:800; font-size:40px; line-height:1; text-transform:uppercase; color:var(--navy); }
+    .howGrid{ display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:14px; }
+    .howStep{ display:flex; gap:14px; align-items:flex-start; }
+    .howStep span{ font-family:'Barlow Condensed', sans-serif; font-style:italic; font-weight:800; font-size:56px; line-height:.8; color:var(--primary-2); }
+    .howStep strong{ font-size:17px; color:var(--navy); }
+    .howStep p{ margin:4px 0 0; font-size:14px; line-height:1.5; color:#475569; }
+    .finalCta{ display:flex; flex-wrap:wrap; gap:24px; align-items:center; justify-content:space-between; background:var(--card); border:1px solid var(--line); border-radius:22px; padding:30px; }
+    .finalCta > div:first-child{ flex:1 1 420px; }
+    .finalCta p{ margin:0; font-size:15px; line-height:1.55; color:#475569; }
+    .finalBtns{ display:flex; flex-direction:column; align-items:center; gap:12px; }
+    @media (max-width: 860px){ .feat{ grid-template-columns:repeat(2, minmax(0, 1fr)); } .howGrid{ grid-template-columns:1fr; } }
+    @media (max-width: 560px){ .heroInner{ padding:36px 24px; } .heroLogo{ width:84px; height:84px; border-radius:18px; padding:8px; } .heroTop{ gap:16px; } .heroTitle{ font-size:16vw; } .feat{ grid-template-columns:1fr; } .heroBtn{ width:100%; justify-content:center; } }
+    .discordBtn{ display:inline-flex; align-items:center; gap:9px; min-height:40px; padding:8px 16px; border-radius:999px; background:#5865F2; color:#fff; font-weight:800; font-size:13px; text-decoration:none; box-shadow:0 8px 20px rgba(88,101,242,.3); transition:transform .15s ease; }
+    .discordBtn:hover{ transform:translateY(-2px); background:#4752C4; color:#fff; opacity:1; }
+    .discordBtn.big{ min-height:58px; padding:14px 26px; font-size:16px; }
   </style>
 
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,800&display=swap" rel="stylesheet">
 </head>
 <body>
   <header>
     <div class="brand">
-      <img src="./its_logo.png" alt="ITS logo" onerror="this.style.display='none'">
+      <img src="./ITS%20Ticket%20System%20Laurel%20Emblem.jpg" alt="ITS logo" onerror="this.style.display='none'">
       <div class="brandText">
         <div class="brandTitle">ITS — Owners Setup</div>
         <div class="welcomeLine" id="welcomeLine">Set up your league's Ticket System.</div>
@@ -601,6 +643,7 @@
       </div>
     </div>
     <div class="row">
+      <a class="discordBtn" href="https://discord.gg/yVMcCAMJPM" target="_blank" rel="noopener"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.6 19.6 0 0 0 15.4 3l-.6 1.3a18.2 18.2 0 0 0-5.6 0L8.6 3a19.5 19.5 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18a19.8 19.8 0 0 0 6 3l1.3-2.1a12.8 12.8 0 0 1-2-1l.5-.4a14.1 14.1 0 0 0 12.2 0l.5.4c-.6.4-1.3.7-2 1l1.3 2.1a19.7 19.7 0 0 0 6-3c.5-5.1-.8-9.6-3.6-13.6ZM8 15.3c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.5 8 10.5s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>ITS Support Discord</a>
       <button id="logoutBtn" style="display:none;">Sign out</button>
     </div>
   </header>
@@ -609,13 +652,85 @@
 
     <!-- Sign in (shown until the user is authenticated) - Google sign-in
          only, matching the rest of IFWL/ITS; no passwords stored here. -->
-    <div class="card authPanel" id="authPanel">
-      <div class="title" style="margin:0;">Sign in to set up your league</div>
-      <div class="muted">Use the Google account you'll manage your league with. First time here signs you up automatically.</div>
-      <div class="row" style="justify-content:center; margin-top:16px;">
-        <button class="primary" id="authGoogleBtn">Continue with Google</button>
-      </div>
-      <div class="muted" id="authError" style="margin-top:10px; color:var(--red-dark); text-align:center;"></div>
+    <div class="landing" id="authPanel">
+      <!-- HERO -->
+      <section class="hero">
+        <div class="checker" aria-hidden="true"></div>
+        <div class="heroInner">
+          <div class="heroTop">
+            <div class="heroLogo"><img src="./ITS%20Ticket%20System%20Laurel%20Emblem.jpg" alt="ITS — IFWL Ticket System" onerror="this.parentNode.style.display='none'"></div>
+            <div class="heroKicker">For sim racing leagues &amp; communities</div>
+          </div>
+          <h1 class="heroTitle">Stewarding,<br><span>sorted.</span></h1>
+          <p class="heroSub">The incident ticket system built inside a real racing league — now open to yours. Drivers report, stewards deliberate, your Head Steward decides. All linked to Discord.</p>
+          <div class="heroCtas">
+            <button class="heroBtn" id="authGoogleBtn">
+              <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 10.2v3.9h5.5c-.2 1.3-1.6 3.8-5.5 3.8-3.3 0-6-2.7-6-6.1s2.7-6.1 6-6.1c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.2 14.6 2.2 12 2.2 6.6 2.2 2.2 6.6 2.2 12s4.4 9.8 9.8 9.8c5.7 0 9.4-4 9.4-9.6 0-.6-.1-1.1-.2-1.6H12z"/></svg>
+              Start your free 30-day beta
+            </button>
+            <a class="discordBtn big" href="https://discord.gg/yVMcCAMJPM" target="_blank" rel="noopener"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.6 19.6 0 0 0 15.4 3l-.6 1.3a18.2 18.2 0 0 0-5.6 0L8.6 3a19.5 19.5 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18a19.8 19.8 0 0 0 6 3l1.3-2.1a12.8 12.8 0 0 1-2-1l.5-.4a14.1 14.1 0 0 0 12.2 0l.5.4c-.6.4-1.3.7-2 1l1.3 2.1a19.7 19.7 0 0 0 6-3c.5-5.1-.8-9.6-3.6-13.6ZM8 15.3c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.5 8 10.5s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>Join the ITS Support Discord</a>
+            <a class="heroLink" href="#how">See how it works ↓</a>
+          </div>
+          <div class="heroNote">Sign up with your Google account · No card needed · Already set up? The same button signs you in.</div>
+          <div class="muted" id="authError" style="margin-top:10px; color:#FDA4AF;"></div>
+        </div>
+      </section>
+
+      <!-- FEATURES -->
+      <section class="feat">
+        <div class="featCard">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg>
+          <h3>Drivers report in seconds</h3>
+          <p>They sign in with Discord, add a video and submit from your league's own link. Named drivers give their side.</p>
+        </div>
+        <div class="featCard">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.4 3.2-5.5 6.5-5.5s5.9 2.1 6.5 5.5"/><path d="M16 6l2 2 4-4"/></svg>
+          <h3>A proper stewarding panel</h3>
+          <p>Stewards see evidence, statements and history in one place, recommend a penalty, and the Head Steward finalises.</p>
+        </div>
+        <div class="featCard">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 18h4V12H4zM10 18h4V8h-4zM16 18h4V4h-4z"/></svg>
+          <h3>Consistent penalties</h3>
+          <p>Use the ITS Standard rulebook or your own. Every rule has Mild, Standard and Severe — similar incidents, similar outcomes.</p>
+        </div>
+        <div class="featCard">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+          <h3>Know who's joining</h3>
+          <p>See a driver's confirmed penalties and bans from every ITS league — and get a heads-up when a banned driver turns up in yours.</p>
+        </div>
+        <div class="featCard">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20.3 4.4A19.6 19.6 0 0 0 15.4 3l-.6 1.3a18 18 0 0 0-5.6 0L8.6 3a19.5 19.5 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18a19.8 19.8 0 0 0 6 3l1.3-2.1"/><path d="M17.9 21l-1.3-2.1"/><circle cx="8.5" cy="13" r="1.5"/><circle cx="15.5" cy="13" r="1.5"/></svg>
+          <h3>Lives in your Discord</h3>
+          <p>Every ticket posts to your channel and updates itself: New → Under review → Finalised. No channel spam.</p>
+        </div>
+        <div class="featCard">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 9v11"/></svg>
+          <h3>Bring your old records</h3>
+          <p>Moving from Excel or Google Sheets? Import your past outcomes so history isn't lost on day one.</p>
+        </div>
+      </section>
+
+      <!-- HOW IT WORKS -->
+      <section class="how" id="how">
+        <h2>Live in three steps</h2>
+        <div class="howGrid">
+          <div class="howStep"><span>1</span><div><strong>Sign up</strong><p>Tell us about your league. ITS approves it and your 30-day free beta starts.</p></div></div>
+          <div class="howStep"><span>2</span><div><strong>Set up</strong><p>Add your logo, Discord webhooks and stewards. A checklist walks you through it.</p></div></div>
+          <div class="howStep"><span>3</span><div><strong>Share your link</strong><p>Pin your league's ticket link in Discord. Tickets start flowing straight away.</p></div></div>
+        </div>
+      </section>
+
+      <!-- TRUST + FINAL CTA -->
+      <section class="finalCta">
+        <div>
+          <h2>Built by league racers, for league racers.</h2>
+          <p>ITS started as the stewarding system for a real league. Driver data is handled under the ITS Privacy &amp; Data Rules — only confirmed penalties and bans are ever shared between leagues.</p>
+        </div>
+        <div class="finalBtns">
+          <button class="heroBtn" id="authGoogleBtn2">Start your free 30-day beta</button>
+          <a class="discordBtn big" href="https://discord.gg/yVMcCAMJPM" target="_blank" rel="noopener"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.6 19.6 0 0 0 15.4 3l-.6 1.3a18.2 18.2 0 0 0-5.6 0L8.6 3a19.5 19.5 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18a19.8 19.8 0 0 0 6 3l1.3-2.1a12.8 12.8 0 0 1-2-1l.5-.4a14.1 14.1 0 0 0 12.2 0l.5.4c-.6.4-1.3.7-2 1l1.3 2.1a19.7 19.7 0 0 0 6-3c.5-5.1-.8-9.6-3.6-13.6ZM8 15.3c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.5 8 10.5s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>Questions? Join the ITS Support Discord</a>
+        </div>
+      </section>
     </div>
 
     <!-- Shown once signed in, if this email already has a role in the system -->
@@ -793,6 +908,8 @@
       }
     };
 
+    $("authGoogleBtn2").onclick = () => { window.scrollTo({ top: 0, behavior: "smooth" }); $("authGoogleBtn").click(); };
+
     $("logoutBtn").onclick = async () => { await auth.signOut(); window.location.reload(); };
 
     (async () => {
@@ -803,7 +920,7 @@
         if (!user) {
           currentUser = null;
           currentEmail = "";
-          $("authPanel").style.display = "block";
+          $("authPanel").style.display = "flex";
           $("logoutBtn").style.display = "none";
           $("alreadySetupCard").style.display = "none";
           $("wizard").style.display = "none";
