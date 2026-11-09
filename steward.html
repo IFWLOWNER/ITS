@@ -1,0 +1,3355 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Steward Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    /* ============================================================
+       ITS STEWARD DASHBOARD — design system (single source of truth)
+       Vibrant light theme. Every id/class the JS relies on is
+       preserved; this replaces three previously-stacked !important
+       patch layers with one consolidated, motion + icon-ready sheet.
+       ============================================================ */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap');
+
+    :root{
+      --navy:#0f172a;
+      --ink:#111827;
+      --muted:#64748b;
+      --muted-2:#94a3b8;
+      --line:#e4e0fb;
+      --line-soft:#eeecfc;
+      --bg:#f5f4fd;
+      --card:#ffffff;
+      --card-soft:#f8f7fe;
+
+      --primary:#4f46e5;
+      --primary-dark:#3730a3;
+      --primary-2:#7c3aed;
+      --accent:#db2777;
+      --accent-2:#06b6d4;
+      --grad-primary:linear-gradient(135deg,#4f46e5,#7c3aed 55%,#db2777);
+      --grad-cool:linear-gradient(135deg,#06b6d4,#4f46e5);
+
+      --red:#e11d48;
+      --red-dark:#9f1239;
+      --red-soft:#fff1f4;
+      --red-line:#fecdd6;
+
+      --amber:#d97706;
+      --amber-dark:#92400e;
+      --amber-soft:#fffbeb;
+      --amber-line:#fde68a;
+
+      --green:#059669;
+      --green-dark:#065f46;
+      --green-soft:#ecfdf5;
+      --green-line:#a7f3d0;
+
+      --blue:#2563eb;
+      --blue-dark:#1d4ed8;
+      --blue-soft:#eff6ff;
+      --blue-line:#bfdbfe;
+
+      --indigo:#4f46e5;
+      --indigo-dark:#3730a3;
+      --indigo-soft:#eef0ff;
+      --indigo-line:#c7d2fe;
+
+      --teal:#0d9488;
+      --teal-dark:#115e59;
+      --teal-soft:#f0fdfa;
+      --teal-line:#99f6e4;
+
+      --purple:#7c3aed;
+
+      --font-display:'Manrope', Inter, ui-sans-serif, system-ui, sans-serif;
+
+      --radius-lg:22px;
+      --radius:16px;
+      --radius-sm:12px;
+      --shadow:0 18px 40px rgba(79,70,229,.13);
+      --shadow-sm:0 8px 18px rgba(15,23,42,.07);
+      --shadow-glow:0 12px 26px rgba(124,58,237,.30);
+      --focus:0 0 0 4px rgba(79,70,229,.18);
+    }
+
+    *, *::before, *::after{ box-sizing:border-box; }
+
+    html{ background:var(--bg); scroll-behavior:smooth; }
+    html, body{ width:100%; max-width:100%; overflow-x:hidden; }
+
+    @keyframes fadeSlideIn{ from{ opacity:0; transform:translateY(7px); } to{ opacity:1; transform:translateY(0); } }
+    @keyframes gradientShift{ 0%{ background-position:0% 50%; } 50%{ background-position:100% 50%; } 100%{ background-position:0% 50%; } }
+    @keyframes pulseDot{ 0%{ box-shadow:0 0 0 0 rgba(217,119,6,.45); } 70%{ box-shadow:0 0 0 7px rgba(217,119,6,0); } 100%{ box-shadow:0 0 0 0 rgba(217,119,6,0); } }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+      color:var(--ink);
+      line-height:1.45;
+      background:
+        radial-gradient(circle at 12% -4%, rgba(79,70,229,.15), transparent 34%),
+        radial-gradient(circle at 88% 0%, rgba(219,39,119,.12), transparent 38%),
+        radial-gradient(circle at 50% 100%, rgba(6,182,212,.09), transparent 40%),
+        var(--bg);
+      background-attachment:fixed;
+    }
+
+    img, video, iframe, canvas, svg{ max-width:100%; }
+    .icon{ width:16px; height:16px; stroke:currentColor; stroke-width:2.2; fill:none; stroke-linecap:round; stroke-linejoin:round; display:block; flex:0 0 auto; }
+
+    /* ---------- header ---------- */
+    header{
+      position:sticky; top:0; z-index:50;
+      display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
+      padding:16px clamp(14px, 2vw, 26px);
+      background:rgba(255,255,255,.88);
+      border-bottom:1px solid var(--line);
+      box-shadow:0 12px 30px rgba(79,70,229,.10);
+      backdrop-filter:blur(18px) saturate(1.3);
+      -webkit-backdrop-filter:blur(18px) saturate(1.3);
+    }
+    header::before{
+      content:""; position:absolute; left:0; right:0; top:0; height:4px;
+      background:var(--grad-primary); background-size:200% 100%;
+      animation:gradientShift 7s ease infinite;
+    }
+    .brand{ display:flex; gap:12px; align-items:center; min-width:0; }
+    .brand img{
+      width:42px; height:42px; object-fit:contain; flex:0 0 auto;
+      padding:6px; border-radius:14px;
+      background:linear-gradient(135deg,#fff,#f1f0fe);
+      border:1px solid var(--line);
+      box-shadow:0 6px 16px rgba(79,70,229,.18);
+    }
+    .brandText{ min-width:0; }
+    .brandTitle{ font-family:var(--font-display); font-weight:800; font-size:19px; letter-spacing:-.02em; background:var(--grad-primary); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    .welcomeLine{ font-size:12px; color:#334155; margin-top:5px; line-height:1.3; max-width:900px; }
+    header .small{ font-size:12px; color:var(--muted); margin-top:4px; line-height:1.2; word-break:break-word; }
+    header .row{ align-items:center; }
+
+    @media (max-width: 980px){
+      header{ position:relative; flex-direction:column; align-items:stretch; padding:14px; }
+      header .row{ width:100%; display:grid; grid-template-columns:minmax(0,1fr); gap:8px; }
+      header button{ width:100%; }
+      .brand{ align-items:center; }
+      .brandText > div, .welcomeLine, header .small{ max-width:100%; overflow-wrap:anywhere; word-break:break-word; }
+    }
+
+    /* ---------- layout ---------- */
+    .wrap{
+      display:grid;
+      grid-template-columns:minmax(320px, 400px) minmax(0, 1fr);
+      gap:16px;
+      width:min(1680px, calc(100% - 28px));
+      margin:0 auto;
+      padding:16px 0 20px;
+      align-items:start;
+    }
+    body > div[style*="padding:14px"]{
+      width:min(1680px, calc(100% - 28px));
+      margin:0 auto;
+    }
+    @media (max-width: 980px){
+      .wrap{ grid-template-columns:minmax(0,1fr); width:calc(100% - 20px); }
+      body > div[style*="padding:14px"]{ width:calc(100% - 20px); }
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius-lg);
+      box-shadow:var(--shadow);
+      padding:18px;
+      overflow:hidden;
+    }
+    .wrap > .card{
+      position:sticky; top:88px;
+      max-height:calc(100vh - 108px);
+      display:flex; flex-direction:column;
+    }
+    @media (max-width: 980px){
+      .wrap > .card{ position:relative; top:auto; max-height:none; }
+    }
+    /* ✅ FIXED: the Live Workload card is a column flexbox with a capped
+       height, so every direct child (title row, workload summary box,
+       filter row, ticket list, hint line) defaulted to flex-shrink:1. When
+       the ticket list's natural content was taller than the available
+       space, the browser shrank ALL of them together instead of just
+       scrolling the list - and because each of those children also sets
+       its own overflow:hidden, shrinking below content height silently
+       clipped their content instead of resizing visibly (the workload
+       summary's pill/subtitle vanishing, ticket text overlapping the
+       status pill). Only .list is meant to flex/scroll - everything else
+       around it needs to hold its natural size no matter how little room
+       is left, so the list is what gives way (via its own overflow-y:auto)
+       instead of every child getting silently crushed.
+    */
+    .wrap > .card > .row,
+    .wrap > .card > .workloadBox,
+    .wrap > .card > .muted{ flex-shrink:0; }
+
+    .title{ font-family:var(--font-display); font-weight:800; font-size:16px; margin:0 0 10px; color:var(--navy); letter-spacing:-.01em; display:flex; align-items:center; gap:9px; }
+    .muted{ color:var(--muted); font-size:12px; font-weight:600; }
+    .small{ font-size:12px; }
+    .ok{ color:var(--green-dark); font-weight:700; }
+
+    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .grid2{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px; }
+    @media (max-width: 980px){ .grid2{ grid-template-columns:minmax(0,1fr); } }
+
+    /* ---------- icon chips (section headers, titles, stat tiles) ---------- */
+    .iconChip{ display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:9px; color:#fff; flex:0 0 auto; box-shadow:0 4px 10px rgba(15,23,42,.14); }
+    .iconChip .icon{ width:15px; height:15px; }
+    .iconChip.chip-indigo{ background:linear-gradient(135deg,var(--indigo),#818cf8); }
+    .iconChip.chip-teal{ background:linear-gradient(135deg,var(--teal),#2dd4bf); }
+    .iconChip.chip-amber{ background:linear-gradient(135deg,var(--amber),#fbbf24); }
+    .iconChip.chip-blue{ background:linear-gradient(135deg,var(--blue),#60a5fa); }
+    .iconChip.chip-pink{ background:linear-gradient(135deg,var(--accent),#f472b6); }
+    .iconChip.chip-red{ background:linear-gradient(135deg,var(--red),#fb7185); }
+
+    /* ---------- buttons & inputs ---------- */
+    button{
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      padding:10px 16px; min-height:42px;
+      border:1px solid var(--line); border-radius:999px;
+      background:var(--card); color:var(--navy); font-weight:750; font-size:13px;
+      cursor:pointer; box-shadow:var(--shadow-sm);
+      transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease, background .15s ease, color .15s ease;
+    }
+    button .btnIcon{ width:15px; height:15px; stroke-width:2.3; }
+    button:hover:not(:disabled){ transform:translateY(-2px); border-color:var(--primary); color:var(--primary-dark); background:#fff; box-shadow:0 10px 22px rgba(79,70,229,.18); }
+    button:active:not(:disabled){ transform:translateY(0); }
+    button:disabled{ opacity:.55; cursor:not-allowed; }
+    button.primary{
+      background:var(--grad-primary); background-size:160% 160%;
+      border-color:transparent; color:#fff;
+      box-shadow:var(--shadow-glow);
+    }
+    button.primary:hover:not(:disabled){ transform:translateY(-2px); background-position:100% 0; color:#fff; box-shadow:0 16px 34px rgba(124,58,237,.38); }
+    button#tlsBtn{
+      border-color:rgba(225,29,72,.28); color:var(--red-dark);
+      background:linear-gradient(135deg,#fff,#fff1f4);
+    }
+    button#tlsBtn:hover{ color:var(--red-dark); border-color:var(--red); box-shadow:0 10px 22px rgba(225,29,72,.18); }
+
+    select, input, textarea{
+      width:100%; box-sizing:border-box;
+      padding:10px 12px; font-size:14px; color:var(--ink);
+      border:1px solid #d8d4f5; border-radius:var(--radius-sm);
+      background:#fff; outline:none;
+      transition:border-color .14s ease, box-shadow .14s ease;
+    }
+    textarea{ min-height:70px; resize:vertical; font-family:inherit; }
+    select:focus, input:focus, textarea:focus{ border-color:var(--primary); box-shadow:var(--focus); }
+    select.nfaNoTimeRequired{ opacity:.7; background:var(--card-soft); }
+    textarea[readonly]{ background:var(--card-soft); color:#334155; }
+
+    label.muted{ display:block; margin-bottom:5px; }
+
+    code{ background:var(--card-soft); border:1px solid var(--line); padding:2px 6px; border-radius:6px; font-size:12px; }
+    a{ color:var(--primary-dark); }
+    a:hover{ opacity:.85; }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+    /* ---------- pills, badges, tags ---------- */
+    .pill, .badge, .miniPill{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:5px 11px; border-radius:999px;
+      border:1px solid var(--line); background:#fff;
+      font-size:12px; font-weight:750; color:var(--ink);
+      box-shadow:var(--shadow-sm); white-space:nowrap;
+    }
+    .pill strong{ font-weight:850; }
+    .miniOk{ border-color:var(--green-line); background:var(--green-soft); color:var(--green-dark); font-weight:850; }
+    .miniBad{ border-color:var(--red-line); background:var(--red-soft); color:var(--red-dark); font-weight:850; }
+
+    .needTag, .linkedMiniTag, .ticketTinyPill, .ticketStatusPill, .ticketOpenHint{
+      display:inline-flex; align-items:center; gap:5px;
+      padding:5px 10px; border-radius:999px; font-size:11px; font-weight:850;
+      border:1px solid var(--line); background:#fff; color:#334155;
+      box-shadow:var(--shadow-sm); white-space:nowrap; line-height:1.1;
+    }
+    .needTag{ position:relative; padding-left:19px; border-color:var(--amber-line); background:var(--amber-soft); color:var(--amber-dark); }
+    .needTag::before{ content:""; position:absolute; left:9px; top:50%; width:6px; height:6px; margin-top:-3px; border-radius:999px; background:var(--amber-dark); animation:pulseDot 1.8s infinite; }
+    .linkedMiniTag{ border-color:var(--blue-line); background:var(--blue-soft); color:#1e3a8a; word-break:break-word; white-space:normal; }
+    .ticketOpenHint{ color:var(--blue-dark); background:var(--blue-soft); border-color:var(--blue-line); }
+    .proofYes{ color:var(--green-dark); background:var(--green-soft); border-color:var(--green-line); }
+    .proofNo{ color:var(--amber-dark); background:var(--amber-soft); border-color:var(--amber-line); }
+
+    .ticketStatusPill{ flex:0 0 auto; max-width:150px; text-align:center; }
+    .ticketStatusPill[data-status="finalised"]{ background:var(--green-soft); border-color:var(--green-line); color:var(--green-dark); }
+    .ticketStatusPill[data-status="in-review"]{ background:var(--indigo-soft); border-color:var(--indigo-line); color:var(--indigo-dark); }
+    .ticketStatusPill[data-status="ready-to-publish"]{ background:var(--teal-soft); border-color:var(--teal-line); color:var(--teal-dark); }
+    .ticketStatusPill[data-status="awaiting-review"],
+    .ticketStatusPill[data-status="under-review"],
+    .ticketStatusPill[data-status=""]{ background:var(--amber-soft); border-color:var(--amber-line); color:var(--amber-dark); }
+
+    .stmtTag, .delibTag{
+      padding:9px 10px; border-radius:var(--radius-sm); font-size:12px; font-weight:850; line-height:1.25;
+      border:1px solid var(--line); background:var(--card-soft); color:var(--ink);
+    }
+    .stmtTag small, .delibTag small{ display:block; margin-top:4px; font-weight:750; opacity:.9; }
+    .stmtOk, .delibOk{ border-color:var(--green-line); background:var(--green-soft); color:var(--green-dark); }
+    .stmtBad, .delibBad{ border-color:var(--red-line); background:var(--red-soft); color:var(--red-dark); }
+
+    /* ---------- top stat bar (NEW) ---------- */
+    .statBar{ display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:12px; }
+    .statTile{
+      position:relative; overflow:hidden;
+      background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+      padding:15px 16px; display:flex; align-items:center; gap:13px;
+      box-shadow:var(--shadow-sm);
+      animation:fadeSlideIn .3s ease both;
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+    .statTile:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+    .statTile::after{ content:""; position:absolute; right:-26px; top:-26px; width:84px; height:84px; border-radius:999px; opacity:.10; }
+    .statTileIcon{ position:relative; z-index:1; width:44px; height:44px; border-radius:13px; display:flex; align-items:center; justify-content:center; color:#fff; flex:0 0 auto; box-shadow:0 8px 18px rgba(15,23,42,.16); }
+    .statTileIcon .icon{ width:21px; height:21px; }
+    .statTileBody{ position:relative; z-index:1; min-width:0; }
+    .statTileNum{ font-family:var(--font-display); font-size:23px; font-weight:800; color:var(--navy); line-height:1.15; }
+    .statTileLabel{ font-size:11px; font-weight:750; color:var(--muted); text-transform:uppercase; letter-spacing:.045em; margin-top:2px; }
+    .statTile.tone-indigo .statTileIcon{ background:linear-gradient(135deg,#4f46e5,#818cf8); }
+    .statTile.tone-indigo::after{ background:#4f46e5; }
+    .statTile.tone-amber .statTileIcon{ background:linear-gradient(135deg,#d97706,#fbbf24); }
+    .statTile.tone-amber::after{ background:#d97706; }
+    .statTile.tone-pink .statTileIcon{ background:linear-gradient(135deg,#db2777,#f472b6); }
+    .statTile.tone-pink::after{ background:#db2777; }
+    .statTile.tone-teal .statTileIcon{ background:linear-gradient(135deg,#0d9488,#2dd4bf); }
+    .statTile.tone-teal::after{ background:#0d9488; }
+
+    /* ---------- workload box ---------- */
+    .workloadBox{ position:relative; overflow:hidden; border:1px solid var(--indigo-line); border-radius:var(--radius-sm); padding:13px 15px; background:linear-gradient(135deg,var(--indigo-soft),#fff); margin:10px 0 12px; }
+    .workloadBox::after{ content:""; position:absolute; right:-22px; top:-22px; width:80px; height:80px; border-radius:999px; background:var(--indigo); opacity:.08; }
+    .workloadTop{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; position:relative; z-index:1; }
+    .workloadTitle{ font-weight:800; font-size:13px; margin:0; color:var(--navy); display:flex; align-items:center; gap:8px; }
+    .workloadSub{ margin-top:6px; font-size:12px; color:var(--muted); line-height:1.3; position:relative; z-index:1; }
+
+    /* ---------- ticket list ---------- */
+    .list{
+      flex:1; min-height:0; overflow-y:auto; overflow-x:hidden;
+      display:flex; flex-direction:column; gap:12px;
+      padding:2px 6px 14px 2px; margin-right:-4px;
+      scrollbar-width:thin; scrollbar-color:#c7bdf5 transparent;
+    }
+    .list::-webkit-scrollbar{ width:9px; }
+    .list::-webkit-scrollbar-thumb{ background:#c7bdf5; border-radius:999px; border:3px solid transparent; background-clip:content-box; }
+    @media (max-width: 980px){ .list{ max-height:62vh; min-height:280px; } }
+
+    .ticket{
+      position:relative; cursor:pointer; border-radius:var(--radius); overflow:hidden;
+      border:1px solid var(--line); background:linear-gradient(180deg,#fff,#fbfbff);
+      box-shadow:var(--shadow-sm);
+      animation:fadeSlideIn .28s ease both;
+      transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+      /* ✅ FIXED: same flex-shrink issue as the card's own children (see
+         .wrap > .card comment above) one level deeper - .list is itself a
+         column flexbox, so each .ticket card defaulted to shrinking below
+         its real content height (and, with overflow:hidden here, silently
+         clipping everything past the title line - the id/people/info/
+         incident/footer rows, and the second line of the subtitle) rather
+         than letting .list's own overflow-y:auto scroll to show every card
+         at full size. Cards now always render full height; .list scrolls. */
+      flex-shrink:0;
+    }
+    .ticket::before{ content:""; position:absolute; inset:0 auto 0 0; width:5px; background:var(--grad-primary); opacity:.35; transition:opacity .16s ease, width .16s ease; }
+    .ticket:hover{ transform:translateY(-2px); box-shadow:0 16px 32px rgba(79,70,229,.16); border-color:var(--indigo-line); background:#fff; }
+    .ticket:hover::before{ opacity:.85; width:6px; }
+    .ticket.active{ border-color:var(--primary); box-shadow:0 0 0 3px rgba(79,70,229,.14), var(--shadow); background:linear-gradient(135deg,#fff,var(--indigo-soft)); }
+    .ticket.active::before{ width:6px; opacity:1; }
+    .ticket .id{ font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; color:var(--navy); font-weight:750; }
+    .ticket .status{ font-size:12px; color:#334155; margin-top:3px; }
+
+    .ticketCardInner, .ticketCardInner.compactTicketCard{ position:relative; z-index:1; padding:14px 14px 13px 18px; }
+    .ticketHeadLine{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; min-width:0; }
+    .ticketHeadText{ min-width:0; flex:1; }
+    .ticketEvent{ font-size:14px; font-weight:850; color:var(--navy); line-height:1.25; white-space:normal; word-break:break-word; }
+    .ticketCompetition{ margin-top:3px; font-size:12px; font-weight:700; color:var(--muted); line-height:1.25; white-space:normal; word-break:break-word; }
+
+    .ticketIdLine{
+      margin-top:9px; display:flex; gap:8px; align-items:center; min-width:0;
+      border:1px solid var(--line); background:var(--card-soft); border-radius:var(--radius-sm); padding:7px 9px;
+    }
+    .ticketIdLine span, .ticketPeopleLine span, .ticketInfoLine span{
+      display:block; color:var(--muted-2); font-size:10px; text-transform:uppercase; letter-spacing:.07em; font-weight:850;
+    }
+    .ticketIdLine strong{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--navy); font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; }
+
+    .ticketPeopleLine, .ticketInfoLine{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px; margin-top:8px; }
+    .ticketPeopleLine > div, .ticketInfoLine > div{ min-width:0; border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; padding:8px 9px; }
+    .ticketPeopleLine strong, .ticketInfoLine strong{ display:block; margin-top:3px; color:var(--navy); font-size:12px; line-height:1.25; font-weight:800; white-space:normal; word-break:break-word; }
+    .ticketPeopleLine > div:first-child{ background:#fff8f9; border-color:var(--red-line); }
+    .ticketPeopleLine > div:last-child{ background:#f7f7fe; border-color:var(--indigo-line); }
+    @media (max-width: 560px){ .ticketPeopleLine, .ticketInfoLine{ grid-template-columns:minmax(0,1fr); } }
+
+    .ticketIncidentLine{
+      margin-top:8px; color:#334155; font-size:12px; line-height:1.35; font-weight:650;
+      background:var(--card-soft); border:1px solid var(--line); border-radius:var(--radius-sm); padding:8px 9px;
+      white-space:normal; word-break:break-word;
+    }
+
+    .compactFooter{ margin-top:9px; display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+    .compactFooter .ticketOpenHint{ margin-left:auto; }
+    .compactChecklist{ margin-top:8px; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:6px; }
+    @media (max-width: 980px){ .compactChecklist{ grid-template-columns:minmax(0,1fr); } }
+
+    /* ---------- section blocks ---------- */
+    .sec{ border:1px solid var(--line); border-left:4px solid var(--line); border-radius:var(--radius); padding:15px; background:var(--card-soft); margin-top:13px; transition:box-shadow .18s ease, border-color .18s ease; }
+    .sec:hover{ box-shadow:var(--shadow-sm); }
+    .sec h3{ margin:0 0 9px; font-size:14.5px; font-family:var(--font-display); font-weight:800; color:var(--navy); display:flex; align-items:center; gap:9px; }
+    #statementsSec{ border-left-color:var(--teal); }
+    #discussionSec{ border-left-color:var(--indigo); }
+    #driverHistorySec{ border-left-color:var(--amber); }
+    #linkedIncidentSec{ border-left-color:var(--blue); }
+
+    #selTitle{ font-size:19px; }
+    #selTitle::after{ content:""; display:block; width:60px; height:3px; margin-top:8px; border-radius:999px; background:var(--grad-primary); }
+
+    #sumCompetition, #sumEvent, #sumRule, #sumProof{ font-weight:750; color:#172033; word-break:break-word; }
+
+    .redBox{
+      border:1px solid var(--red-line); background:var(--red-soft); color:var(--red-dark);
+      border-radius:var(--radius-sm); padding:10px 12px 10px 40px; margin-top:10px;
+      font-size:13px; line-height:1.3; font-weight:700; position:relative;
+    }
+    .redBox::before{
+      content:"!"; position:absolute; left:12px; top:50%; transform:translateY(-50%);
+      width:20px; height:20px; display:grid; place-items:center; border-radius:999px;
+      color:#fff; background:var(--red); font-weight:900; font-size:12px;
+    }
+
+    .bannerBox{ border-radius:var(--radius-sm); padding:12px 14px; font-size:13px; font-weight:800; line-height:1.3; }
+    .bannerBox small{ display:block; margin-top:6px; font-weight:700; opacity:.95; }
+    .bannerRed{ border:1px solid var(--red-line); background:var(--red-soft); color:var(--red-dark); }
+    .bannerAmber{ border:1px solid var(--amber-line); background:var(--amber-soft); color:var(--amber-dark); }
+    .bannerGreen{ border:1px solid var(--green-line); background:var(--green-soft); color:var(--green-dark); }
+
+    .videoWrap{ position:relative; width:100%; padding-top:56.25%; background:#000; border-radius:var(--radius-sm); overflow:hidden; border:1px solid var(--line); margin-top:10px; box-shadow:var(--shadow-sm); }
+    .videoWrap iframe, .videoWrap video{ position:absolute; top:0; left:0; width:100%; height:100%; border:0; }
+
+    .commentBox{
+      position:relative; border:1px solid var(--line); border-radius:var(--radius-sm);
+      padding:12px 12px 12px 16px; background:#fff;
+      transition:box-shadow .15s ease, transform .15s ease;
+    }
+    .commentBox:hover{ transform:translateY(-1px); box-shadow:var(--shadow-sm); }
+    .commentBox::before{ content:""; position:absolute; left:0; top:12px; bottom:12px; width:4px; border-radius:999px; background:var(--grad-primary); opacity:.55; }
+    .commentMeta{ font-size:12px; color:var(--muted); margin-top:4px; font-weight:650; }
+
+    .timePenaltyRow{ margin-top:10px; }
+    .nfaNoTimeNote{ margin-top:6px; font-size:12px; font-weight:800; color:var(--green-dark); display:none; }
+
+    .penPreview{ margin-top:10px; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; color:var(--ink); font-size:13px; line-height:1.3; }
+    .penPreview .mutedLine{ color:var(--muted); font-size:12px; margin-top:6px; }
+    .penPreview .k{ font-weight:900; }
+    .penPreview pre{ margin:8px 0 0; white-space:pre-wrap; font-family:inherit; background:transparent; }
+
+    .voteSummaryBox{ margin-top:12px; border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; padding:12px; }
+    .voteSummaryTitle{ font-weight:850; font-size:14px; margin-bottom:8px; color:var(--navy); display:flex; align-items:center; gap:8px; }
+    .voteSummaryGrid{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px; margin-top:8px; }
+    @media (max-width: 980px){ .voteSummaryGrid{ grid-template-columns:minmax(0,1fr); } }
+    .voteSummaryPanel{ border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card-soft); padding:10px 12px; }
+    .voteSummaryPanelTitle{ font-size:12px; font-weight:850; color:var(--navy); margin-bottom:6px; }
+    .voteLine{ display:flex; justify-content:space-between; gap:10px; border-top:1px solid var(--line-soft); padding:6px 0; font-size:12px; line-height:1.25; }
+    .voteLine:first-of-type{ border-top:0; }
+    .voteLine strong{ font-weight:850; }
+    .recommendationBox{ margin-top:10px; border:1px solid var(--green-line); background:var(--green-soft); color:var(--green-dark); border-radius:var(--radius-sm); padding:10px 12px; font-size:13px; font-weight:850; line-height:1.3; }
+    .recommendationBox small{ display:block; margin-top:5px; font-weight:750; opacity:.95; }
+
+    .linkedMiniTag{ margin-top:8px; display:inline-block; }
+    .linkedIncidentBox{ border:1px solid var(--blue-line); border-radius:var(--radius-sm); background:linear-gradient(135deg,var(--blue-soft),#fff); padding:12px; margin-top:10px; }
+    .linkedIncidentTitle{ font-size:14px; font-weight:850; color:var(--navy); margin-bottom:6px; }
+    .linkedTicketGrid{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:10px; margin-top:10px; }
+    @media (max-width: 980px){ .linkedTicketGrid{ grid-template-columns:minmax(0,1fr); } }
+    .linkedTicketCard{ border:1px solid var(--line); border-radius:var(--radius-sm); background:linear-gradient(180deg,#fff,#f8f7fe); padding:10px 12px; font-size:13px; line-height:1.35; cursor:pointer; box-shadow:var(--shadow-sm); transition:transform .14s ease, box-shadow .14s ease; }
+    .linkedTicketCard:hover{ transform:translateY(-2px); box-shadow:0 12px 24px rgba(37,99,235,.14); }
+    .linkedTicketCard .mono{ word-break:break-all; font-size:12px; }
+    .linkedDriverList{ border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; padding:10px 12px; margin-top:10px; font-size:13px; line-height:1.35; }
+    .linkedDriverList ol{ margin:6px 0 0 20px; padding:0; }
+    .linkedDriverList li{ margin:3px 0; }
+
+    /* ---------- driver history ---------- */
+    .driverHistoryGrid{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; margin-top:10px; }
+    @media (max-width: 640px){ .driverHistoryGrid{ grid-template-columns:minmax(0,1fr); } }
+    .driverHistoryCol{ min-width:0; }
+    .driverHistoryLabel{ font-size:12px; font-weight:800; color:var(--navy); margin-bottom:6px; }
+    .driverHistoryList{ display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto; padding-right:2px; }
+    .driverHistoryItem{
+      border:1px solid var(--line); border-radius:var(--radius-sm); background:linear-gradient(180deg,#fff,#f8f7fe);
+      padding:9px 11px; font-size:12px; line-height:1.35; cursor:pointer; box-shadow:var(--shadow-sm);
+      transition:transform .14s ease, box-shadow .14s ease;
+    }
+    .driverHistoryItem:hover{ transform:translateY(-2px); box-shadow:0 12px 24px rgba(79,70,229,.14); }
+    .driverHistoryItem .roleTag{ font-weight:850; color:var(--navy); }
+    .driverHistoryItem .muted{ margin-top:2px; }
+    .driverHistoryEmpty{ font-size:12px; color:var(--muted); font-weight:650; padding:6px 2px; }
+
+    /* ---------- driver identity cards (licence-card styling) ---------- */
+    .driverCardRow{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; margin-bottom:12px; }
+    @media (max-width: 640px){ .driverCardRow{ grid-template-columns:minmax(0,1fr); } }
+
+    .driverIdCard{
+      position:relative; border-radius:18px; padding:3px;
+      background:linear-gradient(135deg, var(--muted-2), #cbd5e1);
+      box-shadow:var(--shadow-sm);
+      transition:box-shadow .18s ease, transform .18s ease;
+    }
+    .driverIdCard.role-accused{ background:linear-gradient(135deg,#fca5a5,var(--red)); }
+    .driverIdCard.role-reporter{ background:linear-gradient(135deg,var(--indigo-line),var(--indigo)); }
+    .driverIdCard:not(.unlinked):hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+
+    .driverIdCardInner{
+      border-radius:15px; background:#11151b; padding:12px 13px 13px;
+      position:relative; min-height:96px; background-size:cover; background-position:center;
+      display:flex; gap:11px; align-items:center;
+    }
+    .driverIdCardInner::before{
+      content:""; position:absolute; inset:0; border-radius:15px;
+      background:linear-gradient(180deg, rgba(8,10,13,.15), rgba(8,10,13,.82)); pointer-events:none;
+    }
+    .driverIdCard.unlinked .driverIdCardInner{ background:#1f2937; }
+
+    .driverCardRole{
+      position:absolute; top:8px; left:13px; z-index:1;
+      font-size:9px; font-weight:900; letter-spacing:.09em; text-transform:uppercase; color:rgba(255,255,255,.75);
+    }
+    .driverCardPhoto{
+      position:relative; z-index:1; width:52px; height:52px; border-radius:12px; object-fit:cover; flex:0 0 auto;
+      border:2px solid rgba(255,255,255,.25); background:#1a2027;
+    }
+    .driverCardBody{ position:relative; z-index:1; min-width:0; flex:1; padding-top:8px; }
+    .driverCardName{ font-size:14px; font-weight:800; color:#fff; line-height:1.2; word-break:break-word; }
+    .driverCardNumber{ font-size:10.5px; color:rgba(255,255,255,.62); font-family:ui-monospace, SFMono-Regular, Menlo, monospace; margin-top:2px; }
+    .driverCardMetaRow{ display:flex; align-items:center; gap:6px; margin-top:6px; flex-wrap:wrap; }
+    .driverCardTierPill{ display:inline-block; padding:3px 9px; border-radius:999px; font-size:9.5px; font-weight:900; text-transform:uppercase; letter-spacing:.03em; }
+    .driverCardPoints{ font-size:10.5px; font-weight:850; padding:2px 8px; border-radius:999px; background:rgba(255,255,255,.12); }
+    .driverCardPoints.pts-green{ color:#6ee7b7; }
+    .driverCardPoints.pts-orange{ color:#fcd34d; }
+    .driverCardPoints.pts-red{ color:#fca5a5; }
+    .driverIdCard.unlinked .driverCardName{ color:#e5e7eb; }
+    .driverIdCard.unlinked .driverCardNumber{ color:rgba(255,255,255,.5); }
+
+    /* ---------- toast ---------- */
+    .toast{
+      position:fixed; right:16px; bottom:16px; z-index:9999;
+      background:var(--grad-primary); color:#fff;
+      padding:11px 16px; border-radius:999px;
+      box-shadow:0 16px 32px rgba(79,70,229,.30); font-weight:750; font-size:13px;
+      opacity:0; transform:translateY(8px); transition:all .18s ease;
+    }
+    .toast.show{ opacity:1; transform:translateY(0); }
+
+    /* ---------- misc small-screen guards ---------- */
+    @media (max-width: 980px){
+      #refreshStatementsBtn, #refreshTicketsBtn, #refreshDiscussionBtn, #postDiscussionBtn{ width:100%; }
+      #filter{ font-size:16px; }
+      .statBar{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+    }
+  
+</style>
+  <style id="refresh-css">
+
+    /* ============================================================
+       STEWARD DASHBOARD REFRESH (additive layer)
+       Everything above is untouched. This layer only adds/overrides
+       presentation: tabs, two ticket lists, search/sort/compact,
+       sticky ticket bar, side-by-side detail, Server Live panel.
+       ============================================================ */
+    :root{ --stickyTop:0px; --navH:50px; }
+    html, body{ overflow-x:clip; }               /* clip (not hidden) so sticky parts really stick */
+    [hidden]{ display:none !important; }
+
+    /* ---------- header: slimmer ---------- */
+    header{ padding:11px clamp(14px, 2vw, 26px) 10px; align-items:center; }
+    header .brand img{ width:38px; height:38px; }
+    header .brandTitle{ font-size:18px; }
+    header .welcomeLine{ margin-top:2px; font-size:12px; color:#475569; }
+    header .small{ margin-top:2px; }
+    header .row{ gap:8px; justify-content:flex-end; }
+    header .row button{ min-height:36px; padding:7px 14px; font-size:12.5px; box-shadow:none; }
+    header .row button:hover:not(:disabled){ transform:translateY(-1px); }
+    @media (min-width:1100px){ header .row{ flex-wrap:nowrap; flex:0 0 auto; } header .brandText{ max-width:min(520px, 38vw); } header .welcomeLine{ max-width:none; } }
+
+    /* ---------- tab bar ---------- */
+    .appTabs{
+      position:relative; z-index:2;
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+      width:min(1680px, calc(100% - 28px)); margin:0 auto; padding:10px 0 4px;
+    }
+    .tabSet{ display:flex; gap:4px; padding:4px; background:#fff; border:1px solid var(--line); border-radius:999px; box-shadow:var(--shadow-sm); }
+    .tabBtn{
+      min-height:38px; padding:8px 18px; border:0; border-radius:999px; box-shadow:none; background:transparent;
+      font-size:13.5px; font-weight:800; color:#475569; gap:8px;
+    }
+    .tabBtn:hover:not(:disabled){ transform:none; background:var(--indigo-soft); color:var(--primary-dark); box-shadow:none; border:0; }
+    .tabBtn[aria-selected="true"]{ background:var(--grad-primary); color:#fff; box-shadow:var(--shadow-glow); }
+    .tabBtn[aria-selected="true"]:hover:not(:disabled){ background:var(--grad-primary); color:#fff; }
+    .tabCount{
+      display:inline-flex; align-items:center; justify-content:center; min-width:22px; height:22px; padding:0 7px; border-radius:999px;
+      font-size:11.5px; font-weight:900; background:var(--amber-soft); color:var(--amber-dark); border:1px solid var(--amber-line);
+    }
+    .tabBtn[aria-selected="true"] .tabCount{ background:rgba(255,255,255,.22); color:#fff; border-color:rgba(255,255,255,.35); }
+    .tabCount.zero{ background:var(--green-soft); color:var(--green-dark); border-color:var(--green-line); }
+    .tabCount.slbad{ background:var(--red-soft); color:var(--red-dark); border-color:var(--red-line); animation:pulseDot 1.8s infinite; }
+    .tabCount.slok{ background:var(--green-soft); color:var(--green-dark); border-color:var(--green-line); }
+    .appTabsRight{ margin-left:auto; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .appTabsRight button{ min-height:34px; padding:6px 13px; font-size:12px; box-shadow:none; }
+    .lastRef{ font-size:11.5px; font-weight:700; color:var(--muted); }
+    .lastRef.stale{ color:var(--amber-dark); }
+
+    /* ---------- overview strip ---------- */
+    .overview{
+      width:min(1680px, calc(100% - 28px)); margin:0 auto; padding:4px 0 0;
+      display:grid; gap:14px; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); align-items:stretch;
+    }
+    .overview > div{ padding:0 !important; min-width:0; }
+    #ownerClauseWrap{ grid-column:1 / -1; }
+    #ownerClauseWrap:has(#ownerClauseBanner:empty){ display:none; }
+    #statsWrap .statBar{ grid-template-columns:repeat(2, minmax(0,1fr)); height:100%; }
+    #statsWrap .statTile{ padding:12px 14px; cursor:pointer; }
+    #statsWrap .statTile:focus-visible{ outline:3px solid rgba(79,70,229,.35); outline-offset:2px; }
+    #statsWrap .statTileNum{ font-size:24px; }
+    #acctWrap .card{ height:100%; padding:14px 16px; }
+    #acctWrap .title{ font-size:14.5px; }
+    body.ov-off #overview{ display:none; }
+    @media (max-width: 980px){
+      .overview{ width:calc(100% - 20px); grid-template-columns:minmax(0,1fr); }
+      #statsWrap .statBar{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+      .appTabs{ width:calc(100% - 20px); top:0; }
+    }
+
+    /* ---------- layout: sticky offsets follow the real header ---------- */
+    .wrap{ padding-top:12px; }
+    .wrap > .card{ top:calc(var(--stickyTop) + 8px); max-height:calc(100vh - var(--stickyTop) - 20px); border-radius:20px; }
+    @media (max-width: 980px){ .wrap > .card{ top:auto; max-height:none; } }
+
+    /* ---------- left card: toolbar + two lists ---------- */
+    .listTools{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; margin:0 0 10px; align-items:center; flex-shrink:0; }
+    .listTools .searchBox{ position:relative; grid-column:1 / -1; }
+    .listTools .searchBox input{ padding-left:34px; height:38px; font-size:13px; }
+    .listTools .searchBox .icon{ position:absolute; left:11px; top:50%; margin-top:-8px; color:var(--muted-2); pointer-events:none; }
+    .listTools select{ width:100%; height:38px; padding:6px 10px; font-size:12.5px; font-weight:700; }
+    .listTools button{ min-height:38px; padding:6px 12px; font-size:12px; box-shadow:none; }
+    .listTools button[aria-pressed="true"]{ background:var(--indigo-soft); border-color:var(--indigo-line); color:var(--indigo-dark); }
+    .workloadBox{ padding:10px 13px; margin-bottom:10px; }
+    .workloadSub{ margin-top:4px; }
+    @media (max-height:860px){ .workloadSub{ display:none; } }
+    .listHint{ font-size:11px; color:var(--muted-2); font-weight:650; margin-top:6px; flex-shrink:0; }
+    .listHint kbd{ font:700 10.5px ui-monospace, Menlo, monospace; padding:1px 5px; border:1px solid var(--line); border-bottom-width:2px; border-radius:5px; background:#fff; color:#475569; }
+    .list.loading{ opacity:.55; pointer-events:none; transition:opacity .15s; }
+
+    .grp{ display:block; flex-shrink:0; }
+    .grpHead{
+      position:sticky; top:0; z-index:3; display:flex; align-items:center; gap:9px; flex-wrap:wrap;
+      padding:9px 12px; margin:0 0 10px; border-radius:14px; cursor:pointer; user-select:none;
+      border:1px solid var(--line); background:rgba(255,255,255,.96); box-shadow:var(--shadow-sm);
+      backdrop-filter:blur(8px);
+    }
+    .grpHead:focus-visible{ outline:3px solid rgba(79,70,229,.3); outline-offset:1px; }
+    .grpDot{ width:10px; height:10px; border-radius:999px; flex:0 0 auto; }
+    .grp-todo .grpHead{ border-color:var(--amber-line); background:linear-gradient(135deg, rgba(255,251,235,.97), rgba(255,255,255,.97)); }
+    .grp-todo .grpDot{ background:var(--amber); animation:pulseDot 1.8s infinite; }
+    .grp-done .grpHead{ border-color:var(--green-line); background:linear-gradient(135deg, rgba(236,253,245,.97), rgba(255,255,255,.97)); }
+    .grp-done .grpDot{ background:var(--green); }
+    .grpTitle{ font-family:var(--font-display); font-weight:800; font-size:13.5px; color:var(--navy); }
+    .grpCount{ font-size:11.5px; font-weight:900; padding:2px 9px; border-radius:999px; background:#fff; border:1px solid var(--line); color:var(--navy); }
+    .grpSub{ font-size:11px; font-weight:650; color:var(--muted); margin-left:auto; }
+    .grpChev{ width:9px; height:9px; border-right:2px solid var(--muted); border-bottom:2px solid var(--muted); transform:rotate(45deg); transition:transform .15s; margin:-3px 2px 0 0; }
+    .grp.collapsed .grpChev{ transform:rotate(-45deg); margin:0 2px 0 0; }
+    .grpBody{ display:flex; flex-direction:column; gap:12px; padding-bottom:14px; }
+    .grp.collapsed .grpBody{ display:none; }
+    .grpEmpty{
+      padding:16px 14px; border:1px dashed var(--line); border-radius:14px; text-align:center;
+      font-size:12.5px; font-weight:700; color:var(--muted); background:rgba(255,255,255,.6);
+    }
+    .grp-todo .grpEmpty.clear{ border-color:var(--green-line); color:var(--green-dark); background:var(--green-soft); }
+
+    .ticket.isTodo::before{ background:linear-gradient(180deg,#f59e0b,#d97706); opacity:.9; }
+    .ticket.isDone::before{ background:linear-gradient(180deg,#10b981,#059669); opacity:.75; }
+    .ticket.isDone{ background:linear-gradient(180deg,#fcfffd,#f7fdfa); }
+    .ageChip{ font-variant-numeric:tabular-nums; }
+    .ageChip.old{ background:var(--red-soft); border-color:var(--red-line); color:var(--red-dark); }
+    .ageChip.mid{ background:var(--amber-soft); border-color:var(--amber-line); color:var(--amber-dark); }
+
+    /* compact cards */
+    .list.dense .ticketIdLine, .list.dense .ticketInfoLine, .list.dense .ticketIncidentLine{ display:none; }
+    .list.dense .ticketCardInner, .list.dense .ticketCardInner.compactTicketCard{ padding:10px 12px 10px 16px; }
+    .list.dense .ticketPeopleLine{ margin-top:6px; }
+    .list.dense .compactChecklist{ margin-top:6px; grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+    .list.dense .stmtTag, .list.dense .delibTag{ padding:6px 8px; font-size:11px; }
+    .list.dense .stmtTag small, .list.dense .delibTag small{ display:none; }
+    .list.dense .compactFooter{ margin-top:6px; }
+
+    /* ---------- right: sticky ticket bar ---------- */
+    .detailCard{ overflow:visible; padding-top:0; }
+    .ticketBar{
+      position:sticky; top:calc(var(--stickyTop) + 6px); z-index:30;
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+      margin:0 -6px 14px; padding:9px 12px; border-radius:16px;
+      background:rgba(255,255,255,.94); border:1px solid var(--line); box-shadow:var(--shadow-sm);
+      backdrop-filter:blur(10px) saturate(1.2); -webkit-backdrop-filter:blur(10px) saturate(1.2);
+      transform:translateY(-1px);
+    }
+    .tbMain{ min-width:0; flex:1 1 220px; }
+    .tbTitle{ font-family:var(--font-display); font-weight:800; font-size:14px; color:var(--navy); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .tbSub{ font-size:11.5px; font-weight:650; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .tbBtns{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+    .tbBtns button{ min-height:32px; padding:5px 11px; font-size:12px; box-shadow:none; }
+    .tbBtns button.primary{ box-shadow:none; }
+    .tbMine{ font-size:11px; font-weight:850; padding:4px 10px; border-radius:999px; border:1px solid var(--line); white-space:nowrap; }
+    .tbMine.todo{ background:var(--amber-soft); border-color:var(--amber-line); color:var(--amber-dark); }
+    .tbMine.done{ background:var(--green-soft); border-color:var(--green-line); color:var(--green-dark); }
+    .tbJump{ display:flex; gap:4px; flex-wrap:wrap; width:100%; }
+    .tbJump button{ min-height:28px; padding:3px 11px; font-size:11.5px; font-weight:800; box-shadow:none; color:#475569; background:var(--card-soft); }
+    #tbBack{ display:none; }
+    @media (max-width: 980px){
+      #tbBack{ display:inline-flex; }
+      .ticketBar{ top:6px; margin:0 -4px 12px; padding:8px 10px; gap:8px; }
+      .tbSub{ display:none; }
+      .tbMain{ flex:1 1 140px; }
+      .tbTitle{ font-size:13px; }
+      .tbJump{ flex-wrap:nowrap; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:2px; }
+      .tbJump button{ flex:0 0 auto; }
+      .tbBtns{ width:100%; }
+      .tbBtns button{ flex:1 1 auto; }
+      .detailCard .sec{ scroll-margin-top:70px; }
+    }
+
+    /* empty detail state */
+    .detailEmpty{
+      text-align:center; padding:54px 20px 60px; border:1px dashed var(--indigo-line); border-radius:18px;
+      background:linear-gradient(180deg, var(--indigo-soft), #fff); margin-bottom:14px;
+    }
+    .detailEmpty .deIcon{ width:60px; height:60px; margin:0 auto 14px; border-radius:20px; display:flex; align-items:center; justify-content:center; color:#fff; background:var(--grad-primary); box-shadow:var(--shadow-glow); }
+    .detailEmpty .deIcon .icon{ width:28px; height:28px; }
+    .detailEmpty h2{ margin:0 0 6px; font-family:var(--font-display); font-size:20px; color:var(--navy); }
+    .detailEmpty p{ margin:0 auto 16px; max-width:460px; color:var(--muted); font-size:13.5px; font-weight:600; }
+    body.has-ticket .detailEmpty{ display:none; }
+    body:not(.has-ticket) .ticketBar{ display:none; }
+    body:not(.has-ticket) #detailCard > .sec{ display:none; }
+    body:not(.has-ticket) #selTitle, body:not(.has-ticket) #selSub{ display:none; }
+    body.has-ticket #selTitle{ font-size:12px; color:var(--muted); font-weight:700; margin:0 0 2px; }
+
+    /* collapsible sections */
+    .detailCard .sec{ scroll-margin-top:calc(var(--stickyTop) + 110px); }
+    .secHead{ cursor:pointer; }
+    .secHead h3{ position:relative; padding-right:4px; }
+    .secHead h3::after{ content:""; width:8px; height:8px; margin-left:8px; border-right:2px solid var(--muted-2); border-bottom:2px solid var(--muted-2); transform:rotate(45deg) translateY(-2px); transition:transform .15s; flex:0 0 auto; }
+    .sec.sec-collapsed .secHead h3::after{ transform:rotate(-45deg); }
+    .sec.sec-collapsed > :not(.secHead){ display:none !important; }
+    .sec.sec-collapsed{ padding-bottom:12px; }
+    #discussionSec{ border-left-color:var(--primary); }
+    #summarySec{ border-left-color:var(--red); }
+    #statementsSec{ border-left-color:var(--teal); }
+    #driverHistorySec{ border-left-color:var(--amber); }
+    #linkedIncidentSec{ border-left-color:var(--blue); }
+
+    /* side-by-side: evidence left, discussion right */
+    @media (min-width: 1500px){
+      body.split-on .detailCard{ display:grid; grid-template-columns:minmax(0,1.12fr) minmax(0,.98fr); column-gap:16px; align-items:start; }
+      body.split-on .detailCard > .ticketBar,
+      body.split-on .detailCard > .detailEmpty,
+      body.split-on .detailCard > #selTitle,
+      body.split-on .detailCard > #selSub{ grid-column:1 / -1; }
+      body.split-on .detailCard > .sec{ grid-column:1; }
+      body.split-on .detailCard > #discussionSec{ grid-column:2; grid-row:4 / span 12; margin-top:0; }
+    }
+    #splitBtn{ display:none; }
+    @media (min-width: 1500px){ #splitBtn{ display:inline-flex; } }
+
+    /* ---------- Server Live panel ---------- */
+    #panelServer{ width:min(1680px, calc(100% - 28px)); margin:0 auto; padding:12px 0 28px;
+      --text-primary:var(--ink); --text-muted:var(--muted); --its-line:var(--line); --surface:#fff;
+      --font-body:'Inter', ui-sans-serif, system-ui, sans-serif; --font-mono:ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    #panelServer .slShell{ background:var(--card); border:1px solid var(--line); border-radius:20px; box-shadow:var(--shadow); overflow:hidden; }
+    #panelServer .slIntro{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; padding:12px 18px; border-bottom:1px solid var(--line); background:linear-gradient(135deg, var(--indigo-soft), #fff); font-size:12.5px; font-weight:650; color:#475569; }
+    #panelServer .slIntro strong{ color:var(--navy); }
+    #panelServer .slBoot{ padding:40px 20px; text-align:center; color:var(--muted); font-weight:700; }
+    #panelServer .slFail{ padding:28px 22px; }
+    #panelServer .slFail h3{ margin:0 0 6px; color:var(--red-dark); font-family:var(--font-display); }
+    #panelServer .slFail p{ margin:6px 0; color:#475569; font-size:13.5px; }
+    #panelServer .sl-page{ padding:16px 18px 24px; }
+    #panelServer .sl-top h2{ font-family:var(--font-display); letter-spacing:.02em; }
+    #panelServer .sl-btn, #panelServer .sl-mini{ min-height:0; box-shadow:none; border-radius:10px; font-size:12.5px; padding:6px 12px; }
+    #panelServer .sl-mini{ padding:4px 9px; font-size:12px; border-radius:8px; }
+    #panelServer .sl-btn:hover:not(:disabled), #panelServer .sl-mini:hover:not(:disabled){ transform:none; box-shadow:none; background:var(--surface); border-color:#38c9b5; color:var(--text-primary); }
+    #panelServer.bg{ height:0; padding:0; overflow:visible; }
+    #panelServer.bg .slShell{ height:0; border:0; box-shadow:none; background:none; }
+    #panelServer.bg .slIntro, #panelServer.bg .sl-page > *:not(.sl-toasts){ display:none; }
+    #panelServer.bg .sl-page{ padding:0; }
+    @media (max-width: 980px){ #panelServer{ width:calc(100% - 20px); } #panelServer .sl-page{ padding:12px 10px 20px; } }
+
+    /* ---------- small polish ---------- */
+    .card{ border-radius:20px; }
+    .sec{ border-radius:16px; }
+    .toast{ z-index:200; }
+    @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; scroll-behavior:auto !important; } }
+    @media (max-width: 980px){
+      header .row{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:8px; }
+      header .row button{ width:100%; }
+      .appTabsRight .lastRef{ display:none; }
+      .tabBtn{ padding:8px 14px; }
+    }
+      /* ---------- mobile fit (Oct 2026) ----------
+       On phones the ticket page grew wider than the screen and the right-hand
+       side was cut off (html/body hide sideways overflow, so it could not be
+       scrolled to). Cause: single-column grids were sized 1fr, which lets a
+       column grow to its widest child (a long penalty-code option, a pasted
+       link). Columns are now minmax(0,1fr) so they can shrink, grid children
+       may shrink, and form fields and long text stay inside their card. */
+    .wrap > *, .card, .grid2 > *, .voteSummaryGrid > *, .linkedTicketGrid > *, .driverHistoryGrid > *, .driverCardRow > *, .compactChecklist > *, .overview > *{ min-width:0; max-width:100%; }
+    select, input, textarea{ max-width:100%; min-width:0; }
+    select{ text-overflow:ellipsis; }
+    .card, .card p, .card .small, .card .muted, .card li, .card td, .card a{ overflow-wrap:anywhere; }
+    @media (max-width: 980px){
+      html, body{ overflow-x:clip; }
+      .tbJump{ flex-wrap:wrap; overflow-x:visible; }
+      .ticketBar{ max-width:100%; }
+    }
+</style>
+
+</head>
+
+<body>
+  <!-- Icon sprite (feather-style line icons, referenced throughout via <use>) -->
+  <svg style="display:none" aria-hidden="true">
+    <defs>
+      <symbol id="icon-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></symbol>
+      <symbol id="icon-list" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></symbol>
+      <symbol id="icon-external-link" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></symbol>
+      <symbol id="icon-arrow-left" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></symbol>
+      <symbol id="icon-log-out" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
+      <symbol id="icon-award" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></symbol>
+      <symbol id="icon-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+      <symbol id="icon-alert-triangle" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></symbol>
+      <symbol id="icon-message-circle" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></symbol>
+      <symbol id="icon-mail" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></symbol>
+      <symbol id="icon-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+      <symbol id="icon-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+      <symbol id="icon-clipboard" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></symbol>
+      <symbol id="icon-bar-chart" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
+      <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+      <symbol id="icon-activity" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></symbol>
+      <symbol id="icon-refresh-cw" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></symbol>
+    </defs>
+  </svg>
+
+  <header>
+    <div class="brand">
+      <img data-its-logo src="" alt="" style="display:none;">
+      <div class="brandText">
+        <div class="brandTitle" data-its-title>Steward Dashboard</div>
+        <div class="welcomeLine" id="welcomeLine">Welcome — loading your profile…</div>
+        <div class="small" id="who">Loading…</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <button id="itsTicketLinkBtn" title="Copy the link drivers use to submit tickets"><svg class="btnIcon icon"><use href="#icon-list"></use></svg>Copy driver ticket link</button>
+
+      <button id="backBtn" style="display:none;"><svg class="btnIcon icon"><use href="#icon-arrow-left"></use></svg>Back</button>
+      <button id="logoutBtn"><svg class="btnIcon icon"><use href="#icon-log-out"></use></svg>Sign out</button>
+    </div>
+  </header>
+
+  <!-- REFRESH: section tabs (Tickets / Server Live) -->
+  <nav class="appTabs" id="appTabs" aria-label="Dashboard sections">
+    <div class="tabSet" role="tablist">
+      <button type="button" class="tabBtn" id="tabTickets" role="tab" aria-selected="true"><svg class="btnIcon icon"><use href="#icon-clipboard"></use></svg>Tickets <span class="tabCount" id="tabCountTickets" title="Tickets waiting for your view">&mdash;</span></button>
+      <button type="button" class="tabBtn" id="tabServer" role="tab" aria-selected="false" hidden style="display:none;"><svg class="btnIcon icon"><use href="#icon-activity"></use></svg>Server Live <span class="tabCount" id="tabCountServer" hidden></span></button>
+    </div>
+    <div class="appTabsRight">
+      <span class="lastRef" id="lastRef"></span>
+      <button type="button" id="overviewToggle"><svg class="btnIcon icon"><use href="#icon-bar-chart"></use></svg><span>Hide overview</span></button>
+    </div>
+  </nav>
+
+  <!-- ✅ ADDED: top stat bar — dashboard-style snapshot of live workload,
+       populated by loadTickets()/loadMyAccountability() below. Purely a
+       read-only summary of numbers already computed elsewhere on the
+       page, so it stays in sync with the ticket list and workload pill. -->
+  <div class="overview" id="overview">
+  <div style="padding:14px; padding-bottom:0;" id="statsWrap">
+    <div class="statBar">
+      <div class="statTile tone-indigo">
+        <div class="statTileIcon"><svg class="icon"><use href="#icon-users"></use></svg></div>
+        <div class="statTileBody"><div class="statTileNum" id="statLiveTickets">—</div><div class="statTileLabel">Live tickets</div></div>
+      </div>
+      <div class="statTile tone-amber">
+        <div class="statTileIcon"><svg class="icon"><use href="#icon-alert-triangle"></use></svg></div>
+        <div class="statTileBody"><div class="statTileNum" id="statNeedsInput">—</div><div class="statTileLabel">Needs your input</div></div>
+      </div>
+      <div class="statTile tone-teal">
+        <div class="statTileIcon"><svg class="icon"><use href="#icon-clock"></use></svg></div>
+        <div class="statTileBody"><div class="statTileNum" id="statAwaiting">—</div><div class="statTileLabel">Awaiting review</div></div>
+      </div>
+      <div class="statTile tone-pink">
+        <div class="statTileIcon"><svg class="icon"><use href="#icon-award"></use></svg></div>
+        <div class="statTileBody"><div class="statTileNum" id="statRecommendations">—</div><div class="statTileLabel">Your recs (7d)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ✅ ADDED: Owner's Emergency Standards Clause - read-only notice for
+       regular stewards. Enabled/disabled by Owner on headsteward.html only;
+       this just reads league_meta/ownerClause and shows a red box while
+       it's active and not past its 3-week auto-expiry. See loadOwnerClause
+       in the script below. -->
+  <div style="padding:14px; padding-bottom:0;" id="ownerClauseWrap">
+    <div id="ownerClauseBanner"></div>
+  </div>
+
+  <!-- Accountability (Top) -->
+  <div style="padding:14px; padding-bottom:0;" id="acctWrap">
+    <div class="card" id="acctCard">
+      <div class="row" style="justify-content:space-between; align-items:flex-start;">
+        <div>
+          <div class="title" style="margin:0;"><span class="iconChip chip-pink"><svg class="icon"><use href="#icon-award"></use></svg></span>Your Steward Accountability (Last 7 Days)</div>
+          <div class="muted" id="acctSub">Loading…</div>
+        </div>
+        <button id="acctRefreshBtn"><svg class="btnIcon icon"><use href="#icon-refresh-cw"></use></svg>Refresh</button>
+      </div>
+
+      <div class="row" style="margin-top:10px; gap:10px; flex-wrap:wrap;">
+        <div class="pill" id="acctMinePill">You: …</div>
+        <div class="pill" id="acctTeamPill">Team avg: …</div>
+      </div>
+
+      <div id="acctBanner" style="margin-top:10px;"></div>
+    </div>
+  </div>
+  </div><!-- /overview -->
+
+  <div class="wrap" id="panelTickets">
+    <!-- LEFT -->
+    <div class="card">
+      <div class="row" style="justify-content:space-between;">
+        <div class="title" style="margin:0;"><span class="iconChip chip-indigo"><svg class="icon"><use href="#icon-list"></use></svg></span>Live Workload</div>
+        <button id="refreshTicketsBtn"><svg class="btnIcon icon"><use href="#icon-refresh-cw"></use></svg>Refresh</button>
+      </div>
+
+      <div class="workloadBox" aria-label="Workload summary">
+        <div class="workloadTop">
+          <div class="workloadTitle"><svg class="icon" style="color:var(--indigo)"><use href="#icon-bar-chart"></use></svg>Tickets needing steward input</div>
+          <div class="pill" id="workloadPill">Loading…</div>
+        </div>
+        <div class="workloadSub" id="workloadSub">
+          Live tickets are non-finalised tickets you may not have weighed in on yet — check the discussion tab.
+        </div>
+      </div>
+
+      <div class="row" style="margin-bottom:10px;">
+        <div style="flex:1; min-width:220px;">
+          <label class="muted">Filter</label>
+          <select id="filter">
+            <option>All (non-finalised)</option>
+            <option>Awaiting Review</option>
+            <option>In Review</option>
+            <option>Ready to Publish</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="listTools">
+        <div class="searchBox"><svg class="icon"><use href="#icon-search"></use></svg><input id="ticketSearch" type="search" placeholder="Search ticket, driver, event, rule&hellip;" autocomplete="off" aria-label="Search tickets"></div>
+        <select id="ticketSort" aria-label="Sort tickets"><option value="default">Default order</option><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select>
+        <button type="button" id="densityBtn" aria-pressed="false" title="Show smaller ticket cards"><svg class="btnIcon icon"><use href="#icon-list"></use></svg><span>Compact</span></button>
+      </div>
+
+      <div class="list" id="ticketList"></div>
+      <div class="muted" style="margin-top:8px;" id="ticketHint"></div>
+      <div class="listHint">Keys: <kbd>J</kbd> / <kbd>K</kbd> next or previous ticket &middot; <kbd>N</kbd> next ticket waiting for you &middot; <kbd>/</kbd> search &middot; <kbd>1</kbd> / <kbd>2</kbd> tabs</div>
+    </div>
+
+    <!-- RIGHT -->
+    <div>
+      <div class="card detailCard" id="detailCard">
+        <div class="ticketBar" id="ticketBar">
+          <button type="button" id="tbBack" title="Back to the ticket list"><svg class="btnIcon icon"><use href="#icon-arrow-left"></use></svg>List</button>
+          <div class="tbMain"><div class="tbTitle" id="tbTitle">No ticket selected</div><div class="tbSub" id="tbSub">Pick one from the list</div></div>
+          <span class="tbMine" id="tbMine" hidden></span>
+          <div class="tbBtns">
+            <button type="button" id="tbPrev" title="Previous ticket (K)">Prev</button>
+            <button type="button" id="tbNext" title="Next ticket (J)">Next</button>
+            <button type="button" class="primary" id="tbNextTodo" title="Next ticket waiting for you (N)">Next to deliberate</button>
+            <button type="button" id="splitBtn" aria-pressed="true" title="Show the discussion beside the evidence on wide screens"><span>Side by side</span></button>
+          </div>
+          <div class="tbJump">
+            <button type="button" data-target="summarySec">Summary</button>
+            <button type="button" data-target="driverHistorySec">Driver history</button>
+            <button type="button" data-target="statementsSec">Statements</button>
+            <button type="button" data-target="discussionSec">Discussion</button>
+          </div>
+        </div>
+
+        <div class="detailEmpty" id="detailEmpty">
+          <div class="deIcon"><svg class="icon"><use href="#icon-clipboard"></use></svg></div>
+          <h2>Pick a ticket to start</h2>
+          <p>Tickets waiting for your view are listed first on the left. Open one to see the evidence, driver history, statements and the stewards&rsquo; discussion.</p>
+          <button type="button" class="primary" id="emptyOpenFirst">Open the next ticket waiting for me</button>
+        </div>
+
+        <div class="title" id="selTitle">Select a ticket</div>
+        <div class="muted" id="selSub"></div>
+
+        <div class="sec" id="summarySec">
+          <h3><span class="iconChip chip-indigo"><svg class="icon"><use href="#icon-clipboard"></use></svg></span>Ticket Summary</h3>
+
+          <!-- ✅ ADDED: driver identity cards, styled like the licence
+               Centre home cards. Populated by renderDriverIdCard() in
+               selectTicket() via a name lookup against the `licences`
+               collection (same accDriverNames match Head Steward uses). -->
+          <div class="driverCardRow">
+            <div class="driverIdCard role-accused unlinked" id="sumAccusedCardOuter">
+              <div class="driverIdCardInner" id="sumAccusedCardInner">
+                <div class="driverCardRole">Accused</div>
+                <img class="driverCardPhoto" id="sumAccusedPhoto" alt="" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='52' height='52'><rect width='52' height='52' fill='%231a2027'/></svg>">
+                <div class="driverCardBody">
+                  <div class="driverCardName" id="sumAccused">—</div>
+                  <div class="driverCardNumber" id="sumAccusedNumber"></div>
+                  <div class="driverCardMetaRow" id="sumAccusedMetaRow" style="display:none;">
+                    <span class="driverCardTierPill" id="sumAccusedTier"></span>
+                    <span class="driverCardPoints" id="sumAccusedPoints"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="driverIdCard role-reporter unlinked" id="sumReporterCardOuter">
+              <div class="driverIdCardInner" id="sumReporterCardInner">
+                <div class="driverCardRole">Reporter</div>
+                <img class="driverCardPhoto" id="sumReporterPhoto" alt="" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='52' height='52'><rect width='52' height='52' fill='%231a2027'/></svg>">
+                <div class="driverCardBody">
+                  <div class="driverCardName" id="sumReporter">—</div>
+                  <div class="driverCardNumber" id="sumReporterNumber"></div>
+                  <div class="driverCardMetaRow" id="sumReporterMetaRow" style="display:none;">
+                    <span class="driverCardTierPill" id="sumReporterTier"></span>
+                    <span class="driverCardPoints" id="sumReporterPoints"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid2">
+            <div><div class="muted">Competition</div><div id="sumCompetition">—</div></div>
+            <div><div class="muted">Event</div><div id="sumEvent">—</div></div>
+            <div><div class="muted">Rule Breach</div><div id="sumRule">—</div></div>
+            <div><div class="muted">Proof URL</div><div id="sumProof">—</div></div>
+          </div>
+
+          <div id="proofEmbed"></div>
+
+          <div id="videoProofSection" style="display:none;margin-top:14px">
+            <div class="muted">🎥 Video Evidence</div>
+            <div id="videoProofEmbed" style="margin-top:6px"></div>
+          </div>
+
+          <div style="margin-top:10px;">
+            <div class="muted">Incident</div>
+            <textarea id="sumIncident" readonly></textarea>
+          </div>
+        </div>
+
+        <!-- ✅ ADDED: Driver History - other tickets involving the accused
+             and reporter drivers on this ticket, so a steward can spot a
+             repeat offender or a serial reporter at a glance. Matches
+             ticket accused/reporter text the same fuzzy way the licence
+             card lookup does (car-number prefixes vary between tickets). -->
+        <div class="sec" id="driverHistorySec">
+          <h3><span class="iconChip chip-amber"><svg class="icon"><use href="#icon-clock"></use></svg></span>Driver History</h3>
+          <div class="muted">Other tickets involving these two drivers, as either accused or reporter.</div>
+
+          <div class="driverHistoryGrid">
+            <div class="driverHistoryCol">
+              <div class="driverHistoryLabel">Accused: <span id="historyAccusedLabel">—</span></div>
+              <div class="driverHistoryList" id="historyAccusedList"></div>
+            </div>
+            <div class="driverHistoryCol">
+              <div class="driverHistoryLabel">Reporter: <span id="historyReporterLabel">—</span></div>
+              <div class="driverHistoryList" id="historyReporterList"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Linked Incident Notice (Steward view - read only) -->
+        <div class="sec" id="linkedIncidentSec" style="display:none;">
+          <div class="row" style="justify-content:space-between; align-items:flex-start;">
+            <div>
+              <h3 style="margin:0;"><span class="iconChip chip-blue"><svg class="icon"><use href="#icon-link"></use></svg></span>Linked Incident Group</h3>
+              <div class="muted" style="margin-top:6px;" id="linkedIncidentHint">
+                This ticket has been linked by the Head Steward to other tickets under the same incident.
+              </div>
+            </div>
+            <div id="linkedIncidentBadge" class="badge">Not linked</div>
+          </div>
+
+          <div class="linkedIncidentBox" id="linkedIncidentDetails" style="display:none;">
+            <div class="linkedIncidentTitle" id="linkedIncidentTitle">Linked incident</div>
+            <div class="muted" id="linkedIncidentSub">—</div>
+            <div class="muted" style="margin-top:8px; font-weight:800;">
+              Please ensure you examine all linked tickets before submitting your stewarding view. Stewards cannot link or unlink tickets from this page.
+            </div>
+            <div class="linkedTicketGrid" id="linkedTicketGrid"></div>
+
+            <div class="linkedDriverList">
+              <b>Drivers included in this linked incident</b>
+              <div class="grid2" style="margin-top:8px;">
+                <div>
+                  <div class="muted">Accused Drivers</div>
+                  <ol id="linkedAccusedList"><li>—</li></ol>
+                </div>
+                <div>
+                  <div class="muted">Reporting Drivers</div>
+                  <ol id="linkedReporterList"><li>—</li></ol>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="sec" id="statementsSec">
+          <div class="row" style="justify-content:space-between;">
+            <h3 style="margin:0;"><span class="iconChip chip-teal"><svg class="icon"><use href="#icon-mail"></use></svg></span>Player Statements</h3>
+            <div class="row" style="width:100%; justify-content:flex-end;">
+              <button id="refreshStatementsBtn"><svg class="btnIcon icon"><use href="#icon-refresh-cw"></use></svg>Refresh</button>
+              <button id="itsStatementLinkBtn" title="Copy the link drivers use to give a statement for this ticket">Copy statement link</button>
+            </div>
+          </div>
+
+          <div class="muted" id="statementsHint" style="margin-top:8px;">—</div>
+          <div id="statementsList" style="margin-top:8px; display:flex; flex-direction:column; gap:8px;"></div>
+        </div>
+
+        <div class="sec" id="discussionSec">
+          <div class="row" style="justify-content:space-between;">
+            <h3 style="margin:0;"><span class="iconChip chip-indigo"><svg class="icon"><use href="#icon-message-circle"></use></svg></span>Stewards Discussion</h3>
+            <button id="refreshDiscussionBtn"><svg class="btnIcon icon"><use href="#icon-refresh-cw"></use></svg>Refresh</button>
+          </div>
+
+          <!-- Penalty opinion (posts to discussion so all stewards see it) -->
+          <div style="margin-top:10px;">
+            <label class="muted">Penalty opinion (posts to stewards discussion)</label>
+            <select id="discussionPenaltyCode"></select>
+
+            <div class="timePenaltyRow">
+              <label class="muted">Recommended time penalty / DQ (posts with your penalty opinion)</label>
+              <select id="discussionPenaltyTime"></select>
+              <div class="muted" style="margin-top:6px;">
+                Choose from 5s to 60s in 5-second steps, DQ, or NFA if No Further Action is selected. Only the Head Steward sees your actual code/time choice - see the note below.
+              </div>
+              <div class="nfaNoTimeNote" id="discussionNfaNoTimeNote">NFA selected — no time penalty is required or saved.</div>
+            </div>
+
+            <div class="penPreview" id="discussionPenaltyPreview" style="display:none;">
+              <div><span class="k">Penalty:</span> <span id="dppPenalty">—</span></div>
+              <div class="mutedLine"><span class="k">Who:</span> <span id="dppWho">—</span></div>
+              <pre id="dppDesc"></pre>
+              <pre id="dppExample"></pre>
+            </div>
+
+            <div class="row" style="justify-content:flex-end; margin-top:10px;">
+              <button id="recuseBtn"><svg class="btnIcon icon"><use href="#icon-log-out"></use></svg>Recuse yourself from ticket</button>
+              <button class="primary" id="postPenaltyOpinionBtn"><svg class="btnIcon icon"><use href="#icon-message-circle"></use></svg>Submit Penalty Opinion to Chat</button>
+            </div>
+
+            <div class="muted" style="margin-top:6px;">
+              This goes to the Head Steward in full. Other stewards will only see that you've submitted a recommendation - not the code, time, or your reasoning - so everyone's call stays independent.
+            </div>
+
+            <div class="muted" style="margin-top:6px;">
+              Please remain professional and respectful.
+            </div>
+
+            <div id="discussionList" style="margin-top:10px; display:flex; flex-direction:column; gap:8px;"></div>
+
+            <div class="voteSummaryBox" id="stewardVoteSummaryBox" style="display:none;">
+              <div class="voteSummaryTitle"><svg class="icon" style="color:var(--indigo)"><use href="#icon-bar-chart"></use></svg>Steward Voting Recommendation</div>
+              <div class="muted" id="stewardVoteSummarySub">Calculated from submitted steward penalty opinions on this ticket.</div>
+              <div class="voteSummaryGrid">
+                <div class="voteSummaryPanel">
+                  <div class="voteSummaryPanelTitle">Penalty code votes</div>
+                  <div id="penaltyCodeVoteLines" class="muted">No penalty code votes yet.</div>
+                </div>
+                <div class="voteSummaryPanel">
+                  <div class="voteSummaryPanelTitle">Time penalty votes</div>
+                  <div id="penaltyTimeVoteLines" class="muted">No time penalty votes yet.</div>
+                </div>
+              </div>
+              <div class="recommendationBox" id="penaltyRecommendationLine">
+                Recommendation: —
+                <small>Head Steward remains free to finalise or override this recommendation.</small>
+              </div>
+            </div>
+
+            <div style="margin-top:10px;">
+              <label class="muted">Add a comment</label>
+              <textarea id="discussionInput" placeholder="Type your steward comment…"></textarea>
+            </div>
+
+            <div class="row" style="justify-content:flex-end; margin-top:10px;">
+              <button class="primary" id="postDiscussionBtn"><svg class="btnIcon icon"><use href="#icon-message-circle"></use></svg>Post Comment</button>
+            </div>
+
+            <div class="muted" style="margin-top:8px;">
+              Writes to <code>/tickets&lt;ticket&gt;/steward_comments</code>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- REFRESH: Server Live (staff) - mounted on first open -->
+  <div id="panelServer" hidden>
+    <div class="slShell">
+      <div class="slIntro"><strong>Server Live</strong><span>Not available.</span></div>
+      <div id="slMount"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Saved</div>
+
+  <!-- Firebase compat -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="./firebase-init.js"></script>
+  <script src="./its-rules.js"></script>
+  <script src="./its-staff.js"></script>
+
+  <script>
+    // ---------- helpers ----------
+    const $ = (id) => document.getElementById(id);
+    // ITS: driver cards show the Discord username given on the ticket
+    function itsDiscordLine(role) {
+      const t = ITS_CURRENT_TICKET || {};
+      const d = String((role === "Accused" ? t.accusedDiscord : t.reporterDiscord) || "").trim();
+      return d ? "Discord: @" + d.replace(/^@/, "") : "No Discord username on this ticket";
+    }
+    const toastEl = $("toast");
+    function toast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add("show");
+      setTimeout(() => toastEl.classList.remove("show"), 1400);
+    }
+    function safeKey(email) { return (email || "").replaceAll("/", "_").replaceAll("\\", "_").trim(); }
+
+    function maskEmail(email) {
+      const e = String(email || "").trim();
+      if (!e) return "";
+      const at = e.indexOf("@");
+      if (at <= 0) return e;
+      return e.slice(0, at);
+    }
+
+    async function loadMyAccountability() {
+      const sub = $("acctSub");
+      const minePill = $("acctMinePill");
+      const teamPill = $("acctTeamPill");
+      const banner = $("acctBanner");
+
+      if (!sub || !minePill || !teamPill || !banner) return;
+
+      const authorKey = safeKey(currentEmail);
+      if (!authorKey) return;
+
+      sub.textContent = "Loading activity…";
+      minePill.textContent = "You: …";
+      teamPill.textContent = "Team avg: …";
+      banner.innerHTML = "";
+
+      const cutoff = firebase.firestore.Timestamp.fromDate(
+        new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+      );
+
+      // COMMENTS (last 7 days)
+      let commentSnap = null;
+      try {
+        commentSnap = await db.collectionGroup("steward_comments").where("leagueId", "==", LID)
+          .where("createdAt", ">=", cutoff)
+          .limit(2000)
+          .get();
+      } catch (e) {
+        console.warn("Accountability comment query failed:", e);
+      }
+
+      // Penalty-opinion recommendations are just steward_comments with
+      // kind:"penalty_opinion", so they're already inside commentSnap above -
+      // no separate query needed (the old CAUSE-review query this replaced
+      // hit a `reviews` subcollection that no longer gets written to).
+      const per = new Map(); // authorKey -> {comments, opinions, lastActiveMs}
+      function ensure(ak) {
+        if (!per.has(ak)) per.set(ak, { comments:0, opinions:0, lastActiveMs:0 });
+        return per.get(ak);
+      }
+
+      if (commentSnap) {
+        commentSnap.forEach(doc => {
+          const d = doc.data() || {};
+          const ak = String(d.authorKey || "").trim();
+          if (!ak) return;
+          const o = ensure(ak);
+          o.comments++;
+          if (String(d.kind || "").trim() === "penalty_opinion") o.opinions++;
+
+          const ts = d.createdAt && d.createdAt.toDate ? d.createdAt.toDate() : null;
+          if (ts) o.lastActiveMs = Math.max(o.lastActiveMs, ts.getTime());
+        });
+      }
+
+      const mine = per.get(authorKey) || { comments:0, opinions:0, lastActiveMs:0 };
+
+      const arr = [...per.values()];
+      const avgComments = arr.length ? arr.reduce((a,x)=>a+x.comments,0) / arr.length : 0;
+      const avgOpinions  = arr.length ? arr.reduce((a,x)=>a+x.opinions,0) / arr.length : 0;
+
+      minePill.innerHTML = `You: <strong>${mine.comments}</strong> comments • <strong>${mine.opinions}</strong> recommendations`;
+      teamPill.innerHTML = `Team avg: <strong>${avgComments.toFixed(1)}</strong> comments • <strong>${avgOpinions.toFixed(1)}</strong> recommendations`;
+
+      // ✅ ADDED: top stat bar tile - same number already shown in acctMinePill above.
+      const statRecsEl = $("statRecommendations");
+      if (statRecsEl) statRecsEl.textContent = String(mine.opinions);
+
+      const lastActive = mine.lastActiveMs ? new Date(mine.lastActiveMs).toLocaleString() : "No activity logged";
+      sub.textContent = `Last active: ${lastActive}`;
+
+      const isRed = (mine.comments + mine.opinions) === 0;
+      const isAmber = !isRed && (mine.comments < avgComments * 0.6 || mine.opinions < avgOpinions * 0.6);
+
+      if (isRed) {
+        banner.innerHTML = `
+          <div class="bannerBox bannerRed">
+            ACTION REQUIRED: No steward activity recorded in the last 7 days.
+            <small>Please add discussion comments and/or submit penalty recommendations to stay active.</small>
+          </div>
+        `;
+        return;
+      }
+
+      if (isAmber) {
+        banner.innerHTML = `
+          <div class="bannerBox bannerAmber">
+            Knowledge is knowing a tomato is a fruit; wisdom is not putting it in a fruit salad..
+            <small>there - less of a "telling off"  now you've laughed - update a ticket or two.</small>
+          </div>
+        `;
+        return;
+      }
+
+      banner.innerHTML = `
+        <div class="bannerBox bannerGreen">
+          You’re on pace with the steward team ✅
+          <small>Keep going — your activity is in line with the group.</small>
+        </div>
+      `;
+    }
+
+    function fillPenaltyTimeSelects() {
+      const ids = ["discussionPenaltyTime"];
+      for (const id of ids) {
+        const sel = $(id);
+        if (!sel) continue;
+        sel.innerHTML = "";
+
+        const ph = document.createElement("option");
+        ph.value = "";
+        ph.textContent = "Select time penalty / DQ…";
+        ph.disabled = true;
+        ph.selected = true;
+        sel.appendChild(ph);
+
+        const nfa = document.createElement("option");
+        nfa.value = "NFA";
+        nfa.textContent = "NFA — No Further Action";
+        sel.appendChild(nfa);
+
+        for (let sec = 5; sec <= 60; sec += 5) {
+          const opt = document.createElement("option");
+          opt.value = String(sec);
+          opt.textContent = `${sec} seconds`;
+          sel.appendChild(opt);
+        }
+
+        const dq = document.createElement("option");
+        dq.value = "DQ";
+        dq.textContent = "DQ";
+        sel.appendChild(dq);
+      }
+    }
+    fillPenaltyTimeSelects();
+
+    function normalisePenaltyTimeValue(v) {
+      const raw = String(v || "").trim();
+      if (!raw) return "";
+      if (raw.toUpperCase() === "DQ") return "DQ";
+      if (raw.toUpperCase() === "NFA" || raw.toUpperCase().includes("NO FURTHER ACTION")) return "NFA";
+      const n = parseInt(raw.replace(/[^0-9]/g, ""), 10);
+      if (isNaN(n)) return "";
+      if (n < 5 || n > 60) return "";
+      const rounded = Math.round(n / 5) * 5;
+      return String(Math.min(60, Math.max(5, rounded)));
+    }
+
+    function formatPenaltyTime(v) {
+      const norm = normalisePenaltyTimeValue(v);
+      if (!norm) return "—";
+      if (norm === "DQ") return "DQ";
+      if (norm === "NFA") return "NFA — No Further Action";
+      return `${norm} seconds`;
+    }
+
+    // NFA / No Further Action must not force a time penalty.
+    // This checks the saved value and all displayed metadata so it still works
+    // if the penalty JSON uses NFA as the code, title, penalty text, or label.
+    function isNfaPenaltySelection(selectOrId) {
+      const sel = typeof selectOrId === "string" ? $(selectOrId) : selectOrId;
+      if (!sel) return false;
+
+      const opt = sel.selectedOptions && sel.selectedOptions[0] ? sel.selectedOptions[0] : null;
+      const parts = [
+        sel.value,
+        opt?.textContent,
+        opt?.dataset?.code,
+        opt?.dataset?.title,
+        opt?.dataset?.penalty,
+        opt?.dataset?.desc
+      ].map(x => String(x || "").trim()).filter(Boolean);
+
+      const hay = parts.join(" | ").toUpperCase();
+      return /(^|[^A-Z0-9])NFA([^A-Z0-9]|$)/.test(hay) || hay.includes("NO FURTHER ACTION") || hay.includes("NO FURTHER PENALTY");
+    }
+
+    function updatePenaltyTimeRequirement(codeSelectId, timeSelectId, noteId) {
+      const timeSel = $(timeSelectId);
+      if (!timeSel) return false;
+
+      const isNfa = isNfaPenaltySelection(codeSelectId);
+      const placeholder = timeSel.querySelector('option[value=""]');
+
+      if (isNfa) {
+        timeSel.value = "NFA";
+        timeSel.disabled = true;
+        timeSel.classList.add("nfaNoTimeRequired");
+        if (placeholder) placeholder.textContent = "NFA selected — no time penalty required";
+        if ($(noteId)) $(noteId).style.display = "block";
+      } else {
+        timeSel.disabled = false;
+        timeSel.classList.remove("nfaNoTimeRequired");
+        if (placeholder) placeholder.textContent = "Select time penalty / DQ…";
+        if ($(noteId)) $(noteId).style.display = "none";
+      }
+
+      return isNfa;
+    }
+
+    function refreshPenaltyTimeRequirements() {
+      updatePenaltyTimeRequirement("discussionPenaltyCode", "discussionPenaltyTime", "discussionNfaNoTimeNote");
+    }
+
+    function roundToNearestFive(n) {
+      const x = Number(n);
+      if (isNaN(x)) return 0;
+      return Math.min(60, Math.max(5, Math.round(x / 5) * 5));
+    }
+
+    function escapeHtml(s) {
+      return (s || "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+    }
+
+    // ✅ ADDED: Owner's Emergency Standards Clause - read-only for regular
+    // stewards. Owner enables/disables this from headsteward.html only
+    // (see the matching function there); this reads the same
+    // league_meta/ownerClause doc and shows a red box while it's active and
+    // not past its 3-week auto-expiry. No enforcement detail (penalty
+    // doubling / TLS handoff) here - that's Head Steward-specific guidance,
+    // shown only on headsteward.html.
+    async function loadOwnerClause() {
+      const box = document.getElementById("ownerClauseBanner");
+      if (!box) return;
+      try {
+        const snap = await LREF.collection("meta").doc("ownerClause").get();
+        const d = snap.exists ? (snap.data() || {}) : {};
+        const nowMs = Date.now();
+        const active = d.enabled === true && Number(d.expiresAtMs) > nowMs;
+        if (!active) { box.innerHTML = ""; return; }
+
+        const daysLeft = Math.max(1, Math.ceil((Number(d.expiresAtMs) - nowMs) / 86400000));
+        const name = escapeHtml(d.name || "Emergency Standards Clause");
+        const reason = escapeHtml(d.reasonText || "one or more season events have dropped below the league's expected standard");
+        box.innerHTML = `
+          <div class="redBox">
+            <strong>${name} IN EFFECT</strong> — invoked by the League Owner. Reason: ${reason}.
+            Active for approximately ${daysLeft} more day${daysLeft === 1 ? "" : "s"} (expires ${new Date(Number(d.expiresAtMs)).toLocaleString()}).
+            This is enforced by staff and cannot be ignored.
+          </div>
+        `;
+      } catch (e) {
+        console.error("loadOwnerClause failed:", e);
+      }
+    }
+
+    function normalizeUrl(u) {
+      const s = (u || "").trim();
+      if (!s) return "";
+      if (!/^https?:\/\//i.test(s) && !s.startsWith("mailto:")) return "https://" + s;
+      return s;
+    }
+
+    function youtubeIdFromUrl(url) {
+      try {
+        const u = new URL(url);
+        const host = u.hostname.toLowerCase();
+        if (host === "youtu.be") return (u.pathname || "").replace("/", "").trim();
+        if (host.includes("youtube.com")) {
+          if (u.pathname.startsWith("/watch")) return (u.searchParams.get("v") || "").trim();
+          if (u.pathname.startsWith("/shorts/")) return (u.pathname.split("/shorts/")[1] || "").split(/[/?#]/)[0].trim();
+          if (u.pathname.startsWith("/embed/")) return (u.pathname.split("/embed/")[1] || "").split(/[/?#]/)[0].trim();
+        }
+      } catch {}
+      return "";
+    }
+
+    function renderProof(proofUrl, videoProofUrl) {
+      const proofEl = $("sumProof");
+      const embedEl = $("proofEmbed");
+      embedEl.innerHTML = "";
+
+      const url = normalizeUrl(proofUrl);
+      if (!url) { proofEl.textContent = "—"; }
+      else {
+        proofEl.innerHTML = `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">Open proof link</a>`;
+
+        const yt = youtubeIdFromUrl(url);
+        if (yt) {
+          embedEl.innerHTML = `
+            <div class="videoWrap" aria-label="Proof video">
+              <iframe
+                src="https://www.youtube.com/embed/${encodeURIComponent(yt)}"
+                title="Proof video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+            </div>
+          `;
+        } else if (/\.(mp4|webm|ogg)(\?|#|$)/i.test(url)) {
+          embedEl.innerHTML = `
+            <div class="videoWrap" aria-label="Proof video">
+              <video controls src="${escapeHtml(url)}"></video>
+            </div>
+          `;
+        }
+      }
+
+      // ✅ ADDED: Gold Patreon video evidence - uploaded straight to
+      // Storage from the Licence Centre's "Submit a Ticket" form, kept in
+      // its own field (videoProofUrl) separate from the free-text Proof
+      // URL a reporter can type in. Always a direct file, never a
+      // YouTube-style link, so no embed detection needed here.
+      const videoSection = $("videoProofSection");
+      const videoEmbedEl = $("videoProofEmbed");
+      if (videoSection && videoEmbedEl) {
+        const vUrl = normalizeUrl(videoProofUrl);
+        if (vUrl) {
+          videoSection.style.display = "";
+          videoEmbedEl.innerHTML = `
+            <div class="videoWrap" aria-label="Gold video evidence">
+              <video controls src="${escapeHtml(vUrl)}"></video>
+            </div>
+          `;
+        } else {
+          videoSection.style.display = "none";
+          videoEmbedEl.innerHTML = "";
+        }
+      }
+    }
+
+    // =======================================================
+    // ✅ ADDED: driver identity cards, styled like the Licence Centre's
+    // home-page licence cards. Read-only here (linking/points are Head
+    // Steward-only, done on headsteward.html) - this just looks a driver
+    // name up against the `licences` collection (accDriverNames match,
+    // same approach headsteward.html uses) and renders a mini card.
+    // =======================================================
+    // Emergency-only fallback, used solely if the live tier list below
+    // can't be reached (Firestore read fails / doc missing). Names match
+    // the real ladder (Staff > Manage Licence Tiers) so a stale colour
+    // is the worst case, never a wrong tier name.
+    const DEFAULT_TIERS = [
+      { id:'no_licence',   name:'No Licence',          order:0,  color:'#4b5760', foil:false },
+      { id:'provisional',  name:'ITS-GT-Provisional', order:1,  color:'#93a1a9', foil:false },
+      { id:'gt_rookie',    name:'ITS-GT-Rookie',      order:2,  color:'#8fb996', foil:false },
+      { id:'gt_beginner',  name:'ITS-GT-Beginner',    order:3,  color:'#1fd6bd', foil:false },
+      { id:'gt_amateur',   name:'ITS-GT-Amateur',     order:4,  color:'#4f9df0', foil:false },
+      { id:'gt_pro',       name:'ITS-GT-Pro',         order:5,  color:'#c65be8', foil:false },
+      { id:'lmu_lmp2',     name:'ITS-LMU-LMP2',       order:6,  color:'#ff9d4d', foil:false },
+      { id:'lmu_lmp3',     name:'ITS-LMU-LMP3',       order:7,  color:'#ffb238', foil:false },
+      { id:'lmu_lmgt3',    name:'ITS-LMU-LMGT3',      order:8,  color:'#f45b69', foil:false },
+      { id:'lmu_lmgte',    name:'ITS-LMU-LMGTE',      order:9,  color:'#eaf3ff', foil:true  }
+    ];
+
+    function hexToRgba(hex, alpha){
+      const clean = String(hex || '').replace('#','');
+      const full = clean.length === 3 ? clean.split('').map(c => c+c).join('') : clean.padEnd(6,'0').slice(0,6);
+      const r = parseInt(full.substring(0,2),16) || 0, g = parseInt(full.substring(2,4),16) || 0, b = parseInt(full.substring(4,6),16) || 0;
+      return `rgba(${r},${g},${b},${alpha})`;
+    }
+    // Live tier colours are staff-editable and arbitrary, so pill text
+    // colour can't hardcode a single "is this the light tier" hex check
+    // any more - work it out from actual luminance instead.
+    function isLightColor(hex){
+      const clean = String(hex || '').replace('#','');
+      const full = clean.length === 3 ? clean.split('').map(c => c+c).join('') : clean.padEnd(6,'0').slice(0,6);
+      const r = parseInt(full.substring(0,2),16) || 0, g = parseInt(full.substring(2,4),16) || 0, b = parseInt(full.substring(4,6),16) || 0;
+      return (0.299*r + 0.587*g + 0.114*b) > 175;
+    }
+
+    // Live tier ladder, same document the Staff "Manage Licence Tiers"
+    // panel writes to (league_meta/licenceTiers) - read directly here
+    // since steward.html already has Firebase Auth + Firestore access
+    // (existing rule: `match /league_meta/{docId} { allow read: if
+    // isSteward() || isHeadSteward(); }` already covers this doc, no
+    // rules change needed). Falls back to DEFAULT_TIERS only if this
+    // read fails or the document doesn't exist yet.
+    let tierListCacheSteward = null;
+    async function loadTierListSteward(){
+      if (tierListCacheSteward) return tierListCacheSteward;
+      try {
+        const snap = { exists: false }; // ITS: no licence tiers
+        const tiers = snap.exists ? (snap.data()?.tiers || []) : [];
+        tierListCacheSteward = tiers.length ? tiers : DEFAULT_TIERS;
+      } catch (e) {
+        console.warn("Could not load live tier list, using fallback:", e);
+        tierListCacheSteward = DEFAULT_TIERS;
+      }
+      return tierListCacheSteward;
+    }
+
+    function findTier(tierName, tiers){
+      const list = (tiers && tiers.length) ? tiers : DEFAULT_TIERS;
+      return list.find(t => t.name === tierName) || list[0];
+    }
+    function driverCardPointsClass(points){
+      const n = Number(points || 0);
+      return n <= 3 ? "pts-green" : n <= 6 ? "pts-orange" : "pts-red";
+    }
+    function driverNameKey(name){ return String(name || "").trim().toLowerCase(); }
+
+    // Ticket accused/reporter fields have been seen as either a plain
+    // string or an array elsewhere in this codebase - handle both.
+    function namesFromTicketField(raw){
+      if (Array.isArray(raw)) return raw.filter(Boolean);
+      if (typeof raw === "string" && raw.trim()) return [raw.trim()];
+      return [];
+    }
+
+    let licenceProfilesCacheSteward = null;
+    async function loadAllLicenceProfilesSteward(){
+      if (licenceProfilesCacheSteward) return licenceProfilesCacheSteward;
+      try {
+        const snap = { docs: [] }; // ITS: no licence system
+        licenceProfilesCacheSteward = snap.docs.map(d => ({ id: d.id, ...(d.data() || {}) }));
+      } catch (e) {
+        console.warn("Could not load licence profiles:", e);
+        licenceProfilesCacheSteward = [];
+      }
+      return licenceProfilesCacheSteward;
+    }
+
+    function findLinkedLicenceSteward(names, profiles){
+      const keys = names.map(driverNameKey);
+      if (!keys.length) return null;
+      return profiles.find(p => (p.accDriverNames || []).some(n => {
+        const key = driverNameKey(n);
+        // Substring match, not exact - ticket name strings often carry a
+        // bracketed car number ("[18] - Mathias Gonalons") that a driver's
+        // self-reported name usually won't include verbatim.
+        return keys.some(k => k.includes(key) || key.includes(k));
+      })) || null;
+    }
+
+    function driverCardPhotoUrl(p){
+      return p.avatarMode === 'upload' && p.photoUploadUrl ? p.photoUploadUrl
+        : p.avatarMode === 'url' && p.avatarUrl ? p.avatarUrl
+        : (p.discordAvatarUrl || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='52' height='52'><rect width='52' height='52' fill='%231a2027'/></svg>");
+    }
+
+    // role is "Accused" or "Reporter" - matches the #sum<role>... ids in
+    // the Ticket Summary markup.
+    async function renderDriverIdCard(role, ticketFieldValue){
+      const outer = $(`sum${role}CardOuter`);
+      const nameEl = $(`sum${role}`);
+      const numberEl = $(`sum${role}Number`);
+      const photoEl = $(`sum${role}Photo`);
+      const metaRow = $(`sum${role}MetaRow`);
+      const tierEl = $(`sum${role}Tier`);
+      const pointsEl = $(`sum${role}Points`);
+      if (!outer || !nameEl) return;
+
+      const names = namesFromTicketField(ticketFieldValue);
+      nameEl.textContent = names.length ? names[0] : "—";
+
+      if (!names.length){
+        outer.classList.add("unlinked");
+        numberEl.textContent = itsDiscordLine(role);
+        if (metaRow) metaRow.style.display = "none";
+        return;
+      }
+
+      let profiles, tiers;
+      try { [profiles, tiers] = await Promise.all([loadAllLicenceProfilesSteward(), loadTierListSteward()]); }
+      catch (e) { profiles = []; tiers = DEFAULT_TIERS; }
+
+      const match = findLinkedLicenceSteward(names, profiles);
+      if (!match){
+        outer.classList.add("unlinked");
+        if (numberEl) numberEl.textContent = itsDiscordLine(role);
+        if (metaRow) metaRow.style.display = "none";
+        return;
+      }
+
+      outer.classList.remove("unlinked");
+      numberEl.textContent = match.licenceNumber || "ITS-0000-00000";
+      photoEl.src = driverCardPhotoUrl(match);
+
+      const tier = findTier(match.tier || "No Licence", tiers);
+      if (tierEl){
+        tierEl.textContent = match.tier || tier.name;
+        tierEl.style.background = hexToRgba(tier.color, 0.22);
+        tierEl.style.color = isLightColor(tier.color) ? '#0f172a' : tier.color;
+        tierEl.style.border = `1px solid ${hexToRgba(tier.color, 0.45)}`;
+      }
+      const points = Number(match.licencePoints || 0);
+      if (pointsEl){
+        pointsEl.textContent = `${points} pt${points === 1 ? "" : "s"}`;
+        pointsEl.className = "driverCardPoints " + driverCardPointsClass(points);
+      }
+      outer.style.background = tier.foil
+        ? "linear-gradient(135deg,#eaf3ff,#c65be8,#1fd6bd,#eaf3ff)"
+        : `linear-gradient(135deg, ${tier.color}, #7c3aed)`;
+      if (metaRow) metaRow.style.display = "flex";
+    }
+
+    // =======================================================
+    // ✅ ADDED: Driver History - other tickets involving the accused/
+    // reporter drivers on the selected ticket. Fetches a bounded set of
+    // tickets once (cached), then matches client-side the same fuzzy way
+    // findLinkedLicenceSteward() does (ticket accused/reporter text often
+    // carries a bracketed car number that varies between tickets).
+    // =======================================================
+    let allTicketsCacheSteward = null;
+    async function loadAllTicketsForHistory(){
+      if (allTicketsCacheSteward) return allTicketsCacheSteward;
+      try {
+        const snap = await LREF.collection("tickets").limit(1500).get();
+        allTicketsCacheSteward = snap.docs.map(d => ({ id: d.id, ...(d.data() || {}) }));
+      } catch (e) {
+        console.warn("Could not load tickets for driver history:", e);
+        allTicketsCacheSteward = [];
+      }
+      return allTicketsCacheSteward;
+    }
+
+    function ticketDateMs(t){
+      const d = toDateSafe(t.timestamp || t.createdAt || t.submittedAt || t.finalisedAt || null);
+      return d ? d.getTime() : 0;
+    }
+
+    // Ticket accused/reporter text often carries a leading bracketed car
+    // number ("[18] - Mathias Gonalons") that changes between rounds as a
+    // driver switches cars, so a plain substring match (fine for the
+    // licence-card lookup, which matches against a driver's self-reported
+    // accDriverNames) misses history across a car-number change. Strip that
+    // prefix before comparing so "[7] - X" and "[18] - X" both key to "x".
+    function historyNameKey(name){
+      return String(name || "")
+        .replace(/^\s*[\[(][^\])]*[\])]\s*-?\s*/, "")
+        .trim()
+        .toLowerCase();
+    }
+
+    function findDriverHistoryTickets(names, allTickets, excludeTicketId){
+      const keys = names.map(historyNameKey).filter(Boolean);
+      if (!keys.length) return [];
+
+      const nameMatches = (fieldValue) => namesFromTicketField(fieldValue).some(n => {
+        const key = historyNameKey(n);
+        return !!key && keys.includes(key);
+      });
+
+      const out = [];
+      for (const t of allTickets) {
+        if (t.id === excludeTicketId) continue;
+        if (nameMatches(t.accused)) out.push({ t, role: "Accused" });
+        else if (nameMatches(t.reporter)) out.push({ t, role: "Reporter" });
+      }
+      out.sort((a, b) => ticketDateMs(b.t) - ticketDateMs(a.t));
+      return out;
+    }
+
+    function renderDriverHistoryList(listEl, entries){
+      if (!listEl) return;
+      if (!entries.length) {
+        listEl.innerHTML = `<div class="driverHistoryEmpty">No other tickets found for this driver.</div>`;
+        return;
+      }
+      listEl.innerHTML = entries.slice(0, 12).map(({ t, role }) => {
+        const event = shortTicketText(t.event, "Unknown event");
+        const rule = shortTicketText(t.ruleBreach || t.postRaceCode, "No rule/code listed");
+        const status = shortTicketText(t.status, "Under Review");
+        const when = fmtDate(t.timestamp || t.createdAt || t.submittedAt || t.finalisedAt);
+        return `
+          <div class="driverHistoryItem" data-ticket-id="${escapeHtml(t.id)}">
+            <div><span class="roleTag">${role}</span> — ${escapeHtml(event)}</div>
+            <div class="muted">${escapeHtml(rule)} &middot; ${escapeHtml(status)} &middot; ${escapeHtml(when)}</div>
+          </div>
+        `;
+      }).join("");
+
+      listEl.querySelectorAll("[data-ticket-id]").forEach(el => {
+        el.onclick = () => selectTicket(el.dataset.ticketId);
+      });
+    }
+
+    async function renderDriverHistoryColumn(role, ticketFieldValue, excludeTicketId){
+      const labelEl = $(`history${role}Label`);
+      const listEl = $(`history${role}List`);
+      if (!labelEl || !listEl) return;
+
+      const names = namesFromTicketField(ticketFieldValue);
+      labelEl.textContent = names.length ? names[0] : "—";
+
+      if (!names.length) {
+        listEl.innerHTML = `<div class="driverHistoryEmpty">No driver recorded on this ticket.</div>`;
+        return;
+      }
+
+      listEl.innerHTML = `<div class="driverHistoryEmpty">Loading…</div>`;
+      const allTickets = await loadAllTicketsForHistory();
+      const entries = findDriverHistoryTickets(names, allTickets, excludeTicketId);
+      renderDriverHistoryList(listEl, entries);
+    }
+
+    // ---------- statement status ----------
+    const statementStatusCache = new Map();
+
+    async function getAccusedReporterStatementStatus(ticketId) {
+      if (statementStatusCache.has(ticketId)) return statementStatusCache.get(ticketId);
+
+      const col = LREF.collection("tickets").doc(ticketId).collection("player_statements");
+
+      try {
+        const snap = await col.where("role", "in", ["accused", "reporter"]).get();
+        let accused = false, reporter = false;
+
+        snap.forEach(doc => {
+          const d = doc.data() || {};
+          const role = String(d.role || "").toLowerCase().trim();
+          const statement = String(d.statement || "").trim();
+          if (!statement) return;
+          if (role === "accused") accused = true;
+          if (role === "reporter") reporter = true;
+        });
+
+        const res = { accused, reporter };
+        statementStatusCache.set(ticketId, res);
+        return res;
+      } catch (e) {
+        console.warn("role IN query failed; falling back to full statements fetch:", ticketId, e);
+
+        const snap = await col.get();
+        let accused = false, reporter = false;
+
+        snap.forEach(doc => {
+          const d = doc.data() || {};
+          const role = String(d.role || "").toLowerCase().trim();
+          const statement = String(d.statement || "").trim();
+          if (!statement) return;
+          if (role === "accused") accused = true;
+          if (role === "reporter") reporter = true;
+        });
+
+        const res = { accused, reporter };
+        statementStatusCache.set(ticketId, res);
+        return res;
+      }
+    }
+
+    function renderStatementTag(el, st) {
+      const accusedOk = !!st?.accused;
+      const reporterOk = !!st?.reporter;
+
+      if (accusedOk && reporterOk) {
+        el.className = "stmtTag stmtOk";
+        el.innerHTML = `Statements: ✅ Accused + Reporter<br><small>Ready for review</small>`;
+        return;
+      }
+
+      const missing = [];
+      if (!accusedOk) missing.push("Accused");
+      if (!reporterOk) missing.push("Reporter");
+
+      el.className = "stmtTag stmtBad";
+      el.innerHTML = `Statements: ❌ Missing ${missing.join(" + ")}<br><small>Awaiting required statements</small>`;
+    }
+
+    // ---------- deliberation status ----------
+    const deliberationStatusCache = new Map();
+
+    async function getMyDeliberationStatus(ticketId) {
+      if (deliberationStatusCache.has(ticketId)) return deliberationStatusCache.get(ticketId);
+
+      const authorKey = safeKey(currentEmail);
+      if (!authorKey) { deliberationStatusCache.set(ticketId, false); return false; }
+
+      const col = LREF.collection("tickets").doc(ticketId).collection("steward_comments");
+
+      try {
+        const snap = await col.where("authorKey", "==", authorKey).limit(1).get();
+        const has = !snap.empty;
+        deliberationStatusCache.set(ticketId, has);
+        return has;
+      } catch (e) {
+        console.warn("Deliberation query failed; falling back to scan:", ticketId, e);
+
+        const snap = await col.limit(250).get();
+        let has = false;
+
+        snap.forEach(doc => {
+          const d = doc.data() || {};
+          const ak = String(d.authorKey || "").trim();
+          const text = String(d.text || "").trim();
+          if (ak === authorKey && text) has = true;
+        });
+
+        deliberationStatusCache.set(ticketId, has);
+        return has;
+      }
+    }
+
+    function renderDelibTag(el, hasMyComment) {
+      if (!el) return;
+
+      el.style.display = "block";
+
+      if (hasMyComment) {
+        el.className = "delibTag delibOk";
+        el.innerHTML = `Deliberation ongoing<br><small>You have commented on this ticket</small>`;
+        return;
+      }
+
+      el.className = "delibTag delibBad";
+      el.innerHTML = `Requires deliberation<br><small>No steward comment from you yet</small>`;
+    }
+
+    // ---------- discussion penalty preview ----------
+    function setDiscussionPenaltyPreviewFromSelected() {
+      const sel = $("discussionPenaltyCode");
+      const box = $("discussionPenaltyPreview");
+      if (!sel || !box) return;
+
+      const opt = sel.selectedOptions && sel.selectedOptions[0] ? sel.selectedOptions[0] : null;
+      if (!opt || !opt.value) { box.style.display = "none"; updatePenaltyTimeRequirement("discussionPenaltyCode", "discussionPenaltyTime", "discussionNfaNoTimeNote"); return; }
+
+      updatePenaltyTimeRequirement("discussionPenaltyCode", "discussionPenaltyTime", "discussionNfaNoTimeNote");
+
+      const pen = (opt.dataset.penalty || "").trim();
+      const who = (opt.dataset.who || "").trim();
+      const desc = (opt.dataset.desc || "").trim();
+      const ex = (opt.dataset.example || "").trim();
+
+      $("dppPenalty").textContent = pen || "—";
+      $("dppWho").textContent = who || "—";
+      $("dppDesc").textContent = desc ? `Description:\n${desc}` : "";
+      $("dppExample").textContent = ex ? `\nExample:\n${ex}` : "";
+
+      box.style.display = "block";
+    }
+
+    // ---------- penalty codes ----------
+    async function loadPenaltyCodes() {
+
+      async function fillSelect(selectId) {
+        const sel = $(selectId);
+        if (!sel) return;
+
+        sel.innerHTML = "";
+        const ph = document.createElement("option");
+        ph.value = "";
+        ph.textContent = "Select a penalty code…";
+        ph.disabled = true;
+        ph.selected = true;
+        sel.appendChild(ph);
+
+        // ITS: the league's own ticket rules (ITS Standard / + own / own only)
+        const rules = await ITSRules.loadForLeague(LREF);
+        if (!Array.isArray(rules)) throw new Error("steward_rules.json is not a JSON array");
+
+        let added = 0;
+
+        for (const r of rules) {
+          if (!r || typeof r !== "object") continue;
+
+          const code = String((r.Code ?? r.code ?? "")).trim();
+          const title = String((r.Title ?? r.title ?? "")).trim();
+          const group = String((r.Group ?? r.group ?? "")).trim();
+          const pen = String((r.Penalty ?? r.penalty ?? "")).trim();
+
+          // NEW fields (so we can show preview + post opinion)
+          const desc = String((r.Description ?? r.description ?? "")).trim();
+          const example = String((r.Example ?? r.example ?? "")).trim();
+          const who = String((r.Who ?? r.who ?? "")).trim();
+
+          if (!code && !title) continue;
+
+          const value = `${code}${title ? " — " + title : ""}${pen ? " (" + pen + ")" : ""}`.trim();
+          const label = `${code}${title ? " — " + title : ""}`.trim();
+
+          const opt = document.createElement("option");
+          opt.value = value;
+          opt.textContent = label;
+
+          // store everything we need for previews + posting
+          opt.dataset.group = group;
+          opt.dataset.penalty = pen;
+          opt.dataset.desc = desc;
+          opt.dataset.example = example;
+          opt.dataset.who = who;
+          opt.dataset.code = code;
+          opt.dataset.title = title;
+
+          sel.appendChild(opt);
+          added++;
+        }
+
+        if (!added) {
+          const opt = document.createElement("option");
+          opt.value = "";
+          opt.textContent = "No valid penalty codes found (check JSON).";
+          opt.disabled = true;
+          sel.appendChild(opt);
+        }
+      }
+
+      try {
+        await fillSelect("discussionPenaltyCode");
+        refreshPenaltyTimeRequirements();
+      } catch (e) {
+        console.error("Penalty code load failed:", e);
+
+        for (const id of ["penaltyCode", "discussionPenaltyCode"]) {
+          const sel = $(id);
+          if (!sel) continue;
+          sel.innerHTML = "";
+          const opt = document.createElement("option");
+          opt.value = "";
+          opt.textContent = "Failed to load penalty codes (open console).";
+          opt.disabled = true;
+          sel.appendChild(opt);
+        }
+      }
+    }
+
+    // ---------- auth / role ----------
+    let currentUser = null;
+    let currentEmail = "";
+    let isHead = false;
+
+    // ---------- state ----------
+    let selectedTicketId = "";
+    let selectedTicketSnap = null;
+
+
+    // ---------- linked incident display (Steward view only) ----------
+    let currentLinkedIncidentRows = [];
+
+    function uniqueNonEmpty(values) {
+      const seen = new Set();
+      const out = [];
+      for (const v of values || []) {
+        const s = String(v || "").trim();
+        if (!s || seen.has(s.toLowerCase())) continue;
+        seen.add(s.toLowerCase());
+        out.push(s);
+      }
+      return out;
+    }
+
+    function getLinkedIdsFromTicketData(ticketId, data) {
+      const ids = Array.isArray(data?.linkedTicketIds) ? data.linkedTicketIds.map(String) : [];
+      if (ticketId) ids.push(String(ticketId));
+      return uniqueNonEmpty(ids);
+    }
+
+    async function fetchTicketRowsByIds(ids) {
+      const rows = [];
+      for (const id of ids || []) {
+        const ticketId = String(id || "").trim();
+        if (!ticketId) continue;
+        try {
+          const snap = await LREF.collection("tickets").doc(ticketId).get();
+          if (!snap.exists) {
+            rows.push({ id: ticketId, exists:false, data:{} });
+            continue;
+          }
+          rows.push({ id: ticketId, exists:true, data: snap.data() || {} });
+        } catch (e) {
+          console.warn("Failed to fetch linked ticket", ticketId, e);
+          rows.push({ id: ticketId, exists:false, data:{} });
+        }
+      }
+      return rows;
+    }
+
+    function renderOrderedList(el, values) {
+      if (!el) return;
+      const vals = uniqueNonEmpty(values);
+      if (!vals.length) {
+        el.innerHTML = `<li>—</li>`;
+        return;
+      }
+      el.innerHTML = vals.map(v => `<li>${escapeHtml(v)}</li>`).join("");
+    }
+
+    async function loadLinkedIncidentForSelectedTicket() {
+      const sec = $("linkedIncidentSec");
+      const details = $("linkedIncidentDetails");
+      const badge = $("linkedIncidentBadge");
+      const hint = $("linkedIncidentHint");
+      if (!sec || !details || !badge || !hint) return;
+
+      currentLinkedIncidentRows = [];
+      details.style.display = "none";
+      sec.style.display = "none";
+      badge.textContent = "Not linked";
+      badge.className = "badge";
+
+      if (!selectedTicketId || !selectedTicketSnap || !selectedTicketSnap.exists) return;
+
+      const data = selectedTicketSnap.data() || {};
+      const ids = getLinkedIdsFromTicketData(selectedTicketId, data);
+      if (!data.linkedIncidentId || ids.length < 2) return;
+
+      sec.style.display = "block";
+      hint.textContent = "This ticket is linked with other tickets as the same incident.";
+      badge.textContent = `${ids.length} linked tickets`;
+      badge.className = "badge ok";
+
+      const rows = await fetchTicketRowsByIds(ids);
+      currentLinkedIncidentRows = rows.filter(r => r.exists);
+
+      $("linkedIncidentTitle").textContent = `Linked Incident: ${data.linkedIncidentId}`;
+      $("linkedIncidentSub").textContent = `Linked by: ${data.linkedBy || "Head Steward"} | Tickets: ${ids.join(", ")}`;
+
+      const grid = $("linkedTicketGrid");
+      if (grid) {
+        grid.innerHTML = "";
+        for (const r of rows) {
+          const t = r.data || {};
+          const card = document.createElement("div");
+          card.className = "linkedTicketCard";
+          card.innerHTML = `
+            <div class="mono"><b>${escapeHtml(r.id)}</b></div>
+            <div style="margin-top:6px;"><b>Status:</b> ${escapeHtml(t.status || (r.exists ? "Under Review" : "Missing"))}</div>
+            <div><b>Event:</b> ${escapeHtml(t.event || "—")}</div>
+            <div><b>Accused:</b> ${escapeHtml(t.accused || "—")}</div>
+            <div><b>Reporter:</b> ${escapeHtml(t.reporter || "—")}</div>
+          `;
+          card.onclick = async () => {
+            if (!r.exists) return;
+            selectedTicketId = r.id;
+            await selectTicket(r.id);
+          };
+          grid.appendChild(card);
+        }
+      }
+
+      renderOrderedList($("linkedAccusedList"), currentLinkedIncidentRows.map(r => r.data?.accused || ""));
+      renderOrderedList($("linkedReporterList"), currentLinkedIncidentRows.map(r => r.data?.reporter || ""));
+
+      details.style.display = "block";
+    }
+
+    // ---------- UI refs ----------
+    const ticketListEl = $("ticketList");
+    const ticketHintEl = $("ticketHint");
+    const filterEl = $("filter");
+
+    const workloadPillEl = $("workloadPill");
+    const workloadSubEl = $("workloadSub");
+    const welcomeLineEl = $("welcomeLine");
+
+    const refreshDiscussionBtn = $("refreshDiscussionBtn");
+    const postDiscussionBtn = $("postDiscussionBtn");
+
+    // ---------- navigation ----------
+    $("backBtn").onclick = () => window.location.href = "index.html";
+    $("logoutBtn").onclick = async () => { await auth.signOut(); location.reload(); };
+    $("refreshTicketsBtn").onclick = () => loadTickets();
+    $("refreshStatementsBtn").onclick = () => loadStatements();
+    if (refreshDiscussionBtn) refreshDiscussionBtn.onclick = () => loadDiscussion();
+    filterEl.onchange = () => loadTickets();
+
+    $("acctRefreshBtn").onclick = () => loadMyAccountability();
+
+    if (postDiscussionBtn) postDiscussionBtn.onclick = () => postDiscussion();
+    const postPenaltyOpinionBtn = $("postPenaltyOpinionBtn");
+    if (postPenaltyOpinionBtn) postPenaltyOpinionBtn.onclick = () => postPenaltyOpinion();
+    const recuseBtn = $("recuseBtn");
+    if (recuseBtn) recuseBtn.onclick = () => recuseYourself();
+
+    // ---------- gating ----------
+    auth.onAuthStateChanged(async (user) => {
+      try {
+        // ITS: works out the league, role and approval, applies the
+        // league's branding, and sends Head Stewards to their dashboard.
+        const ctx = await ITSStaff.gate(user, "steward");
+        if (!ctx) return;
+        currentUser = user;
+        currentEmail = ctx.email;
+        const data = { role: ctx.roleLabel };
+        isHead = false;
+
+        const nameGuess = (currentEmail.split("@")[0] || "").replace(/[._-]+/g, " ").trim();
+        const niceName = nameGuess ? nameGuess.replace(/\b\w/g, c => c.toUpperCase()) : "Steward";
+        welcomeLineEl.textContent =
+          `Welcome, ${niceName}. Your live workload is shown on the left — please weigh in on any tickets marked "Needs view".`;
+
+        $("who").textContent = `Signed in as: ${maskEmail(currentEmail)} | role: ${data.role || "steward"}`;
+
+        loadOwnerClause();
+        await loadPenaltyCodes();
+
+        // NEW: wire discussion dropdown preview
+        const dSel = $("discussionPenaltyCode");
+        if (dSel) dSel.onchange = () => {
+          setDiscussionPenaltyPreviewFromSelected();
+          updatePenaltyTimeRequirement("discussionPenaltyCode", "discussionPenaltyTime", "discussionNfaNoTimeNote");
+        };
+        setDiscussionPenaltyPreviewFromSelected();
+
+        await loadTickets();
+        await loadMyAccountability();
+        if (window.itsOnReady) window.itsOnReady();
+
+      } catch (e) {
+        toast("Auth error: " + (e?.message || e));
+      }
+    });
+
+    function toDateSafe(ts) {
+      try {
+        if (!ts) return null;
+        if (ts.toDate) return ts.toDate();
+        if (typeof ts === "string") {
+          const d = new Date(ts);
+          return isNaN(d.getTime()) ? null : d;
+        }
+        return null;
+      } catch { return null; }
+    }
+
+    function fmtDate(ts) {
+      const d = toDateSafe(ts);
+      return d ? d.toLocaleString() : "—";
+    }
+
+
+    // ---------- tickets ----------
+    function passesFilter(status) {
+      const f = filterEl.value;
+      const s = (status || "").trim().toLowerCase();
+      if (f === "All (non-finalised)") return s !== "finalised";
+      if (f === "Awaiting Review") return s === "" || s === "under review" || s === "awaiting review";
+      if (f === "In Review") return s === "in review";
+      if (f === "Ready to Publish") return s === "ready to publish";
+      return true;
+    }
+    function isFinalised(status) {
+      const s = (status || "").trim().toLowerCase();
+      return s === "finalised";
+    }
+
+    function formatTicketListDate(data) {
+      const ts = data?.timestamp || data?.createdAt || data?.submittedAt || data?.finalisedAt || null;
+      try {
+        if (ts && ts.toDate) return ts.toDate().toLocaleString();
+        if (typeof ts === "string") {
+          const d = new Date(ts);
+          if (!isNaN(d.getTime())) return d.toLocaleString();
+        }
+      } catch {}
+      return "No timestamp";
+    }
+
+    function shortTicketText(v, fallback = "—") {
+      const s = String(v || "").trim();
+      return s || fallback;
+    }
+
+    async function loadTickets() {
+      const __b = window.itsShell ? window.itsShell() : null;
+      if (!__b) ticketListEl.innerHTML = "";
+      ticketHintEl.textContent = "Loading tickets…";
+      workloadPillEl.textContent = "Loading…";
+      workloadSubEl.textContent = "Live tickets are non-finalised tickets you may not have weighed in on yet — check the discussion tab.";
+
+      statementStatusCache.clear();
+      deliberationStatusCache.clear();
+
+      // ✅ ONLY CHANGE: 200 -> 600
+      const snap = await LREF.collection("tickets").limit(900).get();
+
+      const docs = snap.docs;
+      const tickets = docs.map(d => {
+        const data = d.data() || {};
+        const status = (data.status || "").trim();
+        return { id: d.id, data, status };
+      });
+
+      const liveTickets = tickets.filter(t => !isFinalised(t.status));
+      const liveCount = liveTickets.length;
+
+      const myReviewChecks = liveTickets.map(async (t) => {
+        const hasMine = await getMyDeliberationStatus(t.id);
+        return { id: t.id, hasMine };
+      });
+
+      const myReviewResults = await Promise.all(myReviewChecks);
+      const myReviewMap = new Map(myReviewResults.map(x => [x.id, x.hasMine]));
+      const needsMyInputCount = liveTickets.filter(t => !myReviewMap.get(t.id)).length;
+
+      workloadPillEl.innerHTML = `Live: <strong>${liveCount}</strong> • Needs your input: <strong>${needsMyInputCount}</strong>`;
+
+      // ✅ ADDED: top stat bar - purely a read-out of numbers already
+      // computed above, kept in sync with the workload pill/list.
+      const awaitingCount = liveTickets.filter(t => {
+        const s = (t.status || "").trim().toLowerCase();
+        return s === "" || s === "under review" || s === "awaiting review";
+      }).length;
+      const statLiveEl = $("statLiveTickets");
+      const statNeedsEl = $("statNeedsInput");
+      const statAwaitingEl = $("statAwaiting");
+      if (statLiveEl) statLiveEl.textContent = String(liveCount);
+      if (statNeedsEl) statNeedsEl.textContent = String(needsMyInputCount);
+      if (statAwaitingEl) statAwaitingEl.textContent = String(awaitingCount);
+
+      if (liveCount === 0) {
+        workloadSubEl.textContent = "No live tickets found. You're all caught up ✅";
+      } else if (needsMyInputCount === 0) {
+        workloadSubEl.textContent = "You've weighed in on every live ticket in this batch ✅";
+      } else {
+        workloadSubEl.textContent = "Tickets marked “Needs view” don't have a steward comment from you yet.";
+      }
+
+      let shown = 0;
+      for (const t of tickets) {
+        if (!passesFilter(t.status)) continue;
+
+        const needsMyInput = (!isFinalised(t.status)) && !myReviewMap.get(t.id);
+
+        const div = document.createElement("div");
+        div.className = "ticket" + (t.id === selectedTicketId ? " active" : "");
+
+        const eventName = shortTicketText(t.data.event, "Unknown event");
+        const competitionName = shortTicketText(t.data.competition, "Unknown competition");
+        const accusedName = shortTicketText(t.data.accused, "No accused listed");
+        const reporterName = shortTicketText(t.data.reporter, "No reporter listed");
+        const ruleName = shortTicketText(t.data.ruleBreach || t.data.postRaceCode, "No rule/code listed");
+        const submittedWhen = formatTicketListDate(t.data);
+        const proofState = shortTicketText(t.data.proofUrl, "") || shortTicketText(t.data.videoProofUrl, "");
+        const incidentSummary = shortTicketText(t.data.fullIncident || t.data.incident || t.data.description, "No incident summary listed");
+        const clippedIncident = incidentSummary.length > 135 ? incidentSummary.slice(0, 132) + "…" : incidentSummary;
+        const linkedTag = t.data.linkedIncidentId ? String(t.data.linkedIncidentId).trim() : "";
+
+        div.innerHTML = `
+          <div class="ticketCardInner compactTicketCard">
+            <div class="ticketHeadLine">
+              <div class="ticketHeadText">
+                <div class="ticketEvent">${escapeHtml(eventName)}</div>
+                <div class="ticketCompetition">${escapeHtml(competitionName)}</div>
+              </div>
+              <div class="ticketStatusPill" data-status="${escapeHtml((t.status || "under review").trim().toLowerCase().replace(/\s+/g, "-"))}">${escapeHtml(t.status || "Under Review")}</div>
+            </div>
+
+            <div class="ticketIdLine">
+              <span>Ticket</span>
+              <strong>${escapeHtml(t.id)}</strong>
+            </div>
+
+            <div class="ticketPeopleLine">
+              <div><span>Accused</span><strong>${escapeHtml(accusedName)}</strong></div>
+              <div><span>Reporter</span><strong>${escapeHtml(reporterName)}</strong></div>
+            </div>
+
+            <div class="ticketInfoLine">
+              <div><span>Rule / Code</span><strong>${escapeHtml(ruleName)}</strong></div>
+              <div><span>Submitted</span><strong>${escapeHtml(submittedWhen)}</strong></div>
+            </div>
+
+            <div class="ticketIncidentLine">${escapeHtml(clippedIncident)}</div>
+
+            <div class="ticketFooterRow compactFooter">
+              ${proofState ? `<span class="ticketTinyPill proofYes">Evidence</span>` : `<span class="ticketTinyPill proofNo">No proof</span>`}
+              ${linkedTag ? `<span class="linkedMiniTag">Linked</span>` : ""}
+              ${needsMyInput ? `<span class="needTag">Needs view</span>` : ""}
+              <span class="ticketTinyPill ticketOpenHint">Open</span>
+            </div>
+
+            <div class="ticketChecklistRow compactChecklist">
+              <div class="stmtTag" id="stmt_${escapeHtml(t.id)}">Statements: Checking…<small>Accused + Reporter</small></div>
+              <div class="delibTag" id="delib_${escapeHtml(t.id)}">Deliberation: Checking…<small>Your comment status</small></div>
+            </div>
+          </div>
+        `;
+
+        div.onclick = async () => {
+          selectedTicketId = t.id;
+          await selectTicket(t.id);
+          [...ticketListEl.querySelectorAll(".ticket")].forEach(x => x.classList.remove("active"));
+          div.classList.add("active");
+          if (window.itsSyncActive) window.itsSyncActive();
+        };
+
+        if (__b && window.itsPlace) window.itsPlace(__b, div, needsMyInput, t); else ticketListEl.appendChild(div);
+        shown++;
+
+        (async () => {
+          try {
+            const tagEl = div.querySelector(`[id="stmt_${CSS.escape(t.id)}"]`);
+            if (!tagEl) return;
+            const st = await getAccusedReporterStatementStatus(t.id);
+            renderStatementTag(tagEl, st);
+          } catch (e) {
+            console.warn("Statement status check failed:", t.id, e);
+            const tagEl = div.querySelector(`[id="stmt_${CSS.escape(t.id)}"]`);
+            if (tagEl) {
+              tagEl.className = "stmtTag stmtBad";
+              tagEl.innerHTML = `Statements: ❌ Check failed<br><small>Open console for details</small>`;
+            }
+          }
+        })();
+
+        (async () => {
+          try {
+            const delibEl = div.querySelector(`[id="delib_${CSS.escape(t.id)}"]`);
+            if (!delibEl) return;
+
+            if (isFinalised(t.status)) {
+              delibEl.style.display = "none";
+              delibEl.innerHTML = "";
+              return;
+            }
+
+            const hasMine = await getMyDeliberationStatus(t.id);
+            renderDelibTag(delibEl, hasMine);
+          } catch (e) {
+            console.warn("Deliberation status check failed:", t.id, e);
+            const delibEl = div.querySelector(`[id="delib_${CSS.escape(t.id)}"]`);
+            if (delibEl) {
+              delibEl.className = "delibTag delibBad";
+              delibEl.innerHTML = `Requires deliberation<br><small>Check failed (open console)</small>`;
+            }
+          }
+        })();
+      }
+
+      if (__b && window.itsListDone) window.itsListDone(__b, { shown, liveCount, needsMyInputCount });
+
+      const filterName = filterEl.value;
+
+      // ✅ ONLY CHANGE: 200 -> 600
+      ticketHintEl.textContent =
+        `Showing ${shown} ticket(s) for filter: "${filterName}". Live workload in batch: ${liveCount} | Needs your input: ${needsMyInputCount}. (Max 600 fetched).`;
+    }
+
+    async function selectTicket(ticketId) {
+      if (window.itsOnSelect) window.itsOnSelect(ticketId);
+      $("selTitle").textContent = `Ticket: ${ticketId}`;
+      $("selSub").textContent = "";
+
+      $("statementsHint").textContent = "Loading statements…";
+      $("statementsList").innerHTML = "";
+
+      $("discussionList").innerHTML = `<div class="muted">Loading comments…</div>`;
+      $("discussionInput").value = "";
+      if ($("discussionPenaltyTime")) $("discussionPenaltyTime").value = "";
+      refreshPenaltyTimeRequirements();
+      if ($("linkedIncidentSec")) $("linkedIncidentSec").style.display = "none";
+      if ($("linkedIncidentDetails")) $("linkedIncidentDetails").style.display = "none";
+
+      const ref = LREF.collection("tickets").doc(ticketId);
+      selectedTicketSnap = await ref.get();
+      if (!selectedTicketSnap.exists) { toast("Ticket not found"); return; }
+
+      const t = selectedTicketSnap.data() || {};
+      ITS_CURRENT_TICKET = t;
+      $("sumAccused").textContent = t.accused || "—";
+      $("sumReporter").textContent = t.reporter || "—";
+      $("sumCompetition").textContent = t.competition || "—";
+      $("sumEvent").textContent = t.event || "—";
+      $("sumRule").textContent = t.ruleBreach || "—";
+      renderProof(t.proofUrl || "", t.videoProofUrl || "");
+      $("sumIncident").value = t.fullIncident || "";
+      $("selSub").textContent = `Accused: ${t.accused || "-"} | Event: ${t.event || "-"}`;
+
+      renderDriverIdCard("Accused", t.accused);
+      renderDriverIdCard("Reporter", t.reporter);
+      ITSStaff.renderDriverHistory(ticketId, t, (id) => selectTicket(id));
+
+      await loadLinkedIncidentForSelectedTicket();
+      await loadStatements();
+      await loadDiscussion();
+    }
+
+    // ---------- statements ----------
+    async function loadStatements() {
+      if (!selectedTicketId) { $("statementsHint").textContent = "Select a ticket to view statements."; return; }
+
+      $("statementsList").innerHTML = "";
+      $("statementsHint").textContent = "Loading statements…";
+
+      const col = LREF.collection("tickets").doc(selectedTicketId).collection("player_statements");
+      const snap = await col.get();
+
+      if (snap.empty) { $("statementsHint").textContent = "No player statements submitted yet."; return; }
+
+      const rows = snap.docs.map(d => {
+        const x = d.data() || {};
+        const role = (x.role || "").trim();
+        const name = (x.name || "").trim();
+        const statement = (x.statement || "").trim();
+        const ts = x.submittedAt && x.submittedAt.toDate ? x.submittedAt.toDate() : null;
+        const when = ts ? ts.toLocaleString() : "";
+        return { role, name, statement, when };
+      }).filter(r => r.statement);
+
+      const order = { accused:1, reporter:2, witness:3 };
+      rows.sort((a,b) => (order[a.role?.toLowerCase()]||99)-(order[b.role?.toLowerCase()]||99));
+
+      for (const r of rows) {
+        const box = document.createElement("div");
+        box.style.border = "1px solid #e5e7eb";
+        box.style.borderRadius = "12px";
+        box.style.padding = "12px";
+        box.style.background = "#fff";
+
+        const left = document.createElement("div");
+        left.innerHTML = `<b>${escapeHtml((r.role||"").toUpperCase())} — ${escapeHtml(r.name || "")}</b><div class="muted" style="margin-top:4px;">${escapeHtml(r.when || "")}</div>`;
+
+        const body = document.createElement("div");
+        body.style.marginTop = "10px";
+        body.style.whiteSpace = "pre-wrap";
+        body.textContent = r.statement;
+
+        box.appendChild(left);
+        box.appendChild(body);
+        $("statementsList").appendChild(box);
+      }
+
+      $("statementsHint").textContent = `Loaded ${rows.length} statement(s).`;
+      await loadTickets();
+    }
+
+    // ---------- steward vote summary ----------
+    function readPenaltyCodeFromCommentData(d, text) {
+      const direct = String(d.penaltyCode || d.codeVote || "").trim();
+      if (direct) return direct;
+
+      const m = String(text || "").match(/Code:\s*([^\n]+)/i);
+      return m ? m[1].trim() : "";
+    }
+
+    function readPenaltyTimeFromCommentData(d, text) {
+      const direct = normalisePenaltyTimeValue(d.penaltyTime || d.timePenalty || d.recommendedPenaltyTime || "");
+      if (direct) return direct;
+
+      const m = String(text || "").match(/(?:Recommended time penalty|Time penalty|Penalty time):\s*([^\n]+)/i);
+      return m ? normalisePenaltyTimeValue(m[1]) : "";
+    }
+
+    function countVotes(values) {
+      const map = new Map();
+      for (const v of values) {
+        const key = String(v || "").trim();
+        if (!key) continue;
+        map.set(key, (map.get(key) || 0) + 1);
+      }
+      return [...map.entries()].sort((a,b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+    }
+
+    function renderVoteLines(el, entries, total, formatter) {
+      if (!el) return;
+      if (!entries.length || !total) {
+        el.className = "muted";
+        el.textContent = "No votes yet.";
+        return;
+      }
+
+      el.className = "";
+      el.innerHTML = "";
+      for (const [value, count] of entries) {
+        const pct = total ? ((count / total) * 100).toFixed(1) : "0.0";
+        const row = document.createElement("div");
+        row.className = "voteLine";
+        row.innerHTML = `<span>${escapeHtml(formatter ? formatter(value) : value)}</span><strong>${count}/${total} (${pct}%)</strong>`;
+        el.appendChild(row);
+      }
+    }
+
+    function renderStewardVoteSummary(commentRows) {
+      const box = $("stewardVoteSummaryBox");
+      const sub = $("stewardVoteSummarySub");
+      const codeLines = $("penaltyCodeVoteLines");
+      const timeLines = $("penaltyTimeVoteLines");
+      const recLine = $("penaltyRecommendationLine");
+      if (!box) return;
+
+      const rows = Array.isArray(commentRows) ? commentRows : [];
+      const penaltyRows = rows.filter(r => r && (r.kind === "penalty_opinion" || r.penaltyCode || r.penaltyTime || /PENALTY OPINION/i.test(r.text || "")));
+
+      const codeVotes = [];
+      const timeVotes = [];
+      for (const r of penaltyRows) {
+        const code = readPenaltyCodeFromCommentData(r, r.text);
+        const time = readPenaltyTimeFromCommentData(r, r.text);
+        if (code) codeVotes.push(code);
+        if (time) timeVotes.push(time);
+      }
+
+      const codeEntries = countVotes(codeVotes);
+      const timeEntries = countVotes(timeVotes);
+      const codeTotal = codeVotes.length;
+      const timeTotal = timeVotes.length;
+
+      box.style.display = "block";
+      if (sub) sub.textContent = `Calculated from ${penaltyRows.length} steward penalty opinion(s) on this ticket.`;
+
+      renderVoteLines(codeLines, codeEntries, codeTotal, (v) => v);
+      renderVoteLines(timeLines, timeEntries, timeTotal, (v) => formatPenaltyTime(v));
+
+      let recommendedCode = codeEntries.length ? codeEntries[0][0] : "—";
+      let recommendedTime = "—";
+      let recommendationReason = "No time penalty votes submitted yet.";
+
+      if (timeVotes.length) {
+        const dqCount = timeVotes.filter(v => v === "DQ").length;
+        const nfaCount = timeVotes.filter(v => v === "NFA").length;
+        const numeric = timeVotes.map(v => parseInt(v, 10)).filter(n => !isNaN(n));
+
+        if (nfaCount > dqCount && nfaCount >= numeric.length) {
+          recommendedTime = "NFA — No Further Action";
+          recommendationReason = `NFA has the strongest time-penalty support (${nfaCount}/${timeVotes.length}).`;
+        } else if (dqCount > numeric.length) {
+          recommendedTime = "DQ";
+          recommendationReason = `DQ has the strongest time-penalty support (${dqCount}/${timeVotes.length}).`;
+        } else if (numeric.length) {
+          const avg = numeric.reduce((a,b)=>a+b,0) / numeric.length;
+          const rounded = roundToNearestFive(avg);
+          recommendedTime = `${rounded} seconds`;
+          const mode = timeEntries.length ? formatPenaltyTime(timeEntries[0][0]) : "—";
+          recommendationReason = `Numeric average is ${avg.toFixed(1)}s, rounded to the nearest 5s. Most common time vote: ${mode}. DQ votes: ${dqCount}/${timeVotes.length}.`;
+        } else if (dqCount) {
+          recommendedTime = "DQ";
+          recommendationReason = `Only DQ votes have been submitted (${dqCount}/${timeVotes.length}).`;
+        }
+      }
+
+      if (recLine) {
+        recLine.innerHTML = `Recommended code: ${escapeHtml(recommendedCode)}<br>Recommended time penalty: ${escapeHtml(recommendedTime)}<small>${escapeHtml(recommendationReason)} Head Steward remains free to finalise or override this recommendation.</small>`;
+      }
+    }
+
+    // ---------- discussion ----------
+    async function loadDiscussion() {
+      const list = $("discussionList");
+
+      if (!selectedTicketId) {
+        list.innerHTML = `<div class="muted">Select a ticket to view steward comments.</div>`;
+        return;
+      }
+
+      list.innerHTML = `<div class="muted">Loading comments…</div>`;
+
+      try {
+        const col = LREF.collection("tickets").doc(selectedTicketId).collection("steward_comments");
+        const snap = await col.orderBy("createdAt", "asc").limit(250).get();
+
+        if (snap.empty) {
+          list.innerHTML = `<div class="muted">No steward comments yet.</div>`;
+          await loadTickets();
+          return;
+        }
+
+        const commentRows = [];
+        list.innerHTML = "";
+        snap.forEach(doc => {
+          const d = doc.data() || {};
+          const text = String(d.text || "").trim();
+          if (!text) return;
+
+          const ts = d.createdAt && d.createdAt.toDate ? d.createdAt.toDate() : null;
+          const when = ts ? ts.toLocaleString() : "—";
+
+          const authorKey = String(d.authorKey || "").trim();
+          const who = authorKey ? maskEmail(authorKey) : "Unknown";
+
+          const kind = String(d.kind || "").trim();
+          const isPenaltyOpinion = kind === "penalty_opinion" ||
+            !!String(d.penaltyCode || "").trim() ||
+            !!String(d.penaltyTime || "").trim() ||
+            /PENALTY OPINION/i.test(text);
+
+          commentRows.push({
+            text,
+            authorKey,
+            kind,
+            penaltyCode: String(d.penaltyCode || "").trim(),
+            penaltyTime: normalisePenaltyTimeValue(d.penaltyTime || d.timePenalty || d.recommendedPenaltyTime || "")
+          });
+
+          const box = document.createElement("div");
+          box.className = "commentBox";
+
+          if (isPenaltyOpinion) {
+            // ✅ MASKED FOR STEWARDS: don't reveal the code/time/reasoning another
+            // steward chose - only that they've placed a recommendation. This is
+            // what stops newer stewards simply copying a long-time steward's call.
+            // Head Steward still sees the full opinion (see headsteward page).
+            box.innerHTML = `
+              <div>🧾 <b>${escapeHtml(who)}</b> has placed their penalty recommendation.</div>
+              <div class="commentMeta">${escapeHtml(when)} &middot; hidden from other stewards until the Head Steward reviews it</div>
+            `;
+            list.appendChild(box);
+            return;
+          }
+
+          box.innerHTML = `
+            <div><b>Steward:</b> ${escapeHtml(who)}</div>
+            <div class="commentMeta">${escapeHtml(when)}</div>
+          `;
+
+          const body = document.createElement("div");
+          body.style.marginTop = "10px";
+          body.style.whiteSpace = "pre-wrap";
+          body.textContent = text;
+
+          box.appendChild(body);
+          list.appendChild(box);
+        });
+
+        // ✅ CHANGED: the aggregate vote-tally/recommendation box (code %, time %,
+        // computed recommendation) is no longer shown to regular stewards either -
+        // even without names, seeing "60% picked 20s" nudges people toward the
+        // crowd instead of an independent read. That full picture is now
+        // Head-Steward-only; see renderStewardVoteSummary's call on that page.
+        await loadTickets();
+      } catch (e) {
+        console.error("loadDiscussion failed:", e);
+        list.innerHTML = `<div class="muted">Failed to load comments (check console).</div>`;
+      }
+    }
+
+    async function postDiscussion() {
+      if (!selectedTicketId) { toast("Select a ticket first"); return; }
+
+      const input = $("discussionInput");
+      const text = (input.value || "").trim();
+      if (!text) { toast("Type a comment first"); return; }
+
+      postDiscussionBtn.disabled = true;
+      const original = postDiscussionBtn.textContent;
+      postDiscussionBtn.textContent = "Posting…";
+
+      try {
+        const col = LREF.collection("tickets").doc(selectedTicketId).collection("steward_comments");
+        const authorKey = safeKey(currentEmail);
+
+        await col.add({
+          text,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          authorKey
+        });
+
+        input.value = "";
+        toast("Comment posted ✅");
+        await loadDiscussion();
+      } catch (e) {
+        toast("Post failed: " + (e?.message || e));
+      } finally {
+        postDiscussionBtn.textContent = original;
+        postDiscussionBtn.disabled = false;
+      }
+    }
+
+    async function recuseYourself() {
+      if (!selectedTicketId) { toast("Select a ticket first"); return; }
+
+      const ok = confirm(
+        "Recuse yourself from this ticket?\n\nThis will post a steward comment stating you are involved and have recused yourself from deliberation."
+      );
+      if (!ok) return;
+
+      const authorKey = safeKey(currentEmail);
+      const stewardName = maskEmail(currentEmail) || "This steward";
+
+      const msg =
+`🚫 STEWARD RECUSED
+Steward: ${stewardName}
+
+This steward has declared they are involved in this incident and has recused themselves from any and all deliberation regarding this ticket.`;
+
+      const btn = $("recuseBtn");
+      const original = btn ? btn.textContent : "";
+      if (btn) { btn.disabled = true; btn.textContent = "Posting…"; }
+
+      try {
+        const col = LREF.collection("tickets").doc(selectedTicketId).collection("steward_comments");
+        await col.add({
+          text: msg,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          authorKey,
+          kind: "recusal"
+        });
+
+        toast("Recusal posted ✅");
+        await loadDiscussion();
+      } catch (e) {
+        toast("Post failed: " + (e?.message || e));
+      } finally {
+        if (btn) { btn.textContent = original || "Recuse yourself from ticket"; btn.disabled = false; }
+      }
+    }
+
+    async function postPenaltyOpinion() {
+      if (!selectedTicketId) { toast("Select a ticket first"); return; }
+
+      const sel = $("discussionPenaltyCode");
+      if (!sel) { toast("Penalty opinion dropdown missing"); return; }
+
+      const opt = sel.selectedOptions && sel.selectedOptions[0] ? sel.selectedOptions[0] : null;
+      const value = (sel.value || "").trim();
+      if (!opt || !value) { toast("Select a penalty code first"); return; }
+
+      const isNfa = isNfaPenaltySelection("discussionPenaltyCode");
+      const timePenalty = isNfa ? "NFA" : normalisePenaltyTimeValue($("discussionPenaltyTime")?.value || "");
+      if (!isNfa && !timePenalty) { toast("Select a time penalty or DQ first"); return; }
+
+      const code = (opt.dataset.code || "").trim();
+      const title = (opt.dataset.title || "").trim();
+      const pen = (opt.dataset.penalty || "").trim();
+      const who = (opt.dataset.who || "").trim();
+      const desc = (opt.dataset.desc || "").trim();
+      const ex = (opt.dataset.example || "").trim();
+
+      const note = ($("discussionInput")?.value || "").trim();
+
+      const msg =
+`🧾 PENALTY OPINION
+Code: ${code}${title ? " — " + title : ""}
+Penalty: ${pen || "—"}
+Recommended time penalty: ${formatPenaltyTime(timePenalty)}
+Who: ${who || "—"}${desc ? "\n\nDescription:\n" + desc : ""}${ex ? "\n\nExample:\n" + ex : ""}${note ? "\n\nSteward note:\n" + note : ""}`;
+
+      const btn = $("postPenaltyOpinionBtn");
+      if (btn) {
+        btn.disabled = true;
+        var original = btn.textContent;
+        btn.textContent = "Posting…";
+      }
+
+      try {
+        const col = LREF.collection("tickets").doc(selectedTicketId).collection("steward_comments");
+        const authorKey = safeKey(currentEmail);
+
+        await col.add({
+          text: msg,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          authorKey,
+          kind: "penalty_opinion",
+          penaltyCode: value,
+          penaltyTime: timePenalty
+        });
+
+        toast("Penalty opinion posted ✅");
+
+        if ($("discussionInput")) $("discussionInput").value = "";
+        refreshPenaltyTimeRequirements();
+
+        await loadDiscussion();
+      } catch (e) {
+        toast("Post failed: " + (e?.message || e));
+      } finally {
+        if (btn) {
+          btn.textContent = original || "Submit Penalty Opinion to Chat";
+          btn.disabled = false;
+        }
+      }
+    }
+
+  </script>
+  <script id="refresh-js">
+  /* ============================================================
+     STEWARD DASHBOARD REFRESH (additive layer)
+     Runs after the original script. The original script only calls
+     the window.its* hooks below if they exist, so if anything in here
+     failed the page would still work exactly as before.
+     ============================================================ */
+  (function () {
+    "use strict";
+    const $$ = (id) => document.getElementById(id);
+    const FN = "https://europe-west2-its-591d8.cloudfunctions.net/rtGate";
+    const ASSET_V = "2";
+
+    const LS = {
+      get(k, d) { try { const v = localStorage.getItem("ITS_ST_" + k); return v == null ? d : v; } catch (e) { return d; } },
+      set(k, v) { try { localStorage.setItem("ITS_ST_" + k, v); } catch (e) {} }
+    };
+
+    const ST = {
+      items: [],            // every ticket card of the current load
+      build: null,          // the load that is currently being built
+      shown: null,          // the load currently on screen
+      live: 0, needs: 0,
+      loadedAt: 0,
+      sort: LS.get("sort", "default"),
+      q: "",
+      dense: LS.get("dense", "0") === "1",
+      collapsed: { todo: LS.get("c_todo", "0") === "1", done: LS.get("c_done", "0") === "1" },
+      tab: "tickets"
+    };
+    window.itsState = ST;
+
+    const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const cssEsc = (s) => (window.CSS && CSS.escape ? CSS.escape(s) : String(s).replace(/[^\w-]/g, "\\$&"));
+
+    /* ---------- sticky offsets follow the real header height ---------- */
+    function measure() {
+      const h = document.querySelector("header");
+      const nav = $$("appTabs");
+      const sticky = h && getComputedStyle(h).position === "sticky";
+      const hh = sticky ? h.offsetHeight : 0;
+      const nh = (nav && getComputedStyle(nav).position === "sticky") ? nav.offsetHeight : 0;
+      const r = document.documentElement.style;
+      r.setProperty("--hdrH", hh + "px");
+      r.setProperty("--navH", nh + "px");
+      r.setProperty("--stickyTop", (hh + nh) + "px");
+      document.body.classList.toggle("split-on", window.innerWidth >= 1500 && LS.get("split", "1") !== "0");
+    }
+    window.addEventListener("resize", measure);
+    if (window.ResizeObserver) {
+      const ro = new ResizeObserver(measure);
+      const h = document.querySelector("header"); if (h) ro.observe(h);
+      const n = $$("appTabs"); if (n) ro.observe(n);
+    }
+    measure();
+    setTimeout(measure, 400);
+
+    /* ---------- tickets: two lists ---------- */
+    function ticketMs(data) {
+      const ts = data && (data.timestamp || data.createdAt || data.submittedAt || data.finalisedAt);
+      try {
+        if (ts && ts.toDate) return ts.toDate().getTime();
+        if (typeof ts === "string") { const d = new Date(ts); if (!isNaN(d.getTime())) return d.getTime(); }
+      } catch (e) {}
+      return 0;
+    }
+    function ageText(ms) {
+      if (!ms) return null;
+      const m = Math.max(0, Math.floor((Date.now() - ms) / 60000));
+      if (m < 60) return { t: "just now", cls: "" };
+      const h = Math.floor(m / 60);
+      if (h < 48) return { t: h + "h old", cls: "" };
+      const d = Math.floor(h / 24);
+      return { t: d + "d old", cls: d >= 7 ? "old" : (d >= 3 ? "mid" : "") };
+    }
+
+    function makeGroup(kind) {
+      const todo = kind === "todo";
+      const sec = document.createElement("section");
+      sec.className = "grp grp-" + kind + (ST.collapsed[kind] ? " collapsed" : "");
+      sec.id = todo ? "grpTodo" : "grpDone";
+      sec.innerHTML =
+        '<div class="grpHead" role="button" tabindex="0" aria-expanded="' + (!ST.collapsed[kind]) + '" id="' + (todo ? "grpTodoHead" : "grpDoneHead") + '">' +
+        '<span class="grpDot"></span><span class="grpTitle">' + (todo ? "To deliberate" : "Deliberated") + '</span>' +
+        '<span class="grpCount" id="' + (todo ? "cntTodo" : "cntDone") + '">0</span>' +
+        '<span class="grpSub">' + (todo ? "No comment from you yet" : "You have commented") + '</span><span class="grpChev"></span></div>' +
+        '<div class="grpBody" id="' + (todo ? "ticketListTodo" : "ticketListDone") + '"></div>';
+      const head = sec.firstChild;
+      const toggle = () => {
+        ST.collapsed[kind] = !ST.collapsed[kind];
+        LS.set("c_" + kind, ST.collapsed[kind] ? "1" : "0");
+        sec.classList.toggle("collapsed", ST.collapsed[kind]);
+        head.setAttribute("aria-expanded", String(!ST.collapsed[kind]));
+      };
+      head.addEventListener("click", toggle);
+      head.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
+      return sec;
+    }
+
+    /* called at the start of loadTickets(): builds the new lists off-screen, the old list stays visible until done */
+    window.itsShell = function () {
+      const b = { id: (ST.buildSeq = (ST.buildSeq || 0) + 1), items: [], todo: makeGroup("todo"), done: makeGroup("done") };
+      ST.build = b;
+      const list = $$("ticketList");
+      if (list) list.classList.add("loading");
+      if (!ST.shown && list) list.innerHTML = "";     // first load: nothing to keep on screen
+      clearTimeout(ST.loadGuard);
+      ST.loadGuard = setTimeout(() => { if (list) list.classList.remove("loading"); }, 30000);
+      return b;
+    };
+
+    window.itsPlace = function (b, div, needsMyInput, t) {
+      if (!b || b !== ST.build) return;               // an older load finished late - ignore it
+      const data = t.data || {};
+      const ms = ticketMs(data);
+      div.classList.add(needsMyInput ? "isTodo" : "isDone");
+      div.dataset.ticketId = t.id;
+      const age = ageText(ms);
+      const foot = div.querySelector(".compactFooter");
+      if (age && foot) {
+        const chip = document.createElement("span");
+        chip.className = "ticketTinyPill ageChip" + (age.cls ? " " + age.cls : "");
+        chip.textContent = age.t;
+        chip.title = ms ? new Date(ms).toLocaleString() : "";
+        const open = foot.querySelector(".ticketOpenHint");
+        foot.insertBefore(chip, open || null);
+      }
+      b.items.push({
+        id: t.id, div, todo: !!needsMyInput, ms, idx: b.items.length, t,
+        search: [t.id, data.event, data.competition, data.accused, data.reporter, data.ruleBreach, data.postRaceCode, t.status, data.linkedIncidentId]
+          .map((x) => String(x || "")).join(" ").toLowerCase()
+      });
+    };
+
+    window.itsListDone = function (b, info) {
+      if (!b || b !== ST.build) return;
+      const list = $$("ticketList");
+      if (!list) return;
+      const scroll = list.scrollTop;
+      list.innerHTML = "";
+      list.appendChild(b.todo);
+      list.appendChild(b.done);
+      list.classList.remove("loading");
+      ST.items = b.items; ST.shown = b;
+      ST.live = info.liveCount; ST.needs = info.needsMyInputCount;
+      ST.loadedAt = Date.now();
+      renderLists();
+      list.scrollTop = scroll;
+      syncActive();
+      syncBar();
+      paintCounts();
+    };
+
+    function ordered(arr) {
+      const a = arr.slice();
+      if (ST.sort === "newest") a.sort((x, y) => (y.ms || 0) - (x.ms || 0) || x.idx - y.idx);
+      else if (ST.sort === "oldest") a.sort((x, y) => (x.ms || Infinity) - (y.ms || Infinity) || x.idx - y.idx);
+      return a;
+    }
+
+    function renderLists() {
+      const b = ST.shown; if (!b) return;
+      const q = ST.q.trim().toLowerCase();
+      const parts = [["todo", b.todo, true], ["done", b.done, false]];
+      parts.forEach(([kind, grp, isTodo]) => {
+        const body = grp.querySelector(".grpBody");
+        const mine = ordered(ST.items.filter((it) => it.todo === isTodo));
+        let vis = 0;
+        mine.forEach((it) => {
+          const hit = !q || it.search.indexOf(q) >= 0;
+          it.div.style.display = hit ? "" : "none";
+          if (hit) vis++;
+          body.appendChild(it.div);
+        });
+        let empty = body.querySelector(".grpEmpty");
+        if (!empty) { empty = document.createElement("div"); empty.className = "grpEmpty"; body.appendChild(empty); }
+        body.appendChild(empty);
+        empty.classList.remove("clear");
+        if (vis === 0) {
+          empty.style.display = "";
+          if (mine.length && q) empty.textContent = "No tickets match your search here.";
+          else if (isTodo) { empty.textContent = "You are all caught up. Nothing is waiting for your view."; empty.classList.add("clear"); }
+          else empty.textContent = "Tickets you comment on or recuse from will appear here.";
+        } else empty.style.display = "none";
+        const cnt = grp.querySelector(".grpCount");
+        cnt.textContent = (q && vis !== mine.length) ? vis + " of " + mine.length : String(mine.length);
+      });
+      syncActive();
+    }
+
+    function paintCounts() {
+      const tc = $$("tabCountTickets");
+      if (tc) { tc.textContent = String(ST.needs); tc.classList.toggle("zero", ST.needs === 0); tc.title = ST.needs + " ticket(s) waiting for your view"; }
+      paintRefreshed();
+    }
+
+    function paintRefreshed() {
+      const el = $$("lastRef"); if (!el) return;
+      if (!ST.loadedAt) { el.textContent = ""; return; }
+      const m = Math.floor((Date.now() - ST.loadedAt) / 60000);
+      el.textContent = "Tickets updated " + (m < 1 ? "just now" : m + " min ago");
+      el.classList.toggle("stale", m >= 5);
+    }
+    setInterval(paintRefreshed, 30000);
+
+    window.itsSyncActive = syncActive;
+    function syncActive() {
+      const id = (typeof selectedTicketId !== "undefined") ? selectedTicketId : "";
+      document.querySelectorAll("#ticketList .ticket").forEach((d) => d.classList.toggle("active", !!id && d.dataset.ticketId === id));
+    }
+
+    /* ---------- selected ticket bar ---------- */
+    function itemFor(id) { return ST.items.find((x) => x.id === id) || null; }
+    function syncBar() {
+      const id = (typeof selectedTicketId !== "undefined") ? selectedTicketId : "";
+      const t = $$("tbTitle"), s = $$("tbSub"), m = $$("tbMine");
+      if (!t || !id) return;
+      const it = itemFor(id);
+      const d = (it && it.t && it.t.data) || {};
+      t.textContent = (d.event || "Ticket") + (d.competition ? " • " + d.competition : "");
+      s.textContent = "Accused: " + (d.accused || "-") + "  |  Reporter: " + (d.reporter || "-") + "  |  " + id;
+      if (it) {
+        m.hidden = false;
+        m.className = "tbMine " + (it.todo ? "todo" : "done");
+        m.textContent = it.todo ? "Needs your view" : "You have deliberated";
+      } else m.hidden = true;
+    }
+
+    window.itsOnSelect = function (id) {
+      document.body.classList.add("has-ticket");
+      syncActive(); syncBar();
+      if (window.innerWidth <= 980) {
+        const c = $$("detailCard");
+        if (c) setTimeout(() => c.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+      }
+    };
+
+    function visibleCards() { return [...document.querySelectorAll("#ticketList .ticket")].filter((d) => d.style.display !== "none"); }
+    function openCard(d) {
+      if (!d) return;
+      const grp = d.closest(".grp");
+      if (grp && grp.classList.contains("collapsed")) { grp.querySelector(".grpHead").click(); }
+      d.click();
+      d.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+    function step(dir) {
+      const cards = visibleCards(); if (!cards.length) return;
+      const i = cards.findIndex((d) => d.classList.contains("active"));
+      openCard(cards[i < 0 ? (dir > 0 ? 0 : cards.length - 1) : (i + dir + cards.length) % cards.length]);
+    }
+    function nextTodo() {
+      const cards = visibleCards().filter((d) => d.classList.contains("isTodo"));
+      if (!cards.length) { toastSafe("Nothing else is waiting for your view"); return; }
+      const all = visibleCards();
+      const cur = all.findIndex((d) => d.classList.contains("active"));
+      let pick = cards.find((d) => all.indexOf(d) > cur);
+      if (!pick) pick = cards[0];
+      if (pick.classList.contains("active") && cards.length === 1) { toastSafe("That is the only ticket waiting for your view"); return; }
+      openCard(pick);
+    }
+    function toastSafe(m) { try { toast(m); } catch (e) {} }
+
+    /* ---------- tabs ---------- */
+    function showTab(name, push) {
+      name = "tickets"; // ITS: Server Live removed
+      ST.tab = name;
+      const isT = name === "tickets";
+      $$("panelTickets").hidden = !isT;
+      $$("overview").hidden = !isT;
+      applyPanel();
+      $$("tabTickets").setAttribute("aria-selected", String(isT));
+      $$("tabServer").setAttribute("aria-selected", String(!isT));
+      $$("overviewToggle").hidden = !isT;
+      $$("lastRef").hidden = !isT;
+      if (push !== false) { try { history.replaceState(null, "", isT ? location.pathname + location.search : "#server-live"); } catch (e) {} }
+      if (!isT) mountServer();
+      setTimeout(measure, 0);
+    }
+    function applyPanel() {
+      /* once Server Live has been opened it keeps running in the background so its pop-up alerts still reach a steward who is working on tickets */
+      const isT = ST.tab === "tickets", p = $$("panelServer");
+      p.hidden = isT && !slCtl;
+      p.classList.toggle("bg", isT && !!slCtl);
+    }
+    window.itsShowTab = showTab;
+
+    /* ---------- Server Live (embedded) ---------- */
+    let slCtl = null, slLoading = false;
+    async function fb(action, body, extra) {
+      const u = auth.currentUser;
+      if (!u) throw new Error("You are signed out - refresh the page");
+      const tok = await u.getIdToken();
+      const opts = body
+        ? { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Firebase " + tok }, body: JSON.stringify(body) }
+        : { cache: "no-store", headers: { "Authorization": "Firebase " + tok } };
+      const r = await fetch(FN + "?" + action + "=1" + (extra || ""), opts);
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        let msg = d.error || ("Request failed (" + r.status + ")");
+        if (r.status === 401 && /missing token|bad token|signature/i.test(msg)) msg = "Server Live is not switched on for stewards yet - the Owner needs to publish the latest rtGate update (" + msg + ")";
+        else if (r.status === 401 || r.status === 403) msg = msg + ". Try refreshing the page; if it persists, ask the Owner.";
+        const e = new Error(msg); e.status = 0; e.httpStatus = r.status; throw e;
+      }
+      return d;
+    }
+    function addCss(href) {
+      if (document.querySelector('link[data-sl]')) return;
+      const l = document.createElement("link"); l.rel = "stylesheet"; l.href = href; l.setAttribute("data-sl", "1");
+      document.head.appendChild(l);
+    }
+    function addScript(src) {
+      return new Promise((res, rej) => {
+        const s = document.createElement("script"); s.src = src;
+        s.onload = res; s.onerror = () => rej(new Error("Could not load " + src.split("?")[0]));
+        document.head.appendChild(s);
+      });
+    }
+    async function mountServer() {
+      const box = $$("slMount");
+      if (!box) return;
+      if (slCtl) { if (!slCtl.state.running) slCtl.start(); else slCtl.refresh && slCtl.refresh(); return; }
+      if (slLoading) return;
+      slLoading = true;
+      box.innerHTML = '<div class="slBoot">Loading Server Live…</div>';
+      try {
+        addCss("assets/css/06-server-live.css?v=" + ASSET_V);
+        if (!window.ITS_ServerLive) await addScript("assets/js/12-server-live.js?v=" + ASSET_V);
+        if (!window.ITS_ServerLive) throw new Error("Server Live script did not start");
+        box.innerHTML = "";
+        slCtl = ITS_ServerLive.mount(box, {
+          load: (sv) => fb("staffServerLive", null, "&server=" + encodeURIComponent(sv)),
+          api: (name, body, extra) => fb(name, body, extra),
+          parserUrl: "assets/js/its-serverlog.js?v=" + ASSET_V
+        });
+        slCtl.start();
+        if (!ST.slBadgeTimer) ST.slBadgeTimer = setInterval(paintSlBadge, 4000);
+        setTimeout(paintSlBadge, 1500);
+        applyPanel();
+      } catch (e) {
+        box.innerHTML =
+          '<div class="slFail"><h3>Server Live could not start</h3>' +
+          "<p>" + esc(e && e.message || e) + "</p>" +
+          "<p>It needs these files on the website: <code>assets/js/12-server-live.js</code>, <code>assets/js/its-serverlog.js</code> and <code>assets/css/06-server-live.css</code>.</p>" +
+          '</div>';
+      }
+      slLoading = false;
+    }
+    function paintSlBadge() {
+      const el = $$("tabCountServer"); if (!el) return;
+      const d = slCtl && slCtl.state && slCtl.state.data;
+      const ov = d && d.overview;
+      if (!ov) { el.hidden = true; return; }
+      let trouble = 0, live = 0;
+      ov.forEach((o) => { if (!o.none && !o.stale) { live++; trouble += (o.trouble || 0) + (o.lost || 0); } });
+      if (!live) { el.hidden = true; return; }
+      el.hidden = false;
+      el.textContent = trouble ? String(trouble) : "ok";
+      el.className = "tabCount " + (trouble ? "slbad" : "slok");
+      el.title = trouble ? trouble + " driver(s) with a bad connection or dropped" : "No connection problems right now";
+    }
+
+    /* ---------- wiring ---------- */
+    function wire() {
+      // tabs
+      $$("tabTickets").addEventListener("click", () => showTab("tickets"));
+      $$("tabServer").addEventListener("click", () => showTab("server"));
+
+      // overview toggle
+      const ovOff = LS.get("ov", "1") === "0";
+      document.body.classList.toggle("ov-off", ovOff);
+      const ovBtn = $$("overviewToggle");
+      const paintOv = () => { ovBtn.querySelector("span").textContent = document.body.classList.contains("ov-off") ? "Show overview" : "Hide overview"; };
+      ovBtn.addEventListener("click", () => { const off = document.body.classList.toggle("ov-off"); LS.set("ov", off ? "0" : "1"); paintOv(); setTimeout(measure, 0); });
+      paintOv();
+
+      // stat tiles jump around
+      const tiles = document.querySelectorAll("#statsWrap .statTile");
+      const goTodo = () => { showTab("tickets"); const g = $$("grpTodo"); if (g && g.classList.contains("collapsed")) g.querySelector(".grpHead").click(); const l = $$("ticketList"); if (l) l.scrollTop = 0; const s = $$("ticketSearch"); if (s) s.focus(); };
+      tiles.forEach((t, i) => {
+        t.tabIndex = 0; t.setAttribute("role", "button");
+        const act = () => {
+          if (i === 1) { goTodo(); const first = document.querySelector("#ticketListTodo .ticket"); if (first) first.scrollIntoView({ block: "nearest" }); }
+          else if (i === 0) { showTab("tickets"); setSearch(""); }
+          else if (i === 2) { showTab("tickets"); const f = $$("filter"); if (f) { f.value = "Awaiting Review"; f.dispatchEvent(new Event("change")); } }
+          else if (i === 3) { const a = $$("acctCard"); if (a) a.scrollIntoView({ behavior: "smooth", block: "center" }); }
+        };
+        t.addEventListener("click", act);
+        t.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); act(); } });
+      });
+      const hints = ["Show all live tickets", "Jump to the tickets waiting for your view", "Show only tickets awaiting review", "See your steward activity"];
+      tiles.forEach((t, i) => { t.title = hints[i] || ""; });
+
+      // search / sort / compact
+      const si = $$("ticketSearch");
+      si.addEventListener("input", () => { ST.q = si.value; renderLists(); });
+      si.addEventListener("keydown", (e) => { if (e.key === "Escape") { setSearch(""); si.blur(); } });
+      const so = $$("ticketSort"); so.value = ST.sort;
+      so.addEventListener("change", () => { ST.sort = so.value; LS.set("sort", ST.sort); renderLists(); });
+      const dn = $$("densityBtn");
+      const paintDense = () => { $$("ticketList").classList.toggle("dense", ST.dense); dn.setAttribute("aria-pressed", String(ST.dense)); };
+      dn.addEventListener("click", () => { ST.dense = !ST.dense; LS.set("dense", ST.dense ? "1" : "0"); paintDense(); });
+      paintDense();
+
+      // ticket bar
+      $$("tbPrev").addEventListener("click", () => step(-1));
+      $$("tbNext").addEventListener("click", () => step(1));
+      $$("tbNextTodo").addEventListener("click", nextTodo);
+      $$("tbBack").addEventListener("click", () => { const l = $$("ticketList"); if (l) { l.scrollIntoView({ behavior: "smooth", block: "start" }); } });
+      const sp = $$("splitBtn");
+      const paintSplit = () => { sp.setAttribute("aria-pressed", String(LS.get("split", "1") !== "0")); sp.querySelector("span").textContent = LS.get("split", "1") !== "0" ? "Side by side" : "Stacked"; };
+      sp.addEventListener("click", () => { LS.set("split", LS.get("split", "1") !== "0" ? "0" : "1"); paintSplit(); measure(); });
+      paintSplit();
+      document.querySelectorAll(".tbJump button").forEach((b) => b.addEventListener("click", () => {
+        const sec = $$(b.dataset.target); if (!sec) return;
+        if (sec.classList.contains("sec-collapsed")) sec.classList.remove("sec-collapsed");
+        sec.scrollIntoView({ behavior: "smooth", block: "start" });
+      }));
+      const eb = $$("emptyOpenFirst");
+      if (eb) eb.addEventListener("click", nextTodo);
+
+      // collapsible detail sections
+      document.querySelectorAll("#detailCard > .sec").forEach((sec) => {
+        const h3 = sec.querySelector("h3"); if (!h3) return;
+        const head = h3.parentElement === sec ? h3 : h3.parentElement;
+        head.classList.add("secHead");
+        head.addEventListener("click", (e) => {
+          if (e.target.closest("button, a, select, input, textarea")) return;
+          sec.classList.toggle("sec-collapsed");
+        });
+      });
+
+      // keyboard
+      document.addEventListener("keydown", (e) => {
+        if (e.ctrlKey || e.metaKey || e.altKey) return;
+        const tag = (e.target && e.target.tagName || "").toLowerCase();
+        if (tag === "input" || tag === "textarea" || tag === "select" || (e.target && e.target.isContentEditable)) return;
+        if (ST.tab !== "tickets") { if (e.key === "1") showTab("tickets"); return; }
+        if (e.key === "j") { e.preventDefault(); step(1); }
+        else if (e.key === "k") { e.preventDefault(); step(-1); }
+        else if (e.key === "n") { e.preventDefault(); nextTodo(); }
+        else if (e.key === "/") { e.preventDefault(); si.focus(); si.select(); }
+        else if (e.key === "2") showTab("server");
+      });
+
+      // honour #server-live deep link
+      if (/server/i.test(location.hash)) showTab("server", false);
+      window.addEventListener("hashchange", () => showTab(/server/i.test(location.hash) ? "server" : "tickets", false));
+    }
+
+    function setSearch(v) { const si = $$("ticketSearch"); if (si) si.value = v; ST.q = v; renderLists(); }
+
+    window.itsOnReady = function () { measure(); paintCounts(); };
+
+    wire();
+  })();
+</script>
+</body>
+</html>

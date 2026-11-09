@@ -25,4 +25,4 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 // Every ITS Cloud Function lives in London — firebase.functions()
 // would otherwise default to us-central1 and fail with "not found".
-const functions = firebase.app().functions("europe-west2");
+const functions = (typeof firebase.app().functions === "function") ? firebase.app().functions("europe-west2") : null;

@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Submit a Ticket</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* ============================================================
+       IFWL STEWARD DASHBOARD — design system (single source of truth)
+       Vibrant light theme. Every id/class the JS relies on is
+       preserved; this replaces three previously-stacked !important
+       patch layers with one consolidated, motion + icon-ready sheet.
+       ============================================================ */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap');
+
+    :root{
+      --navy:#0f172a;
+      --ink:#111827;
+      --muted:#64748b;
+      --muted-2:#94a3b8;
+      --line:#e4e0fb;
+      --line-soft:#eeecfc;
+      --bg:#f5f4fd;
+      --card:#ffffff;
+      --card-soft:#f8f7fe;
+
+      --primary:#4f46e5;
+      --primary-dark:#3730a3;
+      --primary-2:#7c3aed;
+      --accent:#db2777;
+      --accent-2:#06b6d4;
+      --grad-primary:linear-gradient(135deg,#4f46e5,#7c3aed 55%,#db2777);
+      --grad-cool:linear-gradient(135deg,#06b6d4,#4f46e5);
+
+      --red:#e11d48;
+      --red-dark:#9f1239;
+      --red-soft:#fff1f4;
+      --red-line:#fecdd6;
+
+      --amber:#d97706;
+      --amber-dark:#92400e;
+      --amber-soft:#fffbeb;
+      --amber-line:#fde68a;
+
+      --green:#059669;
+      --green-dark:#065f46;
+      --green-soft:#ecfdf5;
+      --green-line:#a7f3d0;
+
+      --blue:#2563eb;
+      --blue-dark:#1d4ed8;
+      --blue-soft:#eff6ff;
+      --blue-line:#bfdbfe;
+
+      --indigo:#4f46e5;
+      --indigo-dark:#3730a3;
+      --indigo-soft:#eef0ff;
+      --indigo-line:#c7d2fe;
+
+      --teal:#0d9488;
+      --teal-dark:#115e59;
+      --teal-soft:#f0fdfa;
+      --teal-line:#99f6e4;
+
+      --purple:#7c3aed;
+
+      --font-display:'Manrope', Inter, ui-sans-serif, system-ui, sans-serif;
+
+      --radius-lg:22px;
+      --radius:16px;
+      --radius-sm:12px;
+      --shadow:0 18px 40px rgba(79,70,229,.13);
+      --shadow-sm:0 8px 18px rgba(15,23,42,.07);
+      --shadow-glow:0 12px 26px rgba(124,58,237,.30);
+      --focus:0 0 0 4px rgba(79,70,229,.18);
+    }
+
+    *, *::before, *::after{ box-sizing:border-box; }
+
+    html{ background:var(--bg); scroll-behavior:smooth; }
+    html, body{ width:100%; max-width:100%; overflow-x:hidden; }
+
+    @keyframes fadeSlideIn{ from{ opacity:0; transform:translateY(7px); } to{ opacity:1; transform:translateY(0); } }
+    @keyframes gradientShift{ 0%{ background-position:0% 50%; } 50%{ background-position:100% 50%; } 100%{ background-position:0% 50%; } }
+    @keyframes pulseDot{ 0%{ box-shadow:0 0 0 0 rgba(217,119,6,.45); } 70%{ box-shadow:0 0 0 7px rgba(217,119,6,0); } 100%{ box-shadow:0 0 0 0 rgba(217,119,6,0); } }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+      color:var(--ink);
+      line-height:1.45;
+      background:
+        radial-gradient(circle at 12% -4%, rgba(79,70,229,.15), transparent 34%),
+        radial-gradient(circle at 88% 0%, rgba(219,39,119,.12), transparent 38%),
+        radial-gradient(circle at 50% 100%, rgba(6,182,212,.09), transparent 40%),
+        var(--bg);
+      background-attachment:fixed;
+    }
+
+    img, video, iframe, canvas, svg{ max-width:100%; }
+    .icon{ width:16px; height:16px; stroke:currentColor; stroke-width:2.2; fill:none; stroke-linecap:round; stroke-linejoin:round; display:block; flex:0 0 auto; }
+
+    /* ---------- header ---------- */
+    header{
+      position:sticky; top:0; z-index:50;
+      display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
+      padding:16px clamp(14px, 2vw, 26px);
+      background:rgba(255,255,255,.88);
+      border-bottom:1px solid var(--line);
+      box-shadow:0 12px 30px rgba(79,70,229,.10);
+      backdrop-filter:blur(18px) saturate(1.3);
+      -webkit-backdrop-filter:blur(18px) saturate(1.3);
+    }
+    header::before{
+      content:""; position:absolute; left:0; right:0; top:0; height:4px;
+      background:var(--grad-primary); background-size:200% 100%;
+      animation:gradientShift 7s ease infinite;
+    }
+    .brand{ display:flex; gap:12px; align-items:center; min-width:0; }
+    .brand img{
+      width:42px; height:42px; object-fit:contain; flex:0 0 auto;
+      padding:6px; border-radius:14px;
+      background:linear-gradient(135deg,#fff,#f1f0fe);
+      border:1px solid var(--line);
+      box-shadow:0 6px 16px rgba(79,70,229,.18);
+    }
+    .brandText{ min-width:0; }
+    .brandTitle{ font-family:var(--font-display); font-weight:800; font-size:19px; letter-spacing:-.02em; background:var(--grad-primary); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    .welcomeLine{ font-size:12px; color:#334155; margin-top:5px; line-height:1.3; max-width:900px; }
+    header .small{ font-size:12px; color:var(--muted); margin-top:4px; line-height:1.2; word-break:break-word; }
+    header .row{ align-items:center; }
+
+    @media (max-width: 980px){
+      header{ position:relative; flex-direction:column; align-items:stretch; padding:14px; }
+      header .row{ width:100%; display:grid; grid-template-columns:1fr; gap:8px; }
+      header button{ width:100%; }
+      .brand{ align-items:center; }
+      .brandText > div, .welcomeLine, header .small{ max-width:100%; overflow-wrap:anywhere; word-break:break-word; }
+    }
+
+    /* ---------- layout ---------- */
+    .wrap{
+      display:grid;
+      grid-template-columns:minmax(320px, 400px) minmax(0, 1fr);
+      gap:16px;
+      width:min(1680px, calc(100% - 28px));
+      margin:0 auto;
+      padding:16px 0 20px;
+      align-items:start;
+    }
+    body > div[style*="padding:14px"]{
+      width:min(1680px, calc(100% - 28px));
+      margin:0 auto;
+    }
+    @media (max-width: 980px){
+      .wrap{ grid-template-columns:1fr; width:calc(100% - 20px); }
+      body > div[style*="padding:14px"]{ width:calc(100% - 20px); }
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius-lg);
+      box-shadow:var(--shadow);
+      padding:18px;
+      overflow:hidden;
+    }
+    .wrap > .card{
+      position:sticky; top:88px;
+      max-height:calc(100vh - 108px);
+      display:flex; flex-direction:column;
+    }
+    @media (max-width: 980px){
+      .wrap > .card{ position:relative; top:auto; max-height:none; }
+    }
+    /* ✅ FIXED: the Live Workload card is a column flexbox with a capped
+       height, so every direct child (title row, workload summary box,
+       filter row, ticket list, hint line) defaulted to flex-shrink:1. When
+       the ticket list's natural content was taller than the available
+       space, the browser shrank ALL of them together instead of just
+       scrolling the list - and because each of those children also sets
+       its own overflow:hidden, shrinking below content height silently
+       clipped their content instead of resizing visibly (the workload
+       summary's pill/subtitle vanishing, ticket text overlapping the
+       status pill). Only .list is meant to flex/scroll - everything else
+       around it needs to hold its natural size no matter how little room
+       is left, so the list is what gives way (via its own overflow-y:auto)
+       instead of every child getting silently crushed.
+    */
+    .wrap > .card > .row,
+    .wrap > .card > .workloadBox,
+    .wrap > .card > .muted{ flex-shrink:0; }
+
+    .title{ font-family:var(--font-display); font-weight:800; font-size:16px; margin:0 0 10px; color:var(--navy); letter-spacing:-.01em; display:flex; align-items:center; gap:9px; }
+    .muted{ color:var(--muted); font-size:12px; font-weight:600; }
+    .small{ font-size:12px; }
+    .ok{ color:var(--green-dark); font-weight:700; }
+
+    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    @media (max-width: 980px){ .grid2{ grid-template-columns:1fr; } }
+
+    /* ---------- icon chips (section headers, titles, stat tiles) ---------- */
+    .iconChip{ display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:9px; color:#fff; flex:0 0 auto; box-shadow:0 4px 10px rgba(15,23,42,.14); }
+    .iconChip .icon{ width:15px; height:15px; }
+    .iconChip.chip-indigo{ background:linear-gradient(135deg,var(--indigo),#818cf8); }
+    .iconChip.chip-teal{ background:linear-gradient(135deg,var(--teal),#2dd4bf); }
+    .iconChip.chip-amber{ background:linear-gradient(135deg,var(--amber),#fbbf24); }
+    .iconChip.chip-blue{ background:linear-gradient(135deg,var(--blue),#60a5fa); }
+    .iconChip.chip-pink{ background:linear-gradient(135deg,var(--accent),#f472b6); }
+    .iconChip.chip-red{ background:linear-gradient(135deg,var(--red),#fb7185); }
+
+    /* ---------- buttons & inputs ---------- */
+    button{
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      padding:10px 16px; min-height:42px;
+      border:1px solid var(--line); border-radius:999px;
+      background:var(--card); color:var(--navy); font-weight:750; font-size:13px;
+      cursor:pointer; box-shadow:var(--shadow-sm);
+      transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease, background .15s ease, color .15s ease;
+    }
+    button .btnIcon{ width:15px; height:15px; stroke-width:2.3; }
+    button:hover:not(:disabled){ transform:translateY(-2px); border-color:var(--primary); color:var(--primary-dark); background:#fff; box-shadow:0 10px 22px rgba(79,70,229,.18); }
+    button:active:not(:disabled){ transform:translateY(0); }
+    button:disabled{ opacity:.55; cursor:not-allowed; }
+    button.primary{
+      background:var(--grad-primary); background-size:160% 160%;
+      border-color:transparent; color:#fff;
+      box-shadow:var(--shadow-glow);
+    }
+    button.primary:hover:not(:disabled){ transform:translateY(-2px); background-position:100% 0; color:#fff; box-shadow:0 16px 34px rgba(124,58,237,.38); }
+    button#tlsBtn{
+      border-color:rgba(225,29,72,.28); color:var(--red-dark);
+      background:linear-gradient(135deg,#fff,#fff1f4);
+    }
+    button#tlsBtn:hover{ color:var(--red-dark); border-color:var(--red); box-shadow:0 10px 22px rgba(225,29,72,.18); }
+
+    select, input, textarea{
+      width:100%; box-sizing:border-box;
+      padding:10px 12px; font-size:14px; color:var(--ink);
+      border:1px solid #d8d4f5; border-radius:var(--radius-sm);
+      background:#fff; outline:none;
+      transition:border-color .14s ease, box-shadow .14s ease;
+    }
+    textarea{ min-height:70px; resize:vertical; font-family:inherit; }
+    select:focus, input:focus, textarea:focus{ border-color:var(--primary); box-shadow:var(--focus); }
+    select.nfaNoTimeRequired{ opacity:.7; background:var(--card-soft); }
+    textarea[readonly]{ background:var(--card-soft); color:#334155; }
+
+    label.muted{ display:block; margin-bottom:5px; }
+
+    code{ background:var(--card-soft); border:1px solid var(--line); padding:2px 6px; border-radius:6px; font-size:12px; }
+    a{ color:var(--primary-dark); }
+    a:hover{ opacity:.85; }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+    /* ---------- pills, badges, tags ---------- */
+    .pill, .badge, .miniPill{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:5px 11px; border-radius:999px;
+      border:1px solid var(--line); background:#fff;
+      font-size:12px; font-weight:750; color:var(--ink);
+      box-shadow:var(--shadow-sm); white-space:nowrap;
+    }
+    .pill strong{ font-weight:850; }
+    .miniOk{ border-color:var(--green-line); background:var(--green-soft); color:var(--green-dark); font-weight:850; }
+    .miniBad{ border-color:var(--red-line); background:var(--red-soft); color:var(--red-dark); font-weight:850; }
+
+    .needTag, .linkedMiniTag, .ticketTinyPill, .ticketStatusPill, .ticketOpenHint{
+      display:inline-flex; align-items:center; gap:5px;
+      padding:5px 10px; border-radius:999px; font-size:11px; font-weight:850;
+      border:1px solid var(--line); background:#fff; color:#334155;
+      box-shadow:var(--shadow-sm); white-space:nowrap; line-height:1.1;
+    }
+    .needTag{ position:relative; padding-left:19px; border-color:var(--amber-line); background:var(--amber-soft); color:var(--amber-dark); }
+    .needTag::before{ content:""; position:absolute; left:9px; top:50%; width:6px; height:6px; margin-top:-3px; border-radius:999px; background:var(--amber-dark); animation:pulseDot 1.8s infinite; }
+    .linkedMiniTag{ border-color:var(--blue-line); background:var(--blue-soft); color:#1e3a8a; word-break:break-word; white-space:normal; }
+    .ticketOpenHint{ color:var(--blue-dark); background:var(--blue-soft); border-color:var(--blue-line); }
+    .proofYes{ color:var(--green-dark); background:var(--green-soft); border-color:var(--green-line); }
+    .proofNo{ color:var(--amber-dark); background:var(--amber-soft); border-color:var(--amber-line); }
+
+    .ticketStatusPill{ flex:0 0 auto; max-width:150px; text-align:center; }
+    .ticketStatusPill[data-status="finalised"]{ background:var(--green-soft); border-color:var(--green-line); color:var(--green-dark); }
+    .ticketStatusPill[data-status="in-review"]{ background:var(--indigo-soft); border-color:var(--indigo-line); color:var(--indigo-dark); }
+    .ticketStatusPill[data-status="ready-to-publish"]{ background:var(--teal-soft); border-color:var(--teal-line); color:var(--teal-dark); }
+    .ticketStatusPill[data-status="awaiting-review"],
+    .ticketStatusPill[data-status="under-review"],
+    .ticketStatusPill[data-status=""]{ background:var(--amber-soft); border-color:var(--amber-line); color:var(--amber-dark); }
+
+    .stmtTag, .delibTag{
+      padding:9px 10px; border-radius:var(--radius-sm); font-size:12px; font-weight:850; line-height:1.25;
+      border:1px solid var(--line); background:var(--card-soft); color:var(--ink);
+    }
+    .stmtTag small, .delibTag small{ display:block; margin-top:4px; font-weight:750; opacity:.9; }
+    .stmtOk, .delibOk{ border-color:var(--green-line); background:var(--green-soft); color:var(--green-dark); }
+    .stmtBad, .delibBad{ border-color:var(--red-line); background:var(--red-soft); color:var(--red-dark); }
+
+    /* ---------- top stat bar (NEW) ---------- */
+    .statBar{ display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:12px; }
+    .statTile{
+      position:relative; overflow:hidden;
+      background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+      padding:15px 16px; display:flex; align-items:center; gap:13px;
+      box-shadow:var(--shadow-sm);
+      animation:fadeSlideIn .3s ease both;
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+    .statTile:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+    .statTile::after{ content:""; position:absolute; right:-26px; top:-26px; width:84px; height:84px; border-radius:999px; opacity:.10; }
+    .statTileIcon{ position:relative; z-index:1; width:44px; height:44px; border-radius:13px; display:flex; align-items:center; justify-content:center; color:#fff; flex:0 0 auto; box-shadow:0 8px 18px rgba(15,23,42,.16); }
+    .statTileIcon .icon{ width:21px; height:21px; }
+    .statTileBody{ position:relative; z-index:1; min-width:0; }
+    .statTileNum{ font-family:var(--font-display); font-size:23px; font-weight:800; color:var(--navy); line-height:1.15; }
+    .statTileLabel{ font-size:11px; font-weight:750; color:var(--muted); text-transform:uppercase; letter-spacing:.045em; margin-top:2px; }
+    .statTile.tone-indigo .statTileIcon{ background:linear-gradient(135deg,#4f46e5,#818cf8); }
+    .statTile.tone-indigo::after{ background:#4f46e5; }
+    .statTile.tone-amber .statTileIcon{ background:linear-gradient(135deg,#d97706,#fbbf24); }
+    .statTile.tone-amber::after{ background:#d97706; }
+    .statTile.tone-pink .statTileIcon{ background:linear-gradient(135deg,#db2777,#f472b6); }
+    .statTile.tone-pink::after{ background:#db2777; }
+    .statTile.tone-teal .statTileIcon{ background:linear-gradient(135deg,#0d9488,#2dd4bf); }
+    .statTile.tone-teal::after{ background:#0d9488; }
+
+    /* ---------- workload box ---------- */
+    .workloadBox{ position:relative; overflow:hidden; border:1px solid var(--indigo-line); border-radius:var(--radius-sm); padding:13px 15px; background:linear-gradient(135deg,var(--indigo-soft),#fff); margin:10px 0 12px; }
+    .workloadBox::after{ content:""; position:absolute; right:-22px; top:-22px; width:80px; height:80px; border-radius:999px; background:var(--indigo); opacity:.08; }
+    .workloadTop{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; position:relative; z-index:1; }
+    .workloadTitle{ font-weight:800; font-size:13px; margin:0; color:var(--navy); display:flex; align-items:center; gap:8px; }
+    .workloadSub{ margin-top:6px; font-size:12px; color:var(--muted); line-height:1.3; position:relative; z-index:1; }
+
+    /* ---------- ticket list ---------- */
+    .list{
+      flex:1; min-height:0; overflow-y:auto; overflow-x:hidden;
+      display:flex; flex-direction:column; gap:12px;
+      padding:2px 6px 14px 2px; margin-right:-4px;
+      scrollbar-width:thin; scrollbar-color:#c7bdf5 transparent;
+    }
+    .list::-webkit-scrollbar{ width:9px; }
+    .list::-webkit-scrollbar-thumb{ background:#c7bdf5; border-radius:999px; border:3px solid transparent; background-clip:content-box; }
+    @media (max-width: 980px){ .list{ max-height:62vh; min-height:280px; } }
+
+    .ticket{
+      position:relative; cursor:pointer; border-radius:var(--radius); overflow:hidden;
+      border:1px solid var(--line); background:linear-gradient(180deg,#fff,#fbfbff);
+      box-shadow:var(--shadow-sm);
+      animation:fadeSlideIn .28s ease both;
+      transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+      /* ✅ FIXED: same flex-shrink issue as the card's own children (see
+         .wrap > .card comment above) one level deeper - .list is itself a
+         column flexbox, so each .ticket card defaulted to shrinking below
+         its real content height (and, with overflow:hidden here, silently
+         clipping everything past the title line - the id/people/info/
+         incident/footer rows, and the second line of the subtitle) rather
+         than letting .list's own overflow-y:auto scroll to show every card
+         at full size. Cards now always render full height; .list scrolls. */
+      flex-shrink:0;
+    }
+    .ticket::before{ content:""; position:absolute; inset:0 auto 0 0; width:5px; background:var(--grad-primary); opacity:.35; transition:opacity .16s ease, width .16s ease; }
+    .ticket:hover{ transform:translateY(-2px); box-shadow:0 16px 32px rgba(79,70,229,.16); border-color:var(--indigo-line); background:#fff; }
+    .ticket:hover::before{ opacity:.85; width:6px; }
+    .ticket.active{ border-color:var(--primary); box-shadow:0 0 0 3px rgba(79,70,229,.14), var(--shadow); background:linear-gradient(135deg,#fff,var(--indigo-soft)); }
+    .ticket.active::before{ width:6px; opacity:1; }
+    .ticket .id{ font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; color:var(--navy); font-weight:750; }
+    .ticket .status{ font-size:12px; color:#334155; margin-top:3px; }
+
+    .ticketCardInner, .ticketCardInner.compactTicketCard{ position:relative; z-index:1; padding:14px 14px 13px 18px; }
+    .ticketHeadLine{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; min-width:0; }
+    .ticketHeadText{ min-width:0; flex:1; }
+    .ticketEvent{ font-size:14px; font-weight:850; color:var(--navy); line-height:1.25; white-space:normal; word-break:break-word; }
+    .ticketCompetition{ margin-top:3px; font-size:12px; font-weight:700; color:var(--muted); line-height:1.25; white-space:normal; word-break:break-word; }
+
+    .ticketIdLine{
+      margin-top:9px; display:flex; gap:8px; align-items:center; min-width:0;
+      border:1px solid var(--line); background:var(--card-soft); border-radius:var(--radius-sm); padding:7px 9px;
+    }
+    .ticketIdLine span, .ticketPeopleLine span, .ticketInfoLine span{
+      display:block; color:var(--muted-2); font-size:10px; text-transform:uppercase; letter-spacing:.07em; font-weight:850;
+    }
+    .ticketIdLine strong{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--navy); font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; }
+
+    .ticketPeopleLine, .ticketInfoLine{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
+    .ticketPeopleLine > div, .ticketInfoLine > div{ min-width:0; border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; padding:8px 9px; }
+    .ticketPeopleLine strong, .ticketInfoLine strong{ display:block; margin-top:3px; color:var(--navy); font-size:12px; line-height:1.25; font-weight:800; white-space:normal; word-break:break-word; }
+    .ticketPeopleLine > div:first-child{ background:#fff8f9; border-color:var(--red-line); }
+    .ticketPeopleLine > div:last-child{ background:#f7f7fe; border-color:var(--indigo-line); }
+    @media (max-width: 560px){ .ticketPeopleLine, .ticketInfoLine{ grid-template-columns:1fr; } }
+
+    .ticketIncidentLine{
+      margin-top:8px; color:#334155; font-size:12px; line-height:1.35; font-weight:650;
+      background:var(--card-soft); border:1px solid var(--line); border-radius:var(--radius-sm); padding:8px 9px;
+      white-space:normal; word-break:break-word;
+    }
+
+    .compactFooter{ margin-top:9px; display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+    .compactFooter .ticketOpenHint{ margin-left:auto; }
+    .compactChecklist{ margin-top:8px; display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+    @media (max-width: 980px){ .compactChecklist{ grid-template-columns:1fr; } }
+
+    /* ---------- section blocks ---------- */
+    .sec{ border:1px solid var(--line); border-left:4px solid var(--line); border-radius:var(--radius); padding:15px; background:var(--card-soft); margin-top:13px; transition:box-shadow .18s ease, border-color .18s ease; }
+    .sec:hover{ box-shadow:var(--shadow-sm); }
+    .sec h3{ margin:0 0 9px; font-size:14.5px; font-family:var(--font-display); font-weight:800; color:var(--navy); display:flex; align-items:center; gap:9px; }
+    #statementsSec{ border-left-color:var(--teal); }
+    #discussionSec{ border-left-color:var(--indigo); }
+    #driverHistorySec{ border-left-color:var(--amber); }
+    #linkedIncidentSec{ border-left-color:var(--blue); }
+
+    #selTitle{ font-size:19px; }
+    #selTitle::after{ content:""; display:block; width:60px; height:3px; margin-top:8px; border-radius:999px; background:var(--grad-primary); }
+
+    #sumCompetition, #sumEvent, #sumRule, #sumProof{ font-weight:750; color:#172033; word-break:break-word; }
+
+    .redBox{
+      border:1px solid var(--red-line); background:var(--red-soft); color:var(--red-dark);
+      border-radius:var(--radius-sm); padding:10px 12px 10px 40px; margin-top:10px;
+      font-size:13px; line-height:1.3; font-weight:700; position:relative;
+    }
+    .redBox::before{
+      content:"!"; position:absolute; left:12px; top:50%; transform:translateY(-50%);
+      width:20px; height:20px; display:grid; place-items:center; border-radius:999px;
+      color:#fff; background:var(--red); font-weight:900; font-size:12px;
+    }
+
+    .bannerBox{ border-radius:var(--radius-sm); padding:12px 14px; font-size:13px; font-weight:800; line-height:1.3; }
+    .bannerBox small{ display:block; margin-top:6px; font-weight:700; opacity:.95; }
+    .bannerRed{ border:1px solid var(--red-line); background:var(--red-soft); color:var(--red-dark); }
+    .bannerAmber{ border:1px solid var(--amber-line); background:var(--amber-soft); color:var(--amber-dark); }
+    .bannerGreen{ border:1px solid var(--green-line); background:var(--green-soft); color:var(--green-dark); }
+
+    .videoWrap{ position:relative; width:100%; padding-top:56.25%; background:#000; border-radius:var(--radius-sm); overflow:hidden; border:1px solid var(--line); margin-top:10px; box-shadow:var(--shadow-sm); }
+    .videoWrap iframe, .videoWrap video{ position:absolute; top:0; left:0; width:100%; height:100%; border:0; }
+
+    .commentBox{
+      position:relative; border:1px solid var(--line); border-radius:var(--radius-sm);
+      padding:12px 12px 12px 16px; background:#fff;
+      transition:box-shadow .15s ease, transform .15s ease;
+    }
+    .commentBox:hover{ transform:translateY(-1px); box-shadow:var(--shadow-sm); }
+    .commentBox::before{ content:""; position:absolute; left:0; top:12px; bottom:12px; width:4px; border-radius:999px; background:var(--grad-primary); opacity:.55; }
+    .commentMeta{ font-size:12px; color:var(--muted); margin-top:4px; font-weight:650; }
+
+    .timePenaltyRow{ margin-top:10px; }
+    .nfaNoTimeNote{ margin-top:6px; font-size:12px; font-weight:800; color:var(--green-dark); display:none; }
+
+    .penPreview{ margin-top:10px; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; color:var(--ink); font-size:13px; line-height:1.3; }
+    .penPreview .mutedLine{ color:var(--muted); font-size:12px; margin-top:6px; }
+    .penPreview .k{ font-weight:900; }
+    .penPreview pre{ margin:8px 0 0; white-space:pre-wrap; font-family:inherit; background:transparent; }
+
+    .voteSummaryBox{ margin-top:12px; border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; padding:12px; }
+    .voteSummaryTitle{ font-weight:850; font-size:14px; margin-bottom:8px; color:var(--navy); display:flex; align-items:center; gap:8px; }
+    .voteSummaryGrid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px; }
+    @media (max-width: 980px){ .voteSummaryGrid{ grid-template-columns:1fr; } }
+    .voteSummaryPanel{ border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card-soft); padding:10px 12px; }
+    .voteSummaryPanelTitle{ font-size:12px; font-weight:850; color:var(--navy); margin-bottom:6px; }
+    .voteLine{ display:flex; justify-content:space-between; gap:10px; border-top:1px solid var(--line-soft); padding:6px 0; font-size:12px; line-height:1.25; }
+    .voteLine:first-of-type{ border-top:0; }
+    .voteLine strong{ font-weight:850; }
+    .recommendationBox{ margin-top:10px; border:1px solid var(--green-line); background:var(--green-soft); color:var(--green-dark); border-radius:var(--radius-sm); padding:10px 12px; font-size:13px; font-weight:850; line-height:1.3; }
+    .recommendationBox small{ display:block; margin-top:5px; font-weight:750; opacity:.95; }
+
+    .linkedMiniTag{ margin-top:8px; display:inline-block; }
+    .linkedIncidentBox{ border:1px solid var(--blue-line); border-radius:var(--radius-sm); background:linear-gradient(135deg,var(--blue-soft),#fff); padding:12px; margin-top:10px; }
+    .linkedIncidentTitle{ font-size:14px; font-weight:850; color:var(--navy); margin-bottom:6px; }
+    .linkedTicketGrid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+    @media (max-width: 980px){ .linkedTicketGrid{ grid-template-columns:1fr; } }
+    .linkedTicketCard{ border:1px solid var(--line); border-radius:var(--radius-sm); background:linear-gradient(180deg,#fff,#f8f7fe); padding:10px 12px; font-size:13px; line-height:1.35; cursor:pointer; box-shadow:var(--shadow-sm); transition:transform .14s ease, box-shadow .14s ease; }
+    .linkedTicketCard:hover{ transform:translateY(-2px); box-shadow:0 12px 24px rgba(37,99,235,.14); }
+    .linkedTicketCard .mono{ word-break:break-all; font-size:12px; }
+    .linkedDriverList{ border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; padding:10px 12px; margin-top:10px; font-size:13px; line-height:1.35; }
+    .linkedDriverList ol{ margin:6px 0 0 20px; padding:0; }
+    .linkedDriverList li{ margin:3px 0; }
+
+    /* ---------- driver history ---------- */
+    .driverHistoryGrid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px; }
+    @media (max-width: 640px){ .driverHistoryGrid{ grid-template-columns:1fr; } }
+    .driverHistoryCol{ min-width:0; }
+    .driverHistoryLabel{ font-size:12px; font-weight:800; color:var(--navy); margin-bottom:6px; }
+    .driverHistoryList{ display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto; padding-right:2px; }
+    .driverHistoryItem{
+      border:1px solid var(--line); border-radius:var(--radius-sm); background:linear-gradient(180deg,#fff,#f8f7fe);
+      padding:9px 11px; font-size:12px; line-height:1.35; cursor:pointer; box-shadow:var(--shadow-sm);
+      transition:transform .14s ease, box-shadow .14s ease;
+    }
+    .driverHistoryItem:hover{ transform:translateY(-2px); box-shadow:0 12px 24px rgba(79,70,229,.14); }
+    .driverHistoryItem .roleTag{ font-weight:850; color:var(--navy); }
+    .driverHistoryItem .muted{ margin-top:2px; }
+    .driverHistoryEmpty{ font-size:12px; color:var(--muted); font-weight:650; padding:6px 2px; }
+
+    /* ---------- driver identity cards (licence-card styling) ---------- */
+    .driverCardRow{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+    @media (max-width: 640px){ .driverCardRow{ grid-template-columns:1fr; } }
+
+    .driverIdCard{
+      position:relative; border-radius:18px; padding:3px;
+      background:linear-gradient(135deg, var(--muted-2), #cbd5e1);
+      box-shadow:var(--shadow-sm);
+      transition:box-shadow .18s ease, transform .18s ease;
+    }
+    .driverIdCard.role-accused{ background:linear-gradient(135deg,#fca5a5,var(--red)); }
+    .driverIdCard.role-reporter{ background:linear-gradient(135deg,var(--indigo-line),var(--indigo)); }
+    .driverIdCard:not(.unlinked):hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+
+    .driverIdCardInner{
+      border-radius:15px; background:#11151b; padding:12px 13px 13px;
+      position:relative; min-height:96px; background-size:cover; background-position:center;
+      display:flex; gap:11px; align-items:center;
+    }
+    .driverIdCardInner::before{
+      content:""; position:absolute; inset:0; border-radius:15px;
+      background:linear-gradient(180deg, rgba(8,10,13,.15), rgba(8,10,13,.82)); pointer-events:none;
+    }
+    .driverIdCard.unlinked .driverIdCardInner{ background:#1f2937; }
+
+    .driverCardRole{
+      position:absolute; top:8px; left:13px; z-index:1;
+      font-size:9px; font-weight:900; letter-spacing:.09em; text-transform:uppercase; color:rgba(255,255,255,.75);
+    }
+    .driverCardPhoto{
+      position:relative; z-index:1; width:52px; height:52px; border-radius:12px; object-fit:cover; flex:0 0 auto;
+      border:2px solid rgba(255,255,255,.25); background:#1a2027;
+    }
+    .driverCardBody{ position:relative; z-index:1; min-width:0; flex:1; padding-top:8px; }
+    .driverCardName{ font-size:14px; font-weight:800; color:#fff; line-height:1.2; word-break:break-word; }
+    .driverCardNumber{ font-size:10.5px; color:rgba(255,255,255,.62); font-family:ui-monospace, SFMono-Regular, Menlo, monospace; margin-top:2px; }
+    .driverCardMetaRow{ display:flex; align-items:center; gap:6px; margin-top:6px; flex-wrap:wrap; }
+    .driverCardTierPill{ display:inline-block; padding:3px 9px; border-radius:999px; font-size:9.5px; font-weight:900; text-transform:uppercase; letter-spacing:.03em; }
+    .driverCardPoints{ font-size:10.5px; font-weight:850; padding:2px 8px; border-radius:999px; background:rgba(255,255,255,.12); }
+    .driverCardPoints.pts-green{ color:#6ee7b7; }
+    .driverCardPoints.pts-orange{ color:#fcd34d; }
+    .driverCardPoints.pts-red{ color:#fca5a5; }
+    .driverIdCard.unlinked .driverCardName{ color:#e5e7eb; }
+    .driverIdCard.unlinked .driverCardNumber{ color:rgba(255,255,255,.5); }
+
+    /* ---------- toast ---------- */
+    .toast{
+      position:fixed; right:16px; bottom:16px; z-index:9999;
+      background:var(--grad-primary); color:#fff;
+      padding:11px 16px; border-radius:999px;
+      box-shadow:0 16px 32px rgba(79,70,229,.30); font-weight:750; font-size:13px;
+      opacity:0; transform:translateY(8px); transition:all .18s ease;
+    }
+    .toast.show{ opacity:1; transform:translateY(0); }
+
+    /* ---------- misc small-screen guards ---------- */
+    @media (max-width: 980px){
+      #refreshStatementsBtn, #refreshTicketsBtn, #refreshDiscussionBtn, #postDiscussionBtn{ width:100%; }
+      #filter{ font-size:16px; }
+      .statBar{ grid-template-columns:repeat(2, 1fr); }
+    }
+
+    /* ============================================================
+       ITS OWNERS SETUP — supplemental styling (its-owner-setup.html only)
+       Shared IFWL design system copied verbatim from steward.html above;
+       these rules theme the wizard-specific components.
+       ============================================================ */
+    .setupWrap{ width:min(880px, calc(100% - 28px)); margin:0 auto; padding:24px 0 40px; }
+    .setupIntro{ text-align:center; margin-bottom:20px; }
+    .setupIntro h1{ font-family:var(--font-display); font-size:26px; font-weight:800; color:var(--navy); margin:0 0 8px; }
+    .setupIntro p{ color:var(--muted); font-size:14px; max-width:560px; margin:0 auto; }
+
+    .stepSec{ border:1px solid var(--line); border-left:4px solid var(--indigo); border-radius:var(--radius); padding:18px; background:var(--card-soft); margin-top:16px; }
+    .stepSec h2{ margin:0 0 4px; font-size:16px; font-family:var(--font-display); font-weight:800; color:var(--navy); }
+    .stepSec .stepHint{ color:var(--muted); font-size:12.5px; margin-bottom:12px; }
+    .stepGrid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:6px; }
+    @media (max-width: 700px){ .stepGrid{ grid-template-columns:1fr; } }
+    .stepGrid label.muted{ margin-bottom:5px; }
+    .stepFull{ grid-column:1 / -1; }
+
+    .logoPreviewRow{ display:flex; align-items:center; gap:12px; margin-top:8px; }
+    .logoPreviewRow img{ width:52px; height:52px; border-radius:12px; object-fit:contain; background:#fff; border:1px solid var(--line); }
+
+    .subscriptionNote{
+      border:1px solid var(--amber-line); background:var(--amber-soft); color:var(--amber-dark);
+      border-radius:var(--radius-sm); padding:10px 12px; margin-top:10px; font-size:13px; line-height:1.35; font-weight:700;
+    }
+
+    .authPanel{ max-width:420px; margin:40px auto 0; }
+    .authPanel .row{ margin-top:10px; }
+    .authSwitch{ text-align:center; margin-top:10px; font-size:13px; }
+    .authSwitch a{ cursor:pointer; }
+
+    .successBox{
+      border:1px solid var(--green-line); background:var(--green-soft); color:var(--green-dark);
+      border-radius:var(--radius-sm); padding:16px; margin-top:16px; font-size:14px; line-height:1.4;
+    }
+    .successBox .mono{ display:block; margin-top:6px; font-size:13px; }
+  
+    /* ============================================================
+       ITS OWNER DASHBOARD — supplemental styling (owner.html only)
+       Shared IFWL ticket-system design system above, unchanged.
+       ============================================================ */
+    .ownerWrap{ width:min(1180px, calc(100% - 28px)); margin:0 auto; padding:16px 0 48px; }
+    .gateCard{ max-width:520px; margin:40px auto 0; }
+
+    .tabs{
+      position:sticky; top:86px; z-index:40;
+      display:flex; gap:6px; flex-wrap:wrap; margin:16px 0 4px; padding:6px;
+      background:rgba(255,255,255,.92); border:1px solid var(--line); border-radius:999px;
+      box-shadow:var(--shadow-sm); backdrop-filter:blur(12px);
+    }
+    .tabBtn{ min-height:36px; padding:8px 15px; border:0; box-shadow:none; background:transparent; }
+    .tabBtn:hover:not(:disabled){ transform:none; box-shadow:none; background:var(--indigo-soft); }
+    .tabBtn.active, .tabBtn.active:hover{ background:var(--grad-primary); color:#fff; }
+    @media (max-width: 980px){ .tabs{ position:relative; top:auto; border-radius:var(--radius); } .tabBtn{ flex:1 1 auto; } }
+
+    .panel{ display:none; }
+    .panel.active{ display:block; animation:fadeSlideIn .25s ease both; }
+    .panel > .card{ margin-top:14px; }
+    .cardHead{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap; }
+    .cardHead .muted{ max-width:760px; }
+
+    /* field-level feedback */
+    .fieldMsg{ font-size:12px; margin-top:5px; font-weight:700; min-height:0; }
+    .fieldMsg.bad{ color:var(--red-dark); }
+    .fieldMsg.ok{ color:var(--green-dark); }
+    .fieldMsg.warn{ color:var(--amber-dark); }
+    input.bad, select.bad{ border-color:var(--red); box-shadow:0 0 0 3px rgba(225,29,72,.10); }
+    input.good{ border-color:var(--green); }
+    .req{ color:var(--red); font-weight:900; }
+    .opt{ color:var(--muted-2); font-weight:700; }
+
+    details.howTo{ margin-top:10px; border:1px solid var(--blue-line); background:var(--blue-soft); border-radius:var(--radius-sm); padding:10px 12px; font-size:13px; color:#1e3a8a; }
+    details.howTo summary{ cursor:pointer; font-weight:800; }
+    details.howTo ol{ margin:8px 0 2px 18px; padding:0; line-height:1.5; }
+
+    /* getting-started checklist */
+    .checkList{ display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+    .checkItem{ display:flex; align-items:center; gap:12px; border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; padding:10px 12px; }
+    .checkDot{ width:26px; height:26px; border-radius:999px; display:grid; place-items:center; flex:0 0 auto; font-weight:900; font-size:13px; }
+    .checkItem.done .checkDot{ background:var(--green-soft); color:var(--green-dark); border:1px solid var(--green-line); }
+    .checkItem.todo .checkDot{ background:var(--amber-soft); color:var(--amber-dark); border:1px solid var(--amber-line); }
+    .checkItem.optional .checkDot{ background:var(--card-soft); color:var(--muted); border:1px solid var(--line); }
+    .checkText{ flex:1; min-width:0; font-size:13px; font-weight:750; color:var(--navy); }
+    .checkText small{ display:block; color:var(--muted); font-weight:650; margin-top:2px; }
+
+    .kv{ display:grid; grid-template-columns:160px 1fr; gap:6px 12px; font-size:13px; margin-top:8px; }
+    .kv div:nth-child(odd){ color:var(--muted); font-weight:700; }
+    @media (max-width:560px){ .kv{ grid-template-columns:1fr; } }
+
+    /* tables */
+    .tableWrap{ overflow:auto; border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; margin-top:10px; }
+    table.dataTable{ width:100%; border-collapse:collapse; font-size:13px; }
+    .dataTable th{ position:sticky; top:0; background:var(--card-soft); text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); padding:9px 10px; border-bottom:1px solid var(--line); white-space:nowrap; z-index:1; }
+    .dataTable td{ padding:7px 10px; border-bottom:1px solid var(--line-soft); vertical-align:top; }
+    .dataTable tr:last-child td{ border-bottom:0; }
+    .dataTable input, .dataTable select{ padding:6px 8px; font-size:13px; border-radius:8px; min-width:110px; }
+    .dataTable td.statusCell{ min-width:220px; font-size:12px; font-weight:700; line-height:1.35; }
+    tr.rowErr td{ background:#fff6f8; }
+    tr.rowWarn td{ background:#fffdf3; }
+    tr.rowOk td.statusCell{ color:var(--green-dark); }
+    tr.rowErr td.statusCell{ color:var(--red-dark); }
+    tr.rowWarn td.statusCell{ color:var(--amber-dark); }
+    .impTableWrap{ max-height:60vh; }
+    .impTable.problemsOnly tr.rowOk{ display:none; }
+
+    /* import steps */
+    .stepBadge{ display:inline-grid; place-items:center; width:24px; height:24px; border-radius:999px; background:var(--grad-primary); color:#fff; font-size:12px; font-weight:900; margin-right:8px; flex:0 0 auto; }
+    .impStep{ border:1px solid var(--line); border-left:4px solid var(--indigo); border-radius:var(--radius); padding:15px; background:var(--card-soft); margin-top:13px; }
+    .impStep h3{ margin:0 0 6px; font-size:14.5px; font-family:var(--font-display); font-weight:800; color:var(--navy); display:flex; align-items:center; }
+    .impStep.locked{ opacity:.5; pointer-events:none; }
+    .dropZone{ border:2px dashed #c7bdf5; border-radius:var(--radius); background:#fff; padding:22px; text-align:center; cursor:pointer; transition:border-color .15s ease, background .15s ease; }
+    .dropZone:hover, .dropZone.drag{ border-color:var(--primary); background:var(--indigo-soft); }
+    .dropZone strong{ display:block; font-size:14px; color:var(--navy); }
+    .orLine{ text-align:center; color:var(--muted-2); font-size:12px; font-weight:800; margin:12px 0; }
+    .mapGrid{ display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px; margin-top:8px; }
+    @media (max-width:900px){ .mapGrid{ grid-template-columns:1fr 1fr; } }
+    @media (max-width:560px){ .mapGrid{ grid-template-columns:1fr; } }
+    .summaryRow{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px; }
+    .progressOuter{ height:10px; border-radius:999px; background:var(--line-soft); overflow:hidden; margin-top:10px; display:none; }
+    .progressInner{ height:100%; width:0; background:var(--grad-primary); transition:width .2s ease; }
+    .bannerBlue{ border:1px solid var(--blue-line); background:var(--blue-soft); color:#1e3a8a; }
+
+    button.danger{ border-color:var(--red-line); color:var(--red-dark); background:#fff; }
+    button.danger:hover:not(:disabled){ border-color:var(--red); color:var(--red-dark); box-shadow:0 10px 22px rgba(225,29,72,.16); }
+    button.small{ min-height:32px; padding:6px 12px; font-size:12px; }
+    .roleHint{ font-size:12px; color:var(--muted); margin-top:5px; font-weight:650; }
+
+    .tWrap{ width:min(860px, calc(100% - 28px)); margin:0 auto; padding:16px 0 48px; }
+    .tabs{ top:16px; }
+    .stepSec h2{ font-size:15px; }
+    details.howTo{ margin-top:12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img id="leagueLogo" src="" alt="" style="display:none;">
+      <div class="brandText">
+        <div class="brandTitle" id="brandTitle">Submit a Ticket</div>
+        <div class="welcomeLine" id="welcomeLine">Report an on-track incident to your league's stewards.</div>
+        <div class="small" id="who"></div>
+      </div>
+    </div>
+    <div class="row">
+      <button id="logoutBtn" style="display:none;">Sign out</button>
+    </div>
+  </header>
+
+  <div class="tWrap">
+    <div class="muted" id="loadingMsg" style="text-align:center; margin-top:60px;">Loading…</div>
+
+    <div class="card gateCard" id="gateMsg" style="display:none;">
+      <div class="title" style="margin:0;" id="gateTitle"></div>
+      <div class="muted" id="gateText" style="margin-top:6px;"></div>
+    </div>
+
+    <div class="card gateCard" id="authPanel" style="display:none;">
+      <div class="title" style="margin:0;">Sign in to continue</div>
+      <div class="muted">We ask you to sign in so stewards know who sent each ticket and statement. Use any Google account.</div>
+      <div class="bannerBox bannerAmber" id="inAppWarning" style="display:none; margin-top:12px;">
+        You're in an in-app browser (e.g. Discord). Google blocks sign-in here.
+        <small>Tap the ⋯ menu and choose “Open in browser” (Chrome or Safari), then sign in.</small>
+      </div>
+      <div class="row" style="justify-content:center; margin-top:16px;">
+        <button class="primary" id="authGoogleBtn">Continue with Google</button>
+      </div>
+      <div class="muted" id="authError" style="margin-top:10px; color:var(--red-dark); text-align:center;"></div>
+    </div>
+
+    <div id="app" style="display:none;">
+      <nav class="tabs">
+        <button class="tabBtn" data-tab="ticket">Submit a ticket</button>
+        <button class="tabBtn" data-tab="statement">Give a statement</button>
+        <button class="tabBtn" data-tab="data">Your data</button>
+      </nav>
+
+      <!-- ===== SUBMIT A TICKET ===== -->
+      <section class="panel" id="panel-ticket">
+        <div class="card">
+          <div class="title"><span class="iconChip chip-red"><svg class="icon" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>Report an incident</div>
+          <div class="muted">Fill in every box marked <span class="req">*</span>. Tickets without video can't be reviewed.</div>
+
+          <div class="stepSec">
+            <h2>About you</h2>
+            <div class="stepGrid">
+              <div>
+                <label class="muted">Your driver name <span class="req">*</span></label>
+                <input type="text" id="tkReporter" maxlength="80" placeholder="Exactly as it shows in-game">
+                <div class="fieldMsg"></div>
+              </div>
+              <div>
+                <label class="muted">Your Discord username <span class="req">*</span></label>
+                <input type="text" id="tkReporterDiscord" maxlength="40" placeholder="e.g. speedy_dave" data-discord="required" autocomplete="off">
+                <div class="fieldMsg"></div>
+              </div>
+            </div>
+            <details class="howTo">
+              <summary>Where do I find a Discord username?</summary>
+              Open Discord → click your profile picture. Your <strong>username</strong> is the lowercase name under your display name (no spaces, no @). It is <u>not</u> your server nickname.
+            </details>
+          </div>
+
+          <div class="stepSec">
+            <h2>Who are you reporting?</h2>
+            <div class="stepGrid">
+              <div>
+                <label class="muted">Their driver name <span class="req">*</span></label>
+                <input type="text" id="tkAccused" maxlength="80" placeholder="Exactly as it shows in-game">
+                <div class="fieldMsg"></div>
+              </div>
+              <div>
+                <label class="muted">Their Discord username <span class="opt">(if you know it — it helps a lot)</span></label>
+                <input type="text" id="tkAccusedDiscord" maxlength="40" placeholder="e.g. jo.bloggs" data-discord="optional" autocomplete="off">
+                <div class="fieldMsg"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stepSec">
+            <h2>The incident</h2>
+            <div class="stepGrid">
+              <div>
+                <label class="muted">Series / championship <span class="req">*</span></label>
+                <input type="text" id="tkCompetition" maxlength="80" placeholder="e.g. GT3 Sprint Series">
+                <div class="fieldMsg"></div>
+              </div>
+              <div>
+                <label class="muted">Race / round <span class="req">*</span></label>
+                <input type="text" id="tkEvent" maxlength="80" placeholder="e.g. Round 3 – Monza, Race 1">
+                <div class="fieldMsg"></div>
+              </div>
+              <div>
+                <label class="muted">When in the race? <span class="req">*</span></label>
+                <input type="text" id="tkWhen" maxlength="60" placeholder="e.g. Lap 4, Turn 1  or  12:34 race time">
+                <div class="fieldMsg"></div>
+              </div>
+              <div>
+                <label class="muted">Which rule was broken? <span class="opt">(your best guess)</span></label>
+                <select id="tkRule"></select>
+              </div>
+              <div class="stepFull">
+                <label class="muted">What happened? <span class="req">*</span></label>
+                <textarea id="tkIncident" rows="5" maxlength="3000" placeholder="Describe what happened, in order. Stick to facts — stewards will watch the video."></textarea>
+                <div class="fieldMsg" id="tkIncidentMsg"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="stepSec">
+            <h2>Evidence</h2>
+            <div class="stepGrid">
+              <div class="stepFull">
+                <label class="muted">Video link <span class="req">*</span></label>
+                <input type="url" id="tkVideo" maxlength="500" placeholder="YouTube, Streamable, Twitch clip, Medal…">
+                <div class="fieldMsg"></div>
+              </div>
+              <div class="stepFull">
+                <label class="muted">Second angle / extra evidence <span class="opt">(optional)</span></label>
+                <input type="url" id="tkExtra" maxlength="500" placeholder="https://…">
+                <div class="fieldMsg"></div>
+              </div>
+            </div>
+            <details class="howTo">
+              <summary>Tips for a good video</summary>
+              Include at least 10 seconds before and after the incident. Make sure the link is public or “unlisted”, not private. Replays from more than one angle help stewards decide faster.
+            </details>
+          </div>
+
+          <label class="row" style="margin-top:14px; gap:8px; font-size:13px; font-weight:750; flex-wrap:nowrap; align-items:flex-start;">
+            <input type="checkbox" id="tkConfirm" style="width:auto; margin-top:2px;"> I confirm this report is accurate and honest. False or abusive reports may lead to action against me.
+          </label>
+          <div class="row" style="justify-content:flex-end; margin-top:14px;">
+            <button class="primary" id="tkSubmitBtn">Submit ticket</button>
+          </div>
+          <div class="fieldMsg" id="tkSubmitMsg" style="text-align:right;"></div>
+        </div>
+
+        <div class="successBox" id="tkSuccess" style="display:none;">
+          <strong>✓ Ticket submitted.</strong>
+          <div style="margin-top:6px;">Your ticket ID: <span class="mono" id="tkSuccessId"></span></div>
+          <div style="margin-top:8px;">Keep this ID. The stewards will review it and may ask the drivers involved for a statement.</div>
+          <div class="row" style="margin-top:12px;">
+            <button id="tkCopyIdBtn">Copy ticket ID</button>
+            <button class="primary" id="tkAnotherBtn">Submit another ticket</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== STATEMENT ===== -->
+      <section class="panel" id="panel-statement">
+        <div class="card">
+          <div class="title"><span class="iconChip chip-indigo"><svg class="icon" viewBox="0 0 24 24"><path d="M7 8h10M7 12h6"/><path d="M4 5h16v11H9l-5 4z"/></svg></span>Give a statement</div>
+          <div class="muted">Named in a ticket, or saw what happened? Give the stewards your side. You can send one statement per ticket.</div>
+          <div class="stepGrid" style="margin-top:12px;">
+            <div>
+              <label class="muted">Ticket ID <span class="req">*</span></label>
+              <input type="text" id="stTicket" maxlength="40" placeholder="e.g. 261109-K7QX" autocomplete="off">
+              <div class="fieldMsg"></div>
+            </div>
+            <div>
+              <label class="muted">You are the… <span class="req">*</span></label>
+              <select id="stRole">
+                <option value="">— Choose —</option>
+                <option value="accused">Driver being reported (accused)</option>
+                <option value="reporter">Driver who reported it (reporter)</option>
+                <option value="witness">Witness</option>
+              </select>
+              <div class="fieldMsg"></div>
+            </div>
+            <div>
+              <label class="muted">Your driver name <span class="req">*</span></label>
+              <input type="text" id="stName" maxlength="80" placeholder="Exactly as it shows in-game">
+              <div class="fieldMsg"></div>
+            </div>
+            <div>
+              <label class="muted">Your Discord username <span class="req">*</span></label>
+              <input type="text" id="stDiscord" maxlength="40" placeholder="e.g. speedy_dave" data-discord="required" autocomplete="off">
+              <div class="fieldMsg"></div>
+            </div>
+            <div class="stepFull">
+              <label class="muted">Your statement <span class="req">*</span></label>
+              <textarea id="stText" rows="6" maxlength="1500" placeholder="Explain what happened from your point of view. Stay calm and stick to facts."></textarea>
+              <div class="fieldMsg" id="stTextMsg"></div>
+            </div>
+          </div>
+          <div class="row" style="justify-content:flex-end; margin-top:14px;">
+            <button class="primary" id="stSubmitBtn">Send statement</button>
+          </div>
+          <div class="fieldMsg" id="stSubmitMsg" style="text-align:right;"></div>
+        </div>
+        <div class="successBox" id="stSuccess" style="display:none;">
+          <strong>✓ Statement sent.</strong>
+          <div style="margin-top:6px;">The stewards will read it before they decide ticket <span class="mono" id="stSuccessId"></span>.</div>
+        </div>
+      </section>
+
+      <!-- ===== YOUR DATA ===== -->
+      <section class="panel" id="panel-data">
+        <div class="card">
+          <div class="title"><span class="iconChip chip-teal"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg></span>Your data</div>
+          <div class="muted">You can ask ITS to show you your record, correct it, dispute a decision, or delete your data. ITS will reply within one month. <a href="./privacy.html" target="_blank" rel="noopener">Read the ITS privacy policy</a>.</div>
+          <div class="stepGrid" style="margin-top:12px;">
+            <div>
+              <label class="muted">What would you like? <span class="req">*</span></label>
+              <select id="drType">
+                <option value="">— Choose —</option>
+                <option value="access">See my record</option>
+                <option value="correct">Correct my record</option>
+                <option value="dispute">Dispute a decision</option>
+                <option value="delete">Delete my data</option>
+                <option value="other">Something else</option>
+              </select>
+              <div class="fieldMsg"></div>
+            </div>
+            <div>
+              <label class="muted">Your Discord username <span class="req">*</span></label>
+              <input type="text" id="drDiscord" maxlength="40" placeholder="e.g. speedy_dave" data-discord="required" autocomplete="off">
+              <div class="fieldMsg"></div>
+            </div>
+            <div class="stepFull">
+              <label class="muted">Details <span class="req">*</span></label>
+              <textarea id="drDetails" rows="4" maxlength="2000" placeholder="Tell us what you need. Include ticket IDs if it's about a particular decision."></textarea>
+              <div class="fieldMsg" id="drDetailsMsg"></div>
+            </div>
+          </div>
+          <div class="bannerBox bannerBlue" style="margin-top:12px;">About deletion<small>Your profile, open tickets and any records without a confirmed penalty are deleted. Confirmed penalties and bans are kept for 2 years from the date of the decision so ITS leagues can protect their drivers, then deleted automatically. You can still see and dispute them during that time.</small></div>
+          <div class="row" style="justify-content:flex-end; margin-top:14px;">
+            <button class="primary" id="drSubmitBtn">Send request</button>
+          </div>
+          <div class="fieldMsg" id="drSubmitMsg" style="text-align:right;"></div>
+        </div>
+        <div class="successBox" id="drSuccess" style="display:none;"><strong>✓ Request sent to ITS.</strong><div style="margin-top:6px;">We'll reply to <span id="drSuccessEmail"></span> within one month.</div></div>
+      </section>
+
+      <div class="muted" style="text-align:center; margin-top:24px; font-size:11px; max-width:620px; margin-left:auto; margin-right:auto;">Powered by ITS. Confirmed penalties and bans are added to the driver's ITS record (linked by Discord username) and visible to staff of other ITS leagues for 2 years. Open tickets and reports that didn't lead to a penalty are not shared. <a href="./privacy.html" target="_blank" rel="noopener">Privacy policy</a></div>
+    </div>
+  </div>
+
+  <!-- In-app privacy notice: shown the first time a driver opens ITS -->
+  <div id="privacyNotice" style="display:none; position:fixed; inset:0; z-index:9000; background:rgba(15,23,42,.45); padding:40px 14px; overflow:auto;">
+    <div class="card" style="max-width:560px; margin:0 auto;">
+      <div class="title" style="margin:0;">Before you start: your data and ITS</div>
+      <div style="font-size:13.5px; line-height:1.55; color:#334155; margin-top:8px;">
+        <p style="margin:6px 0;"><strong id="pnLeague">This league</strong> uses ITS to manage stewarding. ITS stores your Discord username, tickets involving you, and stewarding decisions about you.</p>
+        <p style="margin:6px 0;"><strong>Shared with other ITS leagues:</strong> confirmed penalties and bans only, kept for 2 years from the decision and then deleted automatically.</p>
+        <p style="margin:6px 0;"><strong>Never shared:</strong> open tickets, reports that didn't lead to a penalty, and internal steward notes.</p>
+        <p style="margin:6px 0;">You can ask to see, correct or dispute your record, or have your data deleted, at any time from the <strong>Your data</strong> tab.</p>
+      </div>
+      <div class="row" style="justify-content:space-between; margin-top:14px;">
+        <a href="./privacy.html" target="_blank" rel="noopener">Read the full privacy policy</a>
+        <button class="primary" id="pnOkBtn">I understand</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Saved</div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
+  <script src="./firebase-init.js"></script>
+  <script src="./its-rules.js"></script>
+  <script>
+    // ============================================================
+    // ITS — driver page: submit a ticket / give a statement.
+    // One page for every league; the league comes from the link:
+    //   ticket.html?l=<leagueId>                 submit a ticket
+    //   ticket.html?l=<leagueId>&statement=<id>  give a statement
+    // Public league info (name, logo, status) comes from publicLeagues/{lid}.
+    // ============================================================
+    const $ = (id) => document.getElementById(id);
+    const toastEl = $("toast");
+    let toastTimer = null;
+    function toast(msg, ms = 2800) { toastEl.textContent = msg; toastEl.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => toastEl.classList.remove("show"), ms); }
+    const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    function setMsg(el, kind, text) { if (!el) return; el.className = "fieldMsg" + (kind ? " " + kind : ""); el.textContent = text || ""; }
+    function mark(input, kind) { input.classList.toggle("bad", kind === "bad"); input.classList.toggle("good", kind === "ok"); }
+    const msgFor = (input) => input.parentElement.querySelector(".fieldMsg");
+    function friendlyError(e) {
+      const c = String(e && e.code || "");
+      if (c.includes("permission-denied")) return null;
+      if (c.includes("unavailable")) return "Can't reach ITS right now — check your internet and try again.";
+      return (e && e.message || String(e)).replace(/^Firebase:\s*/, "");
+    }
+
+    const params = new URLSearchParams(location.search);
+    const LID = (params.get("l") || params.get("league") || "").trim();
+    const STATEMENT_FOR = (params.get("statement") || "").trim();
+    let league = null, currentUser = null;
+
+    function gate(title, html) {
+      $("loadingMsg").style.display = "none"; $("app").style.display = "none"; $("authPanel").style.display = "none";
+      $("gateTitle").textContent = title; $("gateText").innerHTML = html; $("gateMsg").style.display = "block";
+    }
+
+    // ---------- Discord username check (same rules as the rest of ITS) ----------
+    function checkDiscord(raw) {
+      let s = String(raw || "").replace(/[​-‍﻿]/g, "").trim();
+      if (!s) return { key: "", error: "" };
+      if (s.startsWith("@")) s = s.slice(1).trim();
+      if (/^<@!?\d+>$/.test(s) || /^\d{17,20}$/.test(s)) return { key: "", error: "That's a Discord ID, not a username. Enter the username, e.g. speedy_dave." };
+      if (/#\d{4}$/.test(s)) return { key: "", error: "Old-style tag (name#1234). Discord replaced these — enter the current username." };
+      if (/\s/.test(s)) return { key: "", error: "Has spaces — that's a display name or nickname. Usernames have no spaces." };
+      const key = s.toLowerCase();
+      if (key.length < 2 || key.length > 32) return { key: "", error: "Discord usernames are 2–32 characters." };
+      if (!/^[a-z0-9_.]+$/.test(key)) return { key: "", error: "Usernames only use letters, numbers, _ and ." };
+      if (key.includes("..")) return { key: "", error: "Usernames can't have two dots in a row." };
+      return { key, error: "" };
+    }
+    function vDiscord(input) {
+      const req = input.dataset.discord === "required";
+      const r = checkDiscord(input.value);
+      if (!input.value.trim()) { mark(input, req ? "bad" : ""); setMsg(msgFor(input), req ? "bad" : "", req ? "Enter your Discord username." : ""); return req ? null : ""; }
+      if (r.error) { mark(input, "bad"); setMsg(msgFor(input), "bad", r.error); return null; }
+      mark(input, "ok"); setMsg(msgFor(input), "ok", "✓ @" + r.key); return r.key;
+    }
+    function vText(input, label, min = 2) {
+      const v = input.value.trim();
+      if (v.length < min) { mark(input, "bad"); setMsg(msgFor(input), "bad", v ? `${label} is too short.` : `Enter ${label.toLowerCase()}.`); return null; }
+      mark(input, "ok"); setMsg(msgFor(input), "", ""); return v;
+    }
+    function vUrl(input, required) {
+      const v = input.value.trim();
+      if (!v) { mark(input, required ? "bad" : ""); setMsg(msgFor(input), required ? "bad" : "", required ? "A video link is required — stewards can't review without footage." : ""); return required ? null : ""; }
+      let u; try { u = new URL(v); } catch (e) { u = null; }
+      if (!u || !/^https?:$/.test(u.protocol)) { mark(input, "bad"); setMsg(msgFor(input), "bad", "That isn't a web link. Copy the full link (starting https://) from your video site."); return null; }
+      if (/(^|\.)discordapp\.(com|net)$|(^|\.)discord\.com$/.test(u.hostname)) { mark(input, "ok"); setMsg(msgFor(input), "warn", "Discord file links expire after a while — a YouTube/Streamable link is safer."); return v; }
+      mark(input, "ok"); setMsg(msgFor(input), "ok", "✓"); return v;
+    }
+
+    // ---------- start ----------
+    async function waitForFirebaseReady(maxMs = 8000) {
+      const start = Date.now();
+      while (Date.now() - start < maxMs) { if (typeof auth !== "undefined" && typeof db !== "undefined" && auth && db) return true; await new Promise(r => setTimeout(r, 80)); }
+      return false;
+    }
+
+    (async () => {
+      if (!LID) { gate("Use your league's link", "This page needs your league's own ticket link (it ends with <code>?l=…</code>). Ask your league staff for it — it's usually pinned in their Discord."); return; }
+      if (!(await waitForFirebaseReady())) { gate("Couldn't start", "The page couldn't connect to ITS. Refresh and try again."); return; }
+      try {
+        const snap = await db.collection("publicLeagues").doc(LID).get();
+        if (!snap.exists) { gate("League not found", `We couldn't find a league for this link. Check you copied the whole link, or ask your league staff for it again.`); return; }
+        league = snap.data();
+      } catch (e) { gate("Couldn't load the league", esc(friendlyError(e) || "Please try again.")); return; }
+
+      document.title = `${league.name} — Submit a Ticket`;
+      $("brandTitle").textContent = `${league.name} — Tickets`;
+      if (league.logoUrl) { const img = $("leagueLogo"); img.onerror = () => img.style.display = "none"; img.src = league.logoUrl; img.alt = league.name; img.style.display = "block"; }
+      if (!league.active) { gate("Tickets aren't open yet", `<strong>${esc(league.name)}</strong> isn't accepting tickets on ITS yet. Check with your league staff.`); return; }
+
+      showPrivacyNotice();
+      auth.onAuthStateChanged(async (user) => {
+        currentUser = user;
+        $("loadingMsg").style.display = "none";
+        if (!user) {
+          $("app").style.display = "none"; $("logoutBtn").style.display = "none"; $("who").textContent = "";
+          $("authPanel").style.display = "block";
+          $("inAppWarning").style.display = /Discord|FBAN|FBAV|Instagram|Line\/|Twitter|; wv\)/i.test(navigator.userAgent || "") ? "block" : "none";
+          return;
+        }
+        $("authPanel").style.display = "none";
+        $("logoutBtn").style.display = "inline-flex";
+        $("who").textContent = `Signed in as ${user.email}`;
+        $("app").style.display = "block";
+        restoreRemembered();
+        loadRuleOptions();
+        switchTab(STATEMENT_FOR ? "statement" : "ticket");
+        if (STATEMENT_FOR) $("stTicket").value = STATEMENT_FOR;
+      });
+    })();
+
+    $("authGoogleBtn").onclick = async () => {
+      $("authError").textContent = "";
+      const p = new firebase.auth.GoogleAuthProvider();
+      p.setCustomParameters({ prompt: "select_account" });
+      try { await auth.signInWithPopup(p); }
+      catch (e) {
+        if (e && (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment")) { try { await auth.signInWithRedirect(p); return; } catch (e2) { e = e2; } }
+        if (e && e.code === "auth/popup-closed-by-user") return;
+        $("authError").textContent = friendlyError(e) || "Sign-in failed.";
+      }
+    };
+    $("logoutBtn").onclick = async () => { await auth.signOut(); };
+
+    function switchTab(id) {
+      document.querySelectorAll(".tabBtn").forEach(b => b.classList.toggle("active", b.dataset.tab === id));
+      document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.id === "panel-" + id));
+    }
+    document.querySelectorAll(".tabBtn").forEach(b => b.onclick = () => switchTab(b.dataset.tab));
+
+    // Remember the driver's own details on this device.
+    const REMEMBER = { tkReporter: "name", tkReporterDiscord: "discord", stName: "name", stDiscord: "discord", drDiscord: "discord", tkCompetition: "competition" };
+    function restoreRemembered() {
+      Object.entries(REMEMBER).forEach(([id, k]) => {
+        try { const v = localStorage.getItem(`ITS_DRIVER_${LID}_${k}`); if (v && !$(id).value) $(id).value = v; } catch (e) { /* ignore */ }
+      });
+    }
+    function remember(id) { try { localStorage.setItem(`ITS_DRIVER_${LID}_${REMEMBER[id]}`, $(id).value.trim()); } catch (e) { /* ignore */ } }
+
+    async function loadRuleOptions() {
+      const sel = $("tkRule");
+      sel.innerHTML = `<option value="">Not sure — let the stewards decide</option>`;
+      try {
+        const rows = await ITSRules.loadForLeague(db.collection("leagues").doc(LID));
+        const seen = new Set();
+        rows.filter(r => r.Group !== "NFA").forEach(r => {
+          if (seen.has(r.Group)) return; seen.add(r.Group);
+          sel.insertAdjacentHTML("beforeend", `<option value="${esc(r.Group + " — " + r.Title)}">${esc(r.Title)}</option>`);
+        });
+      } catch (e) { console.warn("rules:", e); }
+    }
+
+    // live checks
+    document.querySelectorAll("[data-discord]").forEach(i => i.addEventListener("input", () => vDiscord(i)));
+    ["tkVideo", "tkExtra"].forEach(id => $(id).addEventListener("blur", () => vUrl($(id), id === "tkVideo")));
+    $("tkIncident").addEventListener("input", () => { const n = $("tkIncident").value.trim().length; setMsg($("tkIncidentMsg"), n && n < 20 ? "warn" : "", n ? `${n}/3000${n < 20 ? " — add a bit more detail" : ""}` : ""); });
+    $("stText").addEventListener("input", () => { const n = $("stText").value.trim().length; setMsg($("stTextMsg"), n && n < 20 ? "warn" : "", n ? `${n}/1500${n < 20 ? " — add a bit more detail" : ""}` : ""); });
+
+    function focusFirstBad(scope) { const b = scope.querySelector("input.bad, select.bad, textarea.bad"); if (b) { b.scrollIntoView({ behavior: "smooth", block: "center" }); b.focus(); } }
+    function newTicketId() {
+      const d = new Date(), p = (n) => String(n).padStart(2, "0");
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let r = ""; const a = new Uint32Array(4); (window.crypto || window.msCrypto).getRandomValues(a);
+      a.forEach(x => r += chars[x % chars.length]);
+      return `${String(d.getFullYear()).slice(2)}${p(d.getMonth() + 1)}${p(d.getDate())}-${r}`;
+    }
+
+    // ---------- submit ticket ----------
+    $("tkSubmitBtn").onclick = async () => {
+      setMsg($("tkSubmitMsg"), "", "");
+      const reporter = vText($("tkReporter"), "Your driver name");
+      const reporterDiscord = vDiscord($("tkReporterDiscord"));
+      const accused = vText($("tkAccused"), "Their driver name");
+      const accusedDiscord = vDiscord($("tkAccusedDiscord"));
+      const competition = vText($("tkCompetition"), "Series");
+      const event = vText($("tkEvent"), "Race / round");
+      const when = vText($("tkWhen"), "When it happened", 1);
+      const incidentEl = $("tkIncident");
+      const incident = incidentEl.value.trim();
+      mark(incidentEl, incident.length >= 20 ? "ok" : "bad");
+      if (incident.length < 20) setMsg($("tkIncidentMsg"), "bad", "Describe what happened (at least 20 characters).");
+      const video = vUrl($("tkVideo"), true);
+      const extra = vUrl($("tkExtra"), false);
+      const ok = [reporter, reporterDiscord, accused, competition, event, when, video].every(v => v) && accusedDiscord !== null && extra !== null && incident.length >= 20;
+      if (!ok) { setMsg($("tkSubmitMsg"), "bad", "Fix the boxes marked in red."); focusFirstBad($("panel-ticket")); return; }
+      if (reporterDiscord && accusedDiscord && reporterDiscord === accusedDiscord) { setMsg($("tkSubmitMsg"), "bad", "You've entered the same Discord username for yourself and the other driver."); return; }
+      if (!$("tkConfirm").checked) { setMsg($("tkSubmitMsg"), "bad", "Tick the box to confirm your report is accurate."); return; }
+
+      const btn = $("tkSubmitBtn");
+      btn.disabled = true; btn.textContent = "Submitting…";
+      const ruleVal = $("tkRule").value;
+      const data = {
+        reporter, reporterDiscord, accused, accusedDiscord: accusedDiscord || "",
+        competition, event, incidentTime: when,
+        ruleBreach: ruleVal || "Not specified",
+        fullIncident: `${incident}\n\nWhen: ${when}${extra ? `\nExtra evidence: ${extra}` : ""}`,
+        proofUrl: video, extraProofUrl: extra || "",
+        status: "Under Review",
+        source: "its-ticket-page",
+        submittedByUid: currentUser.uid,
+        submittedByEmail: (currentUser.email || "").toLowerCase(),
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      let id = null;
+      for (let attempt = 0; attempt < 4 && !id; attempt++) {
+        const tryId = newTicketId();
+        try {
+          await db.collection("leagues").doc(LID).collection("tickets").doc(tryId).set(data);
+          id = tryId;
+        } catch (e) {
+          if (String(e.code || "").includes("permission-denied") && attempt < 3) continue; // ID taken (or rules refused) — try another
+          setMsg($("tkSubmitMsg"), "bad", friendlyError(e) || "ITS refused this ticket. Check every box is filled in properly — if it keeps happening, tell your league staff.");
+          break;
+        }
+      }
+      btn.disabled = false; btn.textContent = "Submit ticket";
+      if (!id) { if (!$("tkSubmitMsg").textContent) setMsg($("tkSubmitMsg"), "bad", "Couldn't submit — please try again."); return; }
+      ["tkReporter", "tkReporterDiscord", "tkCompetition"].forEach(remember);
+      $("tkSuccessId").textContent = id;
+      $("tkSuccess").style.display = "block";
+      document.querySelector("#panel-ticket > .card").style.display = "none";
+      $("tkSuccess").scrollIntoView({ behavior: "smooth", block: "center" });
+    };
+    $("tkCopyIdBtn").onclick = async () => { const id = $("tkSuccessId").textContent; try { await navigator.clipboard.writeText(id); toast("Ticket ID copied."); } catch (e) { toast("Ticket ID: " + id); } };
+    $("tkAnotherBtn").onclick = () => {
+      ["tkAccused", "tkAccusedDiscord", "tkEvent", "tkWhen", "tkIncident", "tkVideo", "tkExtra"].forEach(id => { $(id).value = ""; $(id).classList.remove("good", "bad"); const m = msgFor($(id)); if (m) setMsg(m, "", ""); });
+      $("tkRule").value = ""; $("tkConfirm").checked = false;
+      $("tkSuccess").style.display = "none";
+      document.querySelector("#panel-ticket > .card").style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    // ---------- privacy notice (first visit, per version) ----------
+    const PRIVACY_NOTICE_KEY = "ITS_PRIVACY_NOTICE_2026-11-09";
+    function showPrivacyNotice() {
+      let seen = false;
+      try { seen = localStorage.getItem(PRIVACY_NOTICE_KEY) === "1"; } catch (e) { seen = false; }
+      if (seen) return;
+      $("pnLeague").textContent = league ? league.name : "This league";
+      $("privacyNotice").style.display = "block";
+    }
+    $("pnOkBtn").onclick = () => {
+      try { localStorage.setItem(PRIVACY_NOTICE_KEY, "1"); } catch (e) { /* private mode: show again next time */ }
+      $("privacyNotice").style.display = "none";
+    };
+
+    // ---------- data requests ----------
+    $("drSubmitBtn").onclick = async () => {
+      setMsg($("drSubmitMsg"), "", "");
+      const typeEl = $("drType"); const type = typeEl.value;
+      mark(typeEl, type ? "ok" : "bad"); setMsg(msgFor(typeEl), type ? "" : "bad", type ? "" : "Choose what you'd like.");
+      const discord = vDiscord($("drDiscord"));
+      const details = $("drDetails").value.trim();
+      mark($("drDetails"), details.length >= 10 ? "ok" : "bad");
+      setMsg($("drDetailsMsg"), details.length >= 10 ? "" : "bad", details.length >= 10 ? "" : "Tell us a little more (at least 10 characters).");
+      if (!type || !discord || details.length < 10) { setMsg($("drSubmitMsg"), "bad", "Fix the boxes marked in red."); return; }
+      const btn = $("drSubmitBtn"); btn.disabled = true; btn.textContent = "Sending…";
+      try {
+        await db.collection("dataRequests").add({
+          type, discordKey: discord, details, contact: currentUser.email || "",
+          source: "driver", leagueId: LID, leagueName: league.name,
+          submittedByUid: currentUser.uid, submittedByEmail: (currentUser.email || "").toLowerCase(),
+          status: "open", createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        $("drSuccessEmail").textContent = currentUser.email || "your email";
+        $("drSuccess").style.display = "block";
+        document.querySelector("#panel-data > .card").style.display = "none";
+      } catch (e) { setMsg($("drSubmitMsg"), "bad", friendlyError(e) || "Couldn't send — please try again."); }
+      finally { btn.disabled = false; btn.textContent = "Send request"; }
+    };
+
+    // ---------- statement ----------
+    $("stSubmitBtn").onclick = async () => {
+      setMsg($("stSubmitMsg"), "", "");
+      const ticketEl = $("stTicket");
+      const ticketId = ticketEl.value.trim().toUpperCase().replace(/\s+/g, "");
+      ticketEl.value = ticketId;
+      const tOk = /^[A-Z0-9_-]{4,40}$/.test(ticketId);
+      mark(ticketEl, tOk ? "ok" : "bad"); setMsg(msgFor(ticketEl), tOk ? "" : "bad", tOk ? "" : "Enter the ticket ID the stewards gave you.");
+      const roleEl = $("stRole"); const role = roleEl.value;
+      mark(roleEl, role ? "ok" : "bad"); setMsg(msgFor(roleEl), role ? "" : "bad", role ? "" : "Choose who you are in this incident.");
+      const name = vText($("stName"), "Your driver name");
+      const discord = vDiscord($("stDiscord"));
+      const textEl = $("stText"); const text = textEl.value.trim();
+      mark(textEl, text.length >= 20 ? "ok" : "bad");
+      if (text.length < 20) setMsg($("stTextMsg"), "bad", "Write your statement (at least 20 characters).");
+      if (!(tOk && role && name && discord && text.length >= 20)) { setMsg($("stSubmitMsg"), "bad", "Fix the boxes marked in red."); focusFirstBad($("panel-statement")); return; }
+
+      const btn = $("stSubmitBtn");
+      btn.disabled = true; btn.textContent = "Sending…";
+      try {
+        await db.collection("leagues").doc(LID).collection("tickets").doc(ticketId)
+          .collection("player_statements").doc(`${role}_${currentUser.uid}`).set({
+            role, name, discord, statement: text,
+            submittedByUid: currentUser.uid,
+            submittedByEmail: (currentUser.email || "").toLowerCase(),
+            submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        ["stName", "stDiscord"].forEach(remember);
+        $("stSuccessId").textContent = ticketId;
+        $("stSuccess").style.display = "block";
+        document.querySelector("#panel-statement > .card").style.display = "none";
+      } catch (e) {
+        setMsg($("stSubmitMsg"), "bad", friendlyError(e) || "Couldn't send it. Check the ticket ID is right — and note the ticket may already be decided, or you may have already sent a statement for it.");
+      } finally {
+        btn.disabled = false; btn.textContent = "Send statement";
+      }
+    };
+
+  </script>
+</body>
+</html>

@@ -676,6 +676,12 @@
     button.danger:hover:not(:disabled){ border-color:var(--red); color:var(--red-dark); box-shadow:0 10px 22px rgba(225,29,72,.16); }
     button.small{ min-height:32px; padding:6px 12px; font-size:12px; white-space:nowrap; flex:0 0 auto; }
     .roleHint{ font-size:12px; color:var(--muted); margin-top:5px; font-weight:650; }
+    .privacyDoc h3{ font-family:var(--font-display); font-size:15px; color:var(--navy); margin:18px 0 6px; }
+    .privacyDoc h3:first-child{ margin-top:0; }
+    .privacyDoc p, .privacyDoc li{ font-size:13.5px; line-height:1.55; color:#334155; }
+    .privacyDoc ul{ margin:4px 0 8px 20px; padding:0; }
+    .clauseBox{ border:1px solid var(--indigo-line); background:var(--indigo-soft); border-radius:var(--radius-sm); padding:14px; font-size:13.5px; line-height:1.55; color:var(--navy); white-space:pre-wrap; }
+
     /* ---------- ticket rules ---------- */
     .modeCards{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; margin-top:12px; }
     @media (max-width:900px){ .modeCards{ grid-template-columns:1fr; } }
@@ -793,6 +799,8 @@
     <div id="app" style="display:none;">
       <div id="leagueBanner"></div>
       <div id="clauseBannerTop" style="margin-top:10px;"></div>
+      <div id="alertsBanner" style="margin-top:10px;"></div>
+      <div id="privacyBanner" style="margin-top:10px;"></div>
 
       <div class="statBar" style="margin-top:14px;">
         <div class="statTile tone-indigo">
@@ -819,7 +827,9 @@
         <button class="tabBtn" data-tab="staff">Staff</button>
         <button class="tabBtn" data-tab="rules">Ticket Rules</button>
         <button class="tabBtn" data-tab="import">Import History</button>
+        <button class="tabBtn" data-tab="alerts">Bans &amp; Alerts</button>
         <button class="tabBtn" data-tab="standards">Standards</button>
+        <button class="tabBtn" data-tab="privacy">Privacy &amp; Data</button>
       </nav>
 
       <!-- ===== OVERVIEW ===== -->
@@ -835,6 +845,11 @@
           <div class="row" style="margin-top:12px;">
             <button id="copyLeagueIdBtn" class="small">Copy league ID</button>
           </div>
+        </div>
+        <div class="card">
+          <div class="title"><span class="iconChip chip-pink"><svg class="icon" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 1 0-5.7l2.3-2.3a4 4 0 0 1 5.7 5.7l-1.2 1.2"/><path d="M14 10a4 4 0 0 1 0 5.7l-2.3 2.3a4 4 0 0 1-5.7-5.7l1.2-1.2"/></svg></span>Your league's links</div>
+          <div class="muted">Share these. Every league uses the same ITS pages — your link is what makes them yours.</div>
+          <div class="kv" id="leagueLinks" style="grid-template-columns:180px 1fr auto; align-items:center;"></div>
         </div>
       </section>
 
@@ -1129,6 +1144,171 @@
           <div id="stdList"></div>
         </div>
         <datalist id="penaltyList"></datalist>
+      </section>
+
+      <!-- ===== BANS & ALERTS (ITS network) ===== -->
+      <section class="panel" id="panel-alerts">
+        <div class="card">
+          <div class="cardHead">
+            <div>
+              <div class="title" style="margin:0;"><span class="iconChip chip-red"><svg class="icon" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>Notification centre</div>
+              <div class="muted">ITS tells you when a driver who has raced in your league is banned by another ITS league — or when a driver banned elsewhere turns up in yours. It's a “be mindful” alert: it never bans anyone from your league.</div>
+            </div>
+            <button class="small" id="markAllReadBtn">Mark all as read</button>
+          </div>
+          <div id="networkOffNote"></div>
+          <div id="notifList" style="margin-top:10px;"></div>
+        </div>
+
+        <div class="card">
+          <div class="title" style="margin:0;"><span class="iconChip chip-red"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg></span>Your ban list</div>
+          <div class="muted">Drivers banned from your league. Every other ITS league sees “banned in <span data-league-name></span>” on this driver's tickets and gets an alert if the driver races with them. Your stewards see a flashing BANNED marker.</div>
+          <div class="stepGrid" style="margin-top:12px;">
+            <div>
+              <label class="muted">Driver name <span class="req">*</span></label>
+              <input type="text" id="banName" maxlength="80" placeholder="e.g. Dave Smith">
+              <div class="fieldMsg" id="banNameMsg"></div>
+            </div>
+            <div>
+              <label class="muted">Discord username <span class="req">*</span></label>
+              <input type="text" id="banDiscord" maxlength="40" placeholder="e.g. speedy_dave" autocomplete="off">
+              <div class="fieldMsg" id="banDiscordMsg"></div>
+            </div>
+            <div class="stepFull">
+              <label class="muted">Reason <span class="req">*</span> <span class="opt">(shared with other ITS leagues — keep it factual: what happened, not opinions about the person)</span></label>
+              <input type="text" id="banReason" maxlength="300" placeholder="e.g. Repeated intentional wrecking across Season 3">
+            </div>
+          </div>
+          <div class="row" style="justify-content:flex-end; margin-top:12px;">
+            <button class="primary danger" id="addBanBtn" style="background:var(--red); color:#fff; border-color:transparent;">Add to ban list</button>
+          </div>
+          <div class="tableWrap">
+            <table class="dataTable">
+              <thead><tr><th>Driver</th><th>Discord</th><th>Reason (shared)</th><th>Banned</th><th></th></tr></thead>
+              <tbody id="bansBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="title" style="margin:0;"><span class="iconChip chip-indigo"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>Look up a driver across ITS</div>
+          <div class="muted">Thinking of letting someone join? Check their record in every ITS league by Discord username. Treat it as information, not an automatic ban — and don't copy, screenshot or share it outside ITS.</div>
+          <div class="row" style="margin-top:10px; flex-wrap:nowrap;">
+            <input type="text" id="lookupDiscord" placeholder="Discord username, e.g. speedy_dave" autocomplete="off">
+            <button class="primary" id="lookupBtn" style="white-space:nowrap; flex:0 0 auto;">Look up</button>
+          </div>
+          <div class="fieldMsg" id="lookupMsg"></div>
+          <div id="lookupResult"></div>
+        </div>
+      </section>
+
+      <!-- ===== PRIVACY & DATA RULES ===== -->
+      <section class="panel" id="panel-privacy">
+        <div class="card">
+          <div class="title" style="margin:0;"><span class="iconChip chip-teal"><svg class="icon" viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg></span>ITS Privacy &amp; Data Rules for Leagues</div>
+          <div class="muted">Every league on ITS must follow these rules. Read them, add the clause to your league rules, then confirm at the bottom of this page.</div>
+          <div id="privacyStatus" style="margin-top:12px;"></div>
+        </div>
+
+        <div class="card privacyDoc">
+          <h3>1. How ITS uses driver data</h3>
+          <p>ITS stores the following for each driver:</p>
+          <ul><li>Discord ID and display name</li><li>Tickets raised by or about the driver</li><li>Stewarding decisions, penalties and bans</li></ul>
+          <p>A Discord ID counts as personal data under UK GDPR, even without a real name attached, so these rules apply to everything above.</p>
+          <p><strong>What is shared across leagues:</strong> confirmed penalties and bans are visible to the owners and staff of other leagues using ITS.</p>
+          <p><strong>What is never shared across leagues:</strong> open or unresolved tickets, reports that did not lead to a penalty, and internal stewarding notes. These stay within your own league.</p>
+
+          <h3>2. Who is responsible for what</h3>
+          <div class="tableWrap"><table class="dataTable"><thead><tr><th>ITS is responsible for</th><th>Your league is responsible for</th></tr></thead><tbody>
+            <tr><td>Running the system securely</td><td>Telling your members about ITS (see section 3)</td></tr>
+            <tr><td>Showing drivers a privacy notice inside ITS</td><td>Entering only accurate, confirmed decisions</td></tr>
+            <tr><td>Handling access, correction and deletion requests</td><td>Following a fair stewarding process</td></tr>
+            <tr><td>Deleting records when the retention period ends</td><td>Using other leagues' records responsibly</td></tr>
+            <tr><td>Keeping its ICO registration up to date</td><td>Passing driver requests to ITS promptly</td></tr>
+            <tr><td>Publishing the ITS privacy policy</td><td>Limiting ITS access to staff who need it</td></tr>
+          </tbody></table></div>
+
+          <h3>3. What your league must add to its rules</h3>
+          <p>You must add the clause below to your league rules, and post it somewhere every member will see: your rules channel, your sign-up form, or a pinned message. We've filled in your league's details for you.</p>
+          <div class="clauseBox" id="clauseBox"></div>
+          <div class="row" style="justify-content:flex-end; margin-top:8px;"><button class="small" id="copyClauseBtn">Copy clause</button></div>
+
+          <h3>4. Confirming your members are informed</h3>
+          <p>Before your league can use cross-league records, you must press the confirmation button below. ITS records the date and your Discord username. If the clause changes, you'll be asked to confirm again. <strong>Cross-league access stays switched off until confirmation is given</strong> — your league's penalties and bans aren't shared, and your staff can't see other leagues' records.</p>
+
+          <h3>5. Accuracy and fair process</h3>
+          <p>Because other leagues can see your decisions, they must be fair and accurate:</p>
+          <ul><li>Log a penalty or ban only once the decision is final.</li><li>Give the driver a chance to put their side before deciding.</li><li>Record a clear reason for every penalty or ban.</li><li>Correct or remove a record quickly if it turns out to be wrong.</li><li>Keep notes factual. No insults, opinions about the person, or personal comments.</li></ul>
+
+          <h3>6. Using other leagues' records</h3>
+          <p>Records from other leagues are there to help you make informed decisions, for example when a new driver applies to join. When you use them:</p>
+          <ul><li>Treat them as information, not an automatic ban, unless your own rules say otherwise.</li><li>Do not copy, screenshot or share them outside ITS.</li><li>Never post another league's records publicly or use them to target or harass a driver.</li></ul>
+
+          <h3>7. Driver requests and data deletion</h3>
+          <p>Drivers can ask to see their record, correct it, dispute a decision, or have their data deleted.</p>
+          <ul><li>If a driver asks your league, pass the request to ITS within 3 days (use the form below).</li><li>ITS will respond to the driver within one month, as UK GDPR requires.</li></ul>
+          <p>When a driver asks for deletion:</p>
+          <ul><li>Their profile, open tickets and any records without a confirmed penalty are deleted.</li><li>Confirmed penalties and bans are kept for <span data-retention></span> from the date of the decision so ITS leagues can protect their drivers. After that, they are deleted automatically.</li><li>The driver can still see and dispute these records during that time.</li></ul>
+
+          <h3>8. Breaking these rules</h3>
+          <p>If a league breaks these rules, ITS may suspend its cross-league access or end its subscription.</p>
+        </div>
+
+        <div class="card" id="confirmCard">
+          <div class="title" style="margin:0;"><span class="iconChip chip-indigo"><svg class="icon" viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></svg></span>Confirm</div>
+          <div class="stepGrid" style="margin-top:10px;">
+            <div>
+              <label class="muted">Your Discord username <span class="req">*</span></label>
+              <input type="text" id="confirmDiscord" maxlength="40" placeholder="e.g. speedy_dave" autocomplete="off">
+              <div class="fieldMsg" id="confirmDiscordMsg"></div>
+            </div>
+          </div>
+          <label class="row" style="margin-top:12px; gap:10px; font-size:13.5px; font-weight:800; flex-wrap:nowrap; align-items:flex-start; color:var(--navy);">
+            <input type="checkbox" id="confirmCheck" style="width:auto; margin-top:3px;"> <span id="confirmText"></span>
+          </label>
+          <div class="row" style="justify-content:flex-end; margin-top:12px;">
+            <button class="primary" id="confirmPrivacyBtn" disabled>Confirm</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="title" style="margin:0;"><span class="iconChip chip-amber"><svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16v12H5.2L4 17.2z"/><path d="M8 9h8M8 12h5"/></svg></span>Pass a driver request to ITS</div>
+          <div class="muted">A driver asked your league to see, correct, dispute or delete their data? Send it to ITS here <strong>within 3 days</strong>. ITS replies to the driver within one month.</div>
+          <div class="stepGrid" style="margin-top:12px;">
+            <div>
+              <label class="muted">What do they want? <span class="req">*</span></label>
+              <select id="reqType">
+                <option value="">— Choose —</option>
+                <option value="access">See their record</option>
+                <option value="correct">Correct their record</option>
+                <option value="dispute">Dispute a decision</option>
+                <option value="delete">Delete their data</option>
+                <option value="other">Something else</option>
+              </select>
+            </div>
+            <div>
+              <label class="muted">Driver's Discord username <span class="req">*</span></label>
+              <input type="text" id="reqDiscord" maxlength="40" placeholder="e.g. speedy_dave" autocomplete="off">
+              <div class="fieldMsg" id="reqDiscordMsg"></div>
+            </div>
+            <div>
+              <label class="muted">Driver name <span class="opt">(optional)</span></label>
+              <input type="text" id="reqName" maxlength="80">
+            </div>
+            <div>
+              <label class="muted">How ITS can contact the driver <span class="req">*</span></label>
+              <input type="text" id="reqContact" maxlength="120" placeholder="Email, or 'via our Discord'">
+            </div>
+            <div class="stepFull">
+              <label class="muted">Details <span class="req">*</span></label>
+              <textarea id="reqDetails" rows="3" maxlength="2000" placeholder="What did the driver ask for? Include ticket IDs if they mentioned any, and the date they asked."></textarea>
+            </div>
+          </div>
+          <div class="row" style="justify-content:flex-end; margin-top:12px;">
+            <button class="primary" id="sendReqBtn">Send to ITS</button>
+          </div>
+          <div class="fieldMsg" id="reqMsg" style="text-align:right;"></div>
+        </div>
       </section>
 
       <!-- ===== STANDARDS (ported from IFWL headsteward.html) ===== -->
@@ -1575,8 +1755,9 @@
         renderHeader();
         fillSettingsForm();
         initTabs();
-        await Promise.all([loadStaff(), loadImports(), loadTicketCount(), loadRules(), initOwnerClauseUI(), initSeniorStewardUI()]);
+        await Promise.all([loadStaff(), loadImports(), loadTicketCount(), loadRules(), loadNotifications(), loadBans(), initOwnerClauseUI(), initSeniorStewardUI()]);
         renderOverview();
+        renderPrivacy();
       } catch (e) {
         console.error(e);
         showGate("Couldn't load your league", esc(friendlyError(e)),
@@ -1659,6 +1840,7 @@
         { done: !!(d.guildId && roles.headsteward && roles.steward), title: "Add your Discord server and role IDs", sub: "At least the server, Head Steward and Steward IDs.", tab: "settings" },
         { done: !!(privateCfg.ticketWebhookUrl && privateCfg.finalisationWebhookUrl), title: "Connect your Discord webhooks", sub: "So discussions and results post to Discord.", tab: "settings" },
         { done: headCount > 0, title: "Add at least one Head Steward", sub: headCount ? `${headCount} Head Steward${headCount === 1 ? "" : "s"} added.` : "Someone needs to run stewarding.", tab: "staff" },
+        { done: isPrivacyConfirmed(), title: "Confirm the ITS Privacy & Data Rules", sub: isPrivacyConfirmed() ? "Cross-league records are on." : "Add the clause to your league rules, then confirm. Cross-league records stay off until you do.", tab: "privacy" },
         { done: !!rulesSaved.exists, optional: true, title: "Choose your ticket rules", sub: rulesSaved.exists ? `Using: ${ITSRules.MODES[rulesSaved.mode].label}.` : "You're on the ITS Standard rules by default — have a look they suit you.", tab: "rules" },
         { done: importedCount > 0, optional: true, title: "Import your old ticket records (optional)", sub: importedCount ? `${importedCount} records imported.` : "Only if you're moving from a spreadsheet.", tab: "import" }
       ];
@@ -1678,6 +1860,19 @@
         ["Timezone", esc(league.timezone || "—")],
         ["Created", esc(fmtDate(league.createdAt))]
       ].map(([k, v]) => `<div>${k}</div><div>${v}</div>`).join("");
+
+      const base = new URL("./", location.href).href;
+      const links = [
+        ["Drivers: submit a ticket", `${base}ticket.html?l=${encodeURIComponent(lid)}`, "Pin this in your Discord."],
+        ["Stewards' dashboard", `${base}steward.html?league=${encodeURIComponent(lid)}`, "For your stewards and Head Stewards."],
+        ["Head Steward dashboard", `${base}headsteward.html?league=${encodeURIComponent(lid)}`, "You can use this too, as Owner."]
+      ];
+      $("leagueLinks").innerHTML = links.map(([k, url, hint], i) => `<div>${esc(k)}</div><div style="min-width:0;"><a href="${esc(url)}" target="_blank" rel="noopener" style="word-break:break-all;">${esc(url)}</a><div class="muted" style="font-weight:600;">${esc(hint)}</div></div><div><button class="small" data-copy-link="${i}">Copy</button></div>`).join("");
+      $("leagueLinks").querySelectorAll("[data-copy-link]").forEach(b => b.onclick = async () => {
+        const url = links[Number(b.dataset.copyLink)][1];
+        try { await navigator.clipboard.writeText(url); toast("Link copied."); } catch (e) { prompt("Copy this link:", url); }
+      });
+      if (!isActive()) $("leagueLinks").insertAdjacentHTML("afterbegin", `<div style="grid-column:1/-1;" class="bannerBox bannerAmber">These links start working once your league is approved.</div>`);
 
       $("statHistory").textContent = importedCount;
       $("statStaff").textContent = staffList.length;
@@ -1701,7 +1896,7 @@
     // ============================================================
     // TABS
     // ============================================================
-    const TAB_IDS = ["overview", "settings", "staff", "rules", "import", "standards"];
+    const TAB_IDS = ["overview", "settings", "staff", "rules", "import", "alerts", "standards", "privacy"];
     function switchTab(id) {
       if (!TAB_IDS.includes(id)) id = "overview";
       document.querySelectorAll(".tabBtn").forEach(b => b.classList.toggle("active", b.dataset.tab === id));
@@ -2661,6 +2856,252 @@
       } finally {
         btn.disabled = false; btn.textContent = "Save ticket rules";
       }
+    };
+
+    // ============================================================
+    // BANS & ALERTS — the ITS network
+    //   leagues/{lid}/bans/{discordKey}      this league's ban list (mirrored across ITS by syncban)
+    //   leagues/{lid}/notifications/{id}     alerts written by ITS functions
+    //   itsDrivers/{discordKey}(/records)    cross-league driver record (read-only)
+    // ============================================================
+    let notifications = [], bansList = [];
+    const sevLabel = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
+
+    async function loadNotifications() {
+      try {
+        const snap = await leagueRef.collection("notifications").orderBy("createdAt", "desc").limit(100).get();
+        notifications = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      } catch (e) {
+        notifications = [];
+        $("notifList").innerHTML = `<div class="redBox">Couldn't load notifications: ${esc(friendlyError(e))}</div>`;
+        return;
+      }
+      renderNotifications();
+    }
+
+    function renderNotifications() {
+      const unread = notifications.filter(n => !n.read).length;
+      const tab = document.querySelector('.tabBtn[data-tab="alerts"]');
+      if (tab) tab.innerHTML = `Bans &amp; Alerts${unread ? ` <span class="pill miniBad" style="padding:1px 8px; margin-left:4px;">${unread}</span>` : ""}`;
+      const ob = $("alertsBanner");
+      if (ob) ob.innerHTML = unread ? `<div class="bannerBox bannerRed" style="cursor:pointer;" id="alertsBannerBox">⛔ You have ${unread} new ITS alert${unread === 1 ? "" : "s"} about banned drivers.<small>Open Bans &amp; Alerts to see who and where.</small></div>` : "";
+      const box = $("alertsBannerBox"); if (box) box.onclick = () => switchTab("alerts");
+      $("markAllReadBtn").disabled = !unread;
+      if (!notifications.length) { $("notifList").innerHTML = `<div class="muted">No alerts. You'll see one here if a driver from your league is banned elsewhere on ITS.</div>`; return; }
+      $("notifList").innerHTML = notifications.map(n => `
+        <div class="checkItem ${n.read ? "optional" : "todo"}" style="${n.read ? "" : "border-color:var(--red-line); background:var(--red-soft);"}">
+          <div class="checkDot" style="${n.read ? "" : "background:var(--red); color:#fff; border-color:var(--red);"}">⛔</div>
+          <div class="checkText">
+            ${esc(n.driverName || "A driver")} <span class="muted" style="font-weight:700;">(@${esc(n.discordKey)})</span> is banned in <strong>${esc(n.bannedInLeagueName || n.bannedInLeagueId)}</strong> — and they've raced in your league.
+            <small>${n.reason ? "Reason given: " + esc(n.reason) + " · " : ""}${esc(fmtDate(n.createdAt))} · Be mindful — this doesn't ban them from your league.</small>
+          </div>
+          <div class="row" style="flex-wrap:nowrap;">
+            <button class="small" data-lookup="${esc(n.discordKey)}">Their record</button>
+            ${n.read ? "" : `<button class="small" data-read="${esc(n.id)}">Mark read</button>`}
+            <button class="small danger" data-dismiss="${esc(n.id)}">Dismiss</button>
+          </div>
+        </div>`).join("");
+      $("notifList").querySelectorAll("[data-read]").forEach(b => b.onclick = () => markRead([b.dataset.read]));
+      $("notifList").querySelectorAll("[data-dismiss]").forEach(b => b.onclick = async () => {
+        try { await leagueRef.collection("notifications").doc(b.dataset.dismiss).delete(); notifications = notifications.filter(n => n.id !== b.dataset.dismiss); renderNotifications(); }
+        catch (e) { toast("Couldn't dismiss: " + friendlyError(e), 5000); }
+      });
+      $("notifList").querySelectorAll("[data-lookup]").forEach(b => b.onclick = () => { $("lookupDiscord").value = b.dataset.lookup; lookupDriver(); $("lookupResult").scrollIntoView({ behavior: "smooth", block: "center" }); });
+    }
+
+    async function markRead(ids) {
+      try {
+        const batch = db.batch();
+        ids.forEach(id => batch.update(leagueRef.collection("notifications").doc(id), { read: true }));
+        await batch.commit();
+        notifications.forEach(n => { if (ids.includes(n.id)) n.read = true; });
+        renderNotifications();
+      } catch (e) { toast("Couldn't update: " + friendlyError(e), 5000); }
+    }
+    $("markAllReadBtn").onclick = () => markRead(notifications.filter(n => !n.read).map(n => n.id));
+
+    // ---------- ban list ----------
+    async function loadBans() {
+      try {
+        const snap = await leagueRef.collection("bans").get();
+        bansList = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => String(a.driverName).localeCompare(String(b.driverName)));
+      } catch (e) {
+        bansList = [];
+        $("bansBody").innerHTML = `<tr><td colspan="5"><div class="redBox">Couldn't load your ban list: ${esc(friendlyError(e))}</div></td></tr>`;
+        return;
+      }
+      renderBans();
+    }
+    function renderBans() {
+      document.querySelectorAll("[data-league-name]").forEach(el => el.textContent = league.name);
+      if (!bansList.length) { $("bansBody").innerHTML = `<tr><td colspan="5" class="muted">Nobody on your ban list.</td></tr>`; return; }
+      $("bansBody").innerHTML = bansList.map(b => `<tr>
+        <td><strong>${esc(b.driverName || "—")}</strong></td>
+        <td>@${esc(b.discordKey || b.id)}</td>
+        <td>${esc(b.reason || "—")}</td>
+        <td>${esc(fmtDate(b.bannedAt))}${b.bannedBy ? `<div class="muted">${esc(b.bannedBy)}</div>` : ""}</td>
+        <td style="text-align:right;"><button class="small" data-unban="${esc(b.id)}">Lift ban</button></td>
+      </tr>`).join("");
+      $("bansBody").querySelectorAll("[data-unban]").forEach(btn => btn.onclick = async () => {
+        const b = bansList.find(x => x.id === btn.dataset.unban);
+        if (!confirm(`Lift the ban on ${b.driverName || "@" + b.id}? Other ITS leagues will stop seeing “banned in ${league.name}”.`)) return;
+        btn.disabled = true;
+        try { await leagueRef.collection("bans").doc(b.id).delete(); toast("Ban lifted."); await loadBans(); }
+        catch (e) { btn.disabled = false; toast("Couldn't lift the ban: " + friendlyError(e), 5000); }
+      });
+    }
+    $("banDiscord").addEventListener("input", () => {
+      const r = ImportCore.checkDiscord($("banDiscord").value);
+      if (!$("banDiscord").value.trim()) { markInput($("banDiscord"), ""); setMsg($("banDiscordMsg"), "", ""); return; }
+      markInput($("banDiscord"), r.error ? "bad" : "ok");
+      setMsg($("banDiscordMsg"), r.error ? "bad" : "ok", r.error || `✓ @${r.key}`);
+    });
+    $("addBanBtn").onclick = async () => {
+      const name = $("banName").value.trim();
+      const r = ImportCore.checkDiscord($("banDiscord").value);
+      const reason = $("banReason").value.trim();
+      markInput($("banName"), name.length >= 2 ? "ok" : "bad");
+      setMsg($("banNameMsg"), name.length >= 2 ? "" : "bad", name.length >= 2 ? "" : "Enter the driver's name.");
+      if (!$("banDiscord").value.trim()) { markInput($("banDiscord"), "bad"); setMsg($("banDiscordMsg"), "bad", "The Discord username is what links the ban across ITS — it's required."); }
+      else if (r.error) { markInput($("banDiscord"), "bad"); setMsg($("banDiscordMsg"), "bad", r.error); }
+      if (reason.length < 3) { markInput($("banReason"), "bad"); toast("Give a clear, factual reason — ITS rules require one for every ban."); }
+      else markInput($("banReason"), "");
+      if (name.length < 2 || !r.key || reason.length < 3) return;
+      const existing = bansList.find(b => b.id === r.key);
+      if (!confirm(`${existing ? "Update the ban for" : "Ban"} ${name} (@${r.key}) from ${league.name}?\n\n${isPrivacyConfirmed() ? `Every ITS league will see that this driver is banned in ${league.name}, with your reason.` : "It won't be shared with other leagues until you confirm the ITS Privacy & Data Rules."} It does NOT ban them anywhere else.`)) return;
+      const btn = $("addBanBtn");
+      btn.disabled = true; btn.textContent = "Saving…";
+      try {
+        await leagueRef.collection("bans").doc(r.key).set({ discordKey: r.key, driverName: name, reason, bannedAt: existing ? (existing.bannedAt || FV().serverTimestamp()) : FV().serverTimestamp(), bannedBy: currentEmail });
+        toast(`${name} added to your ban list.`);
+        ["banName", "banDiscord", "banReason"].forEach(id => { $(id).value = ""; markInput($(id), ""); });
+        setMsg($("banDiscordMsg"), "", ""); setMsg($("banNameMsg"), "", "");
+        await loadBans();
+      } catch (e) { toast("Couldn't save: " + friendlyError(e), 5000); }
+      finally { btn.disabled = false; btn.textContent = "Add to ban list"; }
+    };
+
+    // ---------- driver lookup ----------
+    function recDate(v) { const d = v && v.toDate ? v.toDate() : (v ? new Date(v) : null); return d && !isNaN(d) ? d.toLocaleDateString(undefined, { month: "short", year: "numeric" }) : ""; }
+    async function lookupDriver() {
+      if (!isPrivacyConfirmed()) { setMsg($("lookupMsg"), "bad", "Cross-league records are switched off until you confirm the ITS Privacy & Data Rules (Privacy & Data tab)."); return; }
+      const r = ImportCore.checkDiscord($("lookupDiscord").value);
+      if (!r.key) { setMsg($("lookupMsg"), "bad", r.error || "Enter a Discord username."); $("lookupResult").innerHTML = ""; return; }
+      setMsg($("lookupMsg"), "", "Looking up @" + r.key + "…");
+      try {
+        const [sumSnap, recSnap] = await Promise.all([db.collection("itsDrivers").doc(r.key).get(), db.collection("itsDrivers").doc(r.key).collection("records").limit(100).get()]);
+        setMsg($("lookupMsg"), "", "");
+        const s = sumSnap.exists ? sumSnap.data() : null;
+        const recs = recSnap.docs.map(d => d.data()).sort((a, b) => ((b.date && b.date.toMillis) ? b.date.toMillis() : 0) - ((a.date && a.date.toMillis) ? a.date.toMillis() : 0));
+        if (!s && !recs.length) { $("lookupResult").innerHTML = `<div class="bannerBox bannerGreen" style="margin-top:10px;">@${esc(r.key)} has no records or bans anywhere on ITS.</div>`; return; }
+        const bans = (s && s.bannedIn) || [];
+        const leagues = [...new Set(recs.map(x => x.leagueName || x.leagueId))];
+        $("lookupResult").innerHTML = `
+          ${bans.map(b => `<div class="bannerBox bannerRed" style="margin-top:10px;">⛔ Banned in ${esc(b.leagueName)}${b.reason ? `<small>Reason given: ${esc(b.reason)}</small>` : ""}</div>`).join("")}
+          <div style="margin-top:10px; font-weight:800; color:var(--navy);">${esc((s && s.driverName) || "@" + r.key)} — ${recs.length} confirmed penalt${recs.length === 1 ? "y" : "ies"} in ${leagues.length} ITS league${leagues.length === 1 ? "" : "s"}</div>
+          <div class="muted" style="margin-top:4px;">Information, not an automatic ban. Don't copy, screenshot or share it outside ITS.</div>
+          <div class="tableWrap"><table class="dataTable"><thead><tr><th>League</th><th>Outcome</th><th>Rule</th><th>When</th></tr></thead><tbody>
+          ${recs.map(x => `<tr><td><strong>${esc(x.leagueName || x.leagueId)}</strong></td><td>${x.nfa ? "No further action" : esc(x.penalty || x.outcome || "—")}${x.type === "import" ? ' <span class="muted">(imported)</span>' : ""}</td><td>${esc(x.ruleTitle || x.ruleCode || "—")}${x.severity ? ` <span class="pill" style="padding:1px 7px;">${esc(sevLabel(x.severity))}</span>` : ""}</td><td>${esc(recDate(x.date))}</td></tr>`).join("")}
+          </tbody></table></div>`;
+      } catch (e) { setMsg($("lookupMsg"), "bad", "Couldn't look that up: " + friendlyError(e)); }
+    }
+    $("lookupBtn").onclick = lookupDriver;
+    $("lookupDiscord").addEventListener("keydown", e => { if (e.key === "Enter") lookupDriver(); });
+
+    // ============================================================
+    // PRIVACY & DATA RULES (ITS Privacy & Data Rules for Leagues, 9 Nov 2026)
+    // Confirmation is stored on leagues/{lid}.privacyConfirmation. The ITS
+    // network functions only share this league's data, and only let its
+    // staff see other leagues, while version === PRIVACY_VERSION.
+    // ============================================================
+    const PRIVACY_VERSION = "2026-11-09";          // must match functions/index.js
+    const RETENTION_TEXT = "2 years";              // must match RETENTION_DAYS in functions/index.js
+    const ITS_PRIVACY_URL = new URL("./privacy.html", location.href).href;
+    const isPrivacyConfirmed = () => !!(league && league.privacyConfirmation && league.privacyConfirmation.version === PRIVACY_VERSION);
+
+    function clauseText() {
+      const n = league.name;
+      return `Stewarding records and ITS — ${n} uses ITS (IFWL Ticket System) to manage stewarding. By joining ${n}, you agree that your Discord ID, any tickets involving you, and stewarding decisions about you are stored in ITS. Confirmed penalties and bans are visible to staff of other leagues that use ITS. Open tickets and reports that did not lead to a penalty are not shared. Confirmed penalties and bans are kept for ${RETENTION_TEXT} from the date of the decision, then deleted automatically. You can ask to see your record, correct it, dispute a decision, or request deletion at any time. Full details are in the ITS privacy policy: ${ITS_PRIVACY_URL}`;
+    }
+
+    function renderPrivacy() {
+      document.querySelectorAll("[data-retention]").forEach(el => el.textContent = RETENTION_TEXT);
+      $("clauseBox").textContent = clauseText();
+      $("confirmText").textContent = `I confirm that ${league.name} has added the ITS stewarding records clause to its rules and made all members aware of it.`;
+      const pc = league.privacyConfirmation;
+      const ok = isPrivacyConfirmed();
+      $("privacyStatus").innerHTML = ok
+        ? `<div class="bannerBox bannerGreen">✓ Confirmed — cross-league records are switched on for ${esc(league.name)}.<small>Confirmed ${esc(fmtDate(pc.confirmedAt))} by ${esc(pc.confirmedByEmail || "")}${pc.confirmedByDiscord ? ` (@${esc(pc.confirmedByDiscord)})` : ""}.</small></div>`
+        : pc
+          ? `<div class="bannerBox bannerAmber">The ITS rules have changed since you last confirmed. Please read them and confirm again.<small>Until you do, cross-league records are switched off for your league.</small></div>`
+          : `<div class="bannerBox bannerRed">Not confirmed yet — cross-league records are switched OFF for ${esc(league.name)}.<small>Your penalties and bans aren't shared, and your staff can't see other leagues' records, until you confirm below.</small></div>`;
+      $("confirmCard").style.display = ok ? "none" : "block";
+      const banner = $("privacyBanner");
+      if (banner) {
+        banner.innerHTML = ok ? "" : `<div class="bannerBox bannerAmber" style="cursor:pointer;" id="privacyBannerBox">Action needed: confirm the ITS Privacy &amp; Data Rules to switch on cross-league records.<small>Add the clause to your league rules, then press confirm. Open the Privacy &amp; Data tab.</small></div>`;
+        const b = $("privacyBannerBox"); if (b) b.onclick = () => switchTab("privacy");
+      }
+      const netNote = $("networkOffNote");
+      if (netNote) netNote.innerHTML = ok ? "" : `<div class="bannerBox bannerAmber" style="margin-top:10px;">Cross-league records are switched off for your league until you confirm the ITS Privacy &amp; Data Rules (Privacy &amp; Data tab). You can still keep your own ban list — it's shared once you confirm.</div>`;
+    }
+
+    $("copyClauseBtn").onclick = async () => {
+      try { await navigator.clipboard.writeText(clauseText()); toast("Clause copied — paste it into your league rules."); }
+      catch (e) { prompt("Copy this clause:", clauseText()); }
+    };
+    function refreshConfirmBtn() {
+      const r = ImportCore.checkDiscord($("confirmDiscord").value);
+      if ($("confirmDiscord").value.trim()) { markInput($("confirmDiscord"), r.error ? "bad" : "ok"); setMsg($("confirmDiscordMsg"), r.error ? "bad" : "ok", r.error || `✓ @${r.key}`); }
+      else { markInput($("confirmDiscord"), ""); setMsg($("confirmDiscordMsg"), "", ""); }
+      $("confirmPrivacyBtn").disabled = !($("confirmCheck").checked && r.key);
+    }
+    $("confirmDiscord").addEventListener("input", refreshConfirmBtn);
+    $("confirmCheck").addEventListener("change", refreshConfirmBtn);
+    $("confirmPrivacyBtn").onclick = async () => {
+      const r = ImportCore.checkDiscord($("confirmDiscord").value);
+      if (!r.key || !$("confirmCheck").checked) return;
+      const btn = $("confirmPrivacyBtn");
+      btn.disabled = true; btn.textContent = "Saving…";
+      const data = {
+        version: PRIVACY_VERSION,
+        statement: $("confirmText").textContent,
+        clause: clauseText(),
+        confirmedByEmail: currentEmail,
+        confirmedByDiscord: r.key,
+        confirmedAt: FV().serverTimestamp()
+      };
+      try {
+        await leagueRef.update({ privacyConfirmation: data });
+        league.privacyConfirmation = { ...data, confirmedAt: new Date() };
+        renderPrivacy(); renderOverview(); renderNotifications();
+        toast("Confirmed — cross-league records will switch on in a minute or two.", 5000);
+      } catch (e) {
+        toast("Couldn't save: " + friendlyError(e), 5000);
+      } finally { btn.textContent = "Confirm"; refreshConfirmBtn(); }
+    };
+
+    $("reqDiscord").addEventListener("input", () => {
+      const r = ImportCore.checkDiscord($("reqDiscord").value);
+      if (!$("reqDiscord").value.trim()) { markInput($("reqDiscord"), ""); setMsg($("reqDiscordMsg"), "", ""); return; }
+      markInput($("reqDiscord"), r.error ? "bad" : "ok"); setMsg($("reqDiscordMsg"), r.error ? "bad" : "ok", r.error || `✓ @${r.key}`);
+    });
+    $("sendReqBtn").onclick = async () => {
+      const type = $("reqType").value, r = ImportCore.checkDiscord($("reqDiscord").value);
+      const contact = $("reqContact").value.trim(), details = $("reqDetails").value.trim();
+      const missing = [!type && "what they want", !r.key && "their Discord username", !contact && "how to contact them", details.length < 10 && "the details"].filter(Boolean);
+      if (missing.length) { setMsg($("reqMsg"), "bad", "Please add " + missing.join(", ") + "."); return; }
+      const btn = $("sendReqBtn"); btn.disabled = true; btn.textContent = "Sending…";
+      try {
+        await db.collection("dataRequests").add({
+          type, discordKey: r.key, driverName: $("reqName").value.trim(), contact, details,
+          source: "league", leagueId: lid, leagueName: league.name, passedBy: currentEmail,
+          submittedByUid: currentUser.uid, status: "open", createdAt: FV().serverTimestamp()
+        });
+        setMsg($("reqMsg"), "ok", "✓ Sent to ITS. You don't need to do anything else — ITS will reply to the driver.");
+        ["reqType", "reqDiscord", "reqName", "reqContact", "reqDetails"].forEach(id => { $(id).value = ""; $(id).classList.remove("good", "bad"); });
+        setMsg($("reqDiscordMsg"), "", "");
+      } catch (e) { setMsg($("reqMsg"), "bad", "Couldn't send: " + friendlyError(e)); }
+      finally { btn.disabled = false; btn.textContent = "Send to ITS"; }
     };
 
     // ============================================================
