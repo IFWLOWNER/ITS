@@ -809,7 +809,7 @@
             <input type="search" id="lgSearch" placeholder="Search leagues or owners…">
             <select id="lgFilter">
               <option value="">All statuses</option>
-              <option value="pending">Pending approval</option>
+              <option value="pending">Awaiting acceptance</option>
               <option value="beta">Beta</option>
               <option value="active">Paid / active</option>
               <option value="ending">Ending in 7 days</option>
@@ -959,7 +959,7 @@
       const live = ["active", "approved", "beta"].includes(s) && (!until || until > Date.now());
       const daysLeft = until ? Math.ceil((until - Date.now()) / DAY) : null;
       let label = s, cls = "";
-      if (s === "pending") label = "Pending";
+      if (s === "pending") label = "Awaiting acceptance";
       else if (["active", "approved", "beta"].includes(s) && until && until <= Date.now()) { label = "Expired"; cls = "miniBad"; }
       else if (s === "beta") { label = "Beta"; cls = daysLeft != null && daysLeft <= 7 ? "" : "miniOk"; }
       else if (s === "active" || s === "approved") { label = "Paid"; cls = daysLeft != null && daysLeft <= 7 ? "" : "miniOk"; }
@@ -1014,7 +1014,7 @@
       const reqOpen = dataReqs.filter(r => r.status === "open" || r.status === "in_progress");
       const reqDue = reqOpen.filter(r => ms(r.createdAt) && Date.now() - ms(r.createdAt) > 23 * DAY);
       const ending = leagues.filter(L => planState(L).ending);
-      if (pend.length) items.push([`${pend.length} league${pend.length === 1 ? "" : "s"} waiting for approval`, "leagues", "pending"]);
+      if (pend.length) items.push([`${pend.length} new league${pend.length === 1 ? "" : "s"} awaiting acceptance`, "leagues", "pending"]);
       if (claimsP.length) items.push([`${claimsP.length} payment${claimsP.length === 1 ? "" : "s"} to check`, "payments"]);
       if (reqDue.length) items.push([`${reqDue.length} data request${reqDue.length === 1 ? "" : "s"} due within a week (one-month deadline)`, "data"]);
       else if (reqOpen.length) items.push([`${reqOpen.length} open data request${reqOpen.length === 1 ? "" : "s"}`, "data"]);
@@ -1038,7 +1038,8 @@
     let selectedLeague = null;
     function renderLeagues() {
       const q = $("lgSearch").value.trim().toLowerCase(), f = $("lgFilter").value;
-      const list = leagues.filter(L => {
+      const order = (L) => (L.status || "pending") === "pending" ? 0 : 1;
+      const list = [...leagues].sort((a, b) => order(a) - order(b)).filter(L => {
         const p = planState(L), s = L.status || "pending";
         if (q && ![L.name, L.id, L.ownerEmail, L.game].join(" ").toLowerCase().includes(q)) return false;
         if (f === "pending") return s === "pending";
@@ -1053,7 +1054,7 @@
         (list.length ? list.map(L => {
           const p = planState(L), s = stats[L.id];
           return `<tr class="clickRow ${selectedLeague === L.id ? "sel" : ""}" data-lid="${esc(L.id)}">
-            <td><strong>${esc(L.name || L.id)}</strong><div class="muted" style="font-size:11px;">${esc(L.id)}${L.game ? " · " + esc(L.game) : ""}</div></td>
+            <td><strong>${esc(L.name || L.id)}</strong>${(L.status || "pending") === "pending" ? ` <span class="pill miniBad" style="padding:0 7px;">NEW</span>` : ""}<div class="muted" style="font-size:11px;">${esc(L.id)}${L.game ? " · " + esc(L.game) : ""}</div></td>
             <td style="font-size:12px;">${esc(L.ownerEmail || "—")}</td>
             <td><span class="pill ${p.cls}">${esc(p.label)}</span></td>
             <td class="num">${p.daysLeft == null ? "—" : p.daysLeft <= 0 ? "0" : p.daysLeft}</td>
@@ -1116,6 +1117,18 @@
               ${L.status === "suspended" ? `<button class="small" id="lgReinstate">Reinstate</button>` : `<button class="small danger" id="lgSuspend">Suspend</button>`}
               ${p.live ? `<button class="small danger" id="lgExpireNow">End plan now</button>` : ""}
             </div>
+            <div class="muted" style="font-weight:800; margin-top:14px;">Change status</div>
+            <div class="row" style="margin-top:6px; flex-wrap:nowrap;">
+              <select id="lgSetStatus" style="width:auto;">
+                <option value="pending">Awaiting acceptance</option>
+                <option value="beta">Beta (free trial)</option>
+                <option value="active">Paid</option>
+                <option value="expired">Expired</option>
+                <option value="suspended">Suspended</option>
+              </select>
+              <button class="small primary" id="lgSetStatusBtn">Change</button>
+            </div>
+            <div class="muted" style="font-size:12px; margin-top:4px;">Beta starts a fresh ${BETA_DAYS} days if it has no time left. Paid keeps the current end date (add months above). Awaiting acceptance / Expired / Suspended switch the league off — nothing is deleted.</div>
             <div class="muted" style="font-weight:800; margin-top:14px;">Plan history</div>
             ${billing.length ? billing.map(b => `<div class="logLine">${esc(fmtDate(b.createdAt, false))} — ${b.months ? `+${esc(b.months)} month${b.months === 1 ? "" : "s"}` : `+${esc(b.days)} days`}${b.reason ? " · " + esc(b.reason) : ""} → ${esc(fmtDate(b.newAccessUntil, false))} <span class="muted">(${esc(b.by || "")})</span></div>`).join("") : `<div class="muted" style="font-size:12px;">Nothing yet.</div>`}
           </div>
@@ -1128,6 +1141,9 @@
       if ($("lgSuspend")) $("lgSuspend").onclick = () => setStatus(lid, "suspended");
       if ($("lgReinstate")) $("lgReinstate").onclick = () => setStatus(lid, "reinstate");
       if ($("lgExpireNow")) $("lgExpireNow").onclick = () => setStatus(lid, "expire");
+      const cur = (L.status === "approved" ? "active" : L.status) || "pending";
+      $("lgSetStatus").value = ["pending", "beta", "active", "expired", "suspended"].includes(cur) ? cur : "pending";
+      $("lgSetStatusBtn").onclick = () => changeStatus(lid, $("lgSetStatus").value);
       box.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
@@ -1186,6 +1202,38 @@
         await refreshLeague(lid);
         return true;
       } catch (e) { toast(friendlyError(e), 5000); return false; }
+    }
+
+    const STATUS_LABEL = { pending: "Awaiting acceptance", beta: "Beta", active: "Paid", approved: "Paid", expired: "Expired", suspended: "Suspended" };
+    async function changeStatus(lid, to) {
+      const L = leagues.find(x => x.id === lid); const ref = db.collection("leagues").doc(lid);
+      const from = L.status || "pending";
+      if (to === from || (to === "active" && from === "approved")) { toast("It's already " + STATUS_LABEL[to] + "."); return; }
+      const until = ms(L.accessUntil);
+      const upd = { status: to };
+      let msg = "";
+      if (to === "beta") {
+        if (!until || until <= Date.now()) { const u = new Date(Date.now() + BETA_DAYS * DAY); upd.accessUntil = TS().fromDate(u); upd.reminderSentFor = FV().delete(); msg = `Your ${BETA_DAYS}-day free beta runs until ${u.toLocaleDateString()}.`; }
+        else msg = `You're on the ITS beta until ${new Date(until).toLocaleDateString()}.`;
+        upd.plan = "beta"; if (from === "pending") upd.approvedAt = FV().serverTimestamp();
+      } else if (to === "active") {
+        if (until && until <= Date.now()) { if (!confirm("Their end date has already passed, so they'd still be locked out. Change to Paid anyway? (Then add months.)")) return; }
+        if (from === "pending") upd.approvedAt = FV().serverTimestamp();
+        msg = until && until > Date.now() ? `Your plan runs until ${new Date(until).toLocaleDateString()}.` : "Your league is live on ITS.";
+      } else if (to === "expired") {
+        upd.statusBeforeExpiry = from; upd.expiredAt = FV().serverTimestamp(); msg = "Your ITS plan has ended. Your data is safe — renew on Patreon and tell ITS in Plan & Billing to switch back on.";
+      } else if (to === "suspended") {
+        upd.statusBeforeExpiry = from; msg = "Your league has been suspended by ITS. Contact ITS support for details.";
+      } else if (to === "pending") {
+        msg = "";
+      }
+      if (!confirm(`Change ${L.name || lid} from ${STATUS_LABEL[from] || from} to ${STATUS_LABEL[to]}?`)) return;
+      try {
+        await ref.update(upd);
+        if (msg) await notifyOwner(lid, "subscription", `Your league is now: ${STATUS_LABEL[to]}`, msg);
+        await logAction("status_change", { leagueId: lid, leagueName: L.name || lid, statusFrom: from, statusTo: to });
+        toast(`Now ${STATUS_LABEL[to]}.`); await refreshLeague(lid);
+      } catch (e) { toast(friendlyError(e), 5000); }
     }
 
     async function setStatus(lid, action) {
@@ -1428,14 +1476,14 @@
     // ============================================================
     // LOG
     // ============================================================
-    const ACTION_LABEL = { approve_beta: "Approved (beta)", approve_paid: "Approved (paid)", extend: "Added time", suspend: "Suspended", reinstate: "Reinstated", expire_now: "Ended plan", claim_rejected: "Payment not matched", data_request: "Data request", ticket_edit: "Ticket edited", ticket_delete: "Ticket deleted" };
+    const ACTION_LABEL = { approve_beta: "Approved (beta)", approve_paid: "Approved (paid)", extend: "Added time", suspend: "Suspended", reinstate: "Reinstated", expire_now: "Ended plan", claim_rejected: "Payment not matched", data_request: "Data request", ticket_edit: "Ticket edited", ticket_delete: "Ticket deleted", status_change: "Status changed" };
     async function loadLog() {
       $("logTable").innerHTML = `<tr><td class="muted">Loading…</td></tr>`;
       try {
         const snap = await db.collection("adminLog").orderBy("at", "desc").limit(300).get();
         const rows = snap.docs.map(d => d.data());
         $("logTable").innerHTML = `<thead><tr><th>When</th><th>Who</th><th>What</th><th>Details</th></tr></thead><tbody>` + (rows.length ? rows.map(r => {
-          let det = [r.leagueName || r.leagueId, r.ticketId && "ticket " + r.ticketId, r.months && "+" + r.months + " months", r.days && "+" + r.days + " days", r.reason, r.text, r.discordKey && "@" + r.discordKey].filter(Boolean).map(esc).join(" · ");
+          let det = [r.leagueName || r.leagueId, r.ticketId && "ticket " + r.ticketId, r.months && "+" + r.months + " months", r.days && "+" + r.days + " days", r.statusTo && `${STATUS_LABEL[r.statusFrom] || r.statusFrom || "?"} → ${STATUS_LABEL[r.statusTo] || r.statusTo}`, r.reason, r.text, r.discordKey && "@" + r.discordKey].filter(Boolean).map(esc).join(" · ");
           if (r.after) det += `<div style="margin-top:2px;">${Object.keys(r.after).map(k => `${esc(k)}: <span class="diffOld">${esc(r.before && r.before[k] != null ? r.before[k] : "")}</span> → <span class="diffNew">${esc(r.after[k])}</span>`).join("<br>")}</div>`;
           return `<tr><td style="font-size:12px; white-space:nowrap;">${esc(fmtDate(r.at))}</td><td style="font-size:12px;">${esc(r.by)}</td><td><strong>${esc(ACTION_LABEL[r.action] || r.action)}</strong></td><td style="font-size:12px;">${det}</td></tr>`;
         }).join("") : `<tr><td colspan="4" class="muted">Nothing yet.</td></tr>`) + `</tbody>`;
