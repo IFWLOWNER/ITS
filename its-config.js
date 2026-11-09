@@ -8,10 +8,10 @@ const ITS_CONFIG = {
   // Discord application → OAuth2 → Client ID (a long number). Public — safe
   // to put here. The Client SECRET never goes in this file: it's stored with
   //   firebase functions:secrets:set DISCORD_CLIENT_SECRET
-  discordClientId: "PASTE_DISCORD_CLIENT_ID_HERE",
+  discordClientId: "1569249588127338537",
 
   // Where league owners buy / renew ITS.
-  patreonUrl: "https://www.patreon.com/",
+  patreonUrl: "https://www.patreon.com/c/IFWL",
 
   // ITS Support Discord (owners must join).
   supportDiscordUrl: "https://discord.gg/yVMcCAMJPM",
