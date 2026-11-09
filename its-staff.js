@@ -167,11 +167,15 @@ const ITSStaff = (() => {
     const role = staffDoc.data().role;
     LEAGUE = leagueSnap.data();
 
-    const status = LEAGUE.status || "pending";
-    if (status !== "active" && status !== "approved") {
-      message(status === "pending" ? "League waiting for approval" : "League not active",
+    let status = LEAGUE.status || "pending";
+    const until = LEAGUE.accessUntil ? (LEAGUE.accessUntil.toMillis ? LEAGUE.accessUntil.toMillis() : Number(LEAGUE.accessUntil)) : null;
+    if (["active", "approved", "beta"].includes(status) && until != null && until <= Date.now()) status = "expired";
+    if (!["active", "approved", "beta"].includes(status)) {
+      message(status === "pending" ? "League waiting for approval" : status === "expired" ? "ITS plan ended" : "League not active",
         status === "pending"
           ? `<strong>${esc(LEAGUE.name)}</strong> hasn't been approved by ITS yet. Stewarding switches on as soon as it is.`
+          : status === "expired"
+          ? `<strong>${esc(LEAGUE.name)}</strong>'s ITS plan has ended, so stewarding is paused. Nothing has been lost — it all comes back as soon as the league owner extends the plan.`
           : `<strong>${esc(LEAGUE.name)}</strong> is currently <strong>${esc(status)}</strong>. Contact your league owner.`,
         role === "owner" ? `<button class="p" data-its="owner">Open Owner Dashboard</button>` : "");
       return null;

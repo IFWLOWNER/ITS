@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ITS — Admin</title>
+  <meta name="robots" content="noindex">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    /* ============================================================
+       IFWL STEWARD DASHBOARD — design system (single source of truth)
+       Vibrant light theme. Every id/class the JS relies on is
+       preserved; this replaces three previously-stacked !important
+       patch layers with one consolidated, motion + icon-ready sheet.
+       ============================================================ */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap');
+
+    :root{
+      --navy:#0f172a;
+      --ink:#111827;
+      --muted:#64748b;
+      --muted-2:#94a3b8;
+      --line:#e4e0fb;
+      --line-soft:#eeecfc;
+      --bg:#f5f4fd;
+      --card:#ffffff;
+      --card-soft:#f8f7fe;
+
+      --primary:#4f46e5;
+      --primary-dark:#3730a3;
+      --primary-2:#7c3aed;
+      --accent:#db2777;
+      --accent-2:#06b6d4;
+      --grad-primary:linear-gradient(135deg,#4f46e5,#7c3aed 55%,#db2777);
+      --grad-cool:linear-gradient(135deg,#06b6d4,#4f46e5);
+
+      --red:#e11d48;
+      --red-dark:#9f1239;
+      --red-soft:#fff1f4;
+      --red-line:#fecdd6;
+
+      --amber:#d97706;
+      --amber-dark:#92400e;
+      --amber-soft:#fffbeb;
+      --amber-line:#fde68a;
+
+      --green:#059669;
+      --green-dark:#065f46;
+      --green-soft:#ecfdf5;
+      --green-line:#a7f3d0;
+
+      --blue:#2563eb;
+      --blue-dark:#1d4ed8;
+      --blue-soft:#eff6ff;
+      --blue-line:#bfdbfe;
+
+      --indigo:#4f46e5;
+      --indigo-dark:#3730a3;
+      --indigo-soft:#eef0ff;
+      --indigo-line:#c7d2fe;
+
+      --teal:#0d9488;
+      --teal-dark:#115e59;
+      --teal-soft:#f0fdfa;
+      --teal-line:#99f6e4;
+
+      --purple:#7c3aed;
+
+      --font-display:'Manrope', Inter, ui-sans-serif, system-ui, sans-serif;
+
+      --radius-lg:22px;
+      --radius:16px;
+      --radius-sm:12px;
+      --shadow:0 18px 40px rgba(79,70,229,.13);
+      --shadow-sm:0 8px 18px rgba(15,23,42,.07);
+      --shadow-glow:0 12px 26px rgba(124,58,237,.30);
+      --focus:0 0 0 4px rgba(79,70,229,.18);
+    }
+
+    *, *::before, *::after{ box-sizing:border-box; }
+
+    html{ background:var(--bg); scroll-behavior:smooth; }
+    html, body{ width:100%; max-width:100%; overflow-x:hidden; }
+
+    @keyframes fadeSlideIn{ from{ opacity:0; transform:translateY(7px); } to{ opacity:1; transform:translateY(0); } }
+    @keyframes gradientShift{ 0%{ background-position:0% 50%; } 50%{ background-position:100% 50%; } 100%{ background-position:0% 50%; } }
+    @keyframes pulseDot{ 0%{ box-shadow:0 0 0 0 rgba(217,119,6,.45); } 70%{ box-shadow:0 0 0 7px rgba(217,119,6,0); } 100%{ box-shadow:0 0 0 0 rgba(217,119,6,0); } }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+      color:var(--ink);
+      line-height:1.45;
+      background:
+        radial-gradient(circle at 12% -4%, rgba(79,70,229,.15), transparent 34%),
+        radial-gradient(circle at 88% 0%, rgba(219,39,119,.12), transparent 38%),
+        radial-gradient(circle at 50% 100%, rgba(6,182,212,.09), transparent 40%),
+        var(--bg);
+      background-attachment:fixed;
+    }
+
+    img, video, iframe, canvas, svg{ max-width:100%; }
+    .icon{ width:16px; height:16px; stroke:currentColor; stroke-width:2.2; fill:none; stroke-linecap:round; stroke-linejoin:round; display:block; flex:0 0 auto; }
+
+    /* ---------- header ---------- */
+    header{
+      position:sticky; top:0; z-index:50;
+      display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
+      padding:16px clamp(14px, 2vw, 26px);
+      background:rgba(255,255,255,.88);
+      border-bottom:1px solid var(--line);
+      box-shadow:0 12px 30px rgba(79,70,229,.10);
+      backdrop-filter:blur(18px) saturate(1.3);
+      -webkit-backdrop-filter:blur(18px) saturate(1.3);
+    }
+    header::before{
+      content:""; position:absolute; left:0; right:0; top:0; height:4px;
+      background:var(--grad-primary); background-size:200% 100%;
+      animation:gradientShift 7s ease infinite;
+    }
+    .brand{ display:flex; gap:12px; align-items:center; min-width:0; }
+    .brand img{
+      width:42px; height:42px; object-fit:contain; flex:0 0 auto;
+      padding:6px; border-radius:14px;
+      background:linear-gradient(135deg,#fff,#f1f0fe);
+      border:1px solid var(--line);
+      box-shadow:0 6px 16px rgba(79,70,229,.18);
+    }
+    .brandText{ min-width:0; }
+    .brandTitle{ font-family:var(--font-display); font-weight:800; font-size:19px; letter-spacing:-.02em; background:var(--grad-primary); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    .welcomeLine{ font-size:12px; color:#334155; margin-top:5px; line-height:1.3; max-width:900px; }
+    header .small{ font-size:12px; color:var(--muted); margin-top:4px; line-height:1.2; word-break:break-word; }
+    header .row{ align-items:center; }
+
+    @media (max-width: 980px){
+      header{ position:relative; flex-direction:column; align-items:stretch; padding:14px; }
+      header .row{ width:100%; display:grid; grid-template-columns:1fr; gap:8px; }
+      header button{ width:100%; }
+      .brand{ align-items:center; }
+      .brandText > div, .welcomeLine, header .small{ max-width:100%; overflow-wrap:anywhere; word-break:break-word; }
+    }
+
+    /* ---------- layout ---------- */
+    .wrap{
+      display:grid;
+      grid-template-columns:minmax(320px, 400px) minmax(0, 1fr);
+      gap:16px;
+      width:min(1680px, calc(100% - 28px));
+      margin:0 auto;
+      padding:16px 0 20px;
+      align-items:start;
+    }
+    body > div[style*="padding:14px"]{
+      width:min(1680px, calc(100% - 28px));
+      margin:0 auto;
+    }
+    @media (max-width: 980px){
+      .wrap{ grid-template-columns:1fr; width:calc(100% - 20px); }
+      body > div[style*="padding:14px"]{ width:calc(100% - 20px); }
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius-lg);
+      box-shadow:var(--shadow);
+      padding:18px;
+      overflow:hidden;
+    }
+    .wrap > .card{
+      position:sticky; top:88px;
+      max-height:calc(100vh - 108px);
+      display:flex; flex-direction:column;
+    }
+    @media (max-width: 980px){
+      .wrap > .card{ position:relative; top:auto; max-height:none; }
+    }
+    /* ✅ FIXED: the Live Workload card is a column flexbox with a capped
+       height, so every direct child (title row, workload summary box,
+       filter row, ticket list, hint line) defaulted to flex-shrink:1. When
+       the ticket list's natural content was taller than the available
+       space, the browser shrank ALL of them together instead of just
+       scrolling the list - and because each of those children also sets
+       its own overflow:hidden, shrinking below content height silently
+       clipped their content instead of resizing visibly (the workload
+       summary's pill/subtitle vanishing, ticket text overlapping the
+       status pill). Only .list is meant to flex/scroll - everything else
+       around it needs to hold its natural size no matter how little room
+       is left, so the list is what gives way (via its own overflow-y:auto)
+       instead of every child getting silently crushed.
+    */
+    .wrap > .card > .row,
+    .wrap > .card > .workloadBox,
+    .wrap > .card > .muted{ flex-shrink:0; }
+
+    .title{ font-family:var(--font-display); font-weight:800; font-size:16px; margin:0 0 10px; color:var(--navy); letter-spacing:-.01em; display:flex; align-items:center; gap:9px; }
+    .muted{ color:var(--muted); font-size:12px; font-weight:600; }
+    .small{ font-size:12px; }
+    .ok{ color:var(--green-dark); font-weight:700; }
+
+    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    @media (max-width: 980px){ .grid2{ grid-template-columns:1fr; } }
+
+    /* ---------- icon chips (section headers, titles, stat tiles) ---------- */
+    .iconChip{ display:inline-flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:9px; color:#fff; flex:0 0 auto; box-shadow:0 4px 10px rgba(15,23,42,.14); }
+    .iconChip .icon{ width:15px; height:15px; }
+    .iconChip.chip-indigo{ background:linear-gradient(135deg,var(--indigo),#818cf8); }
+    .iconChip.chip-teal{ background:linear-gradient(135deg,var(--teal),#2dd4bf); }
+    .iconChip.chip-amber{ background:linear-gradient(135deg,var(--amber),#fbbf24); }
+    .iconChip.chip-blue{ background:linear-gradient(135deg,var(--blue),#60a5fa); }
+    .iconChip.chip-pink{ background:linear-gradient(135deg,var(--accent),#f472b6); }
+    .iconChip.chip-red{ background:linear-gradient(135deg,var(--red),#fb7185); }
+
+    /* ---------- buttons & inputs ---------- */
+    button{
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      padding:10px 16px; min-height:42px;
+      border:1px solid var(--line); border-radius:999px;
+      background:var(--card); color:var(--navy); font-weight:750; font-size:13px;
+      cursor:pointer; box-shadow:var(--shadow-sm);
+      transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease, background .15s ease, color .15s ease;
+    }
+    button .btnIcon{ width:15px; height:15px; stroke-width:2.3; }
+    button:hover:not(:disabled){ transform:translateY(-2px); border-color:var(--primary); color:var(--primary-dark); background:#fff; box-shadow:0 10px 22px rgba(79,70,229,.18); }
+    button:active:not(:disabled){ transform:translateY(0); }
+    button:disabled{ opacity:.55; cursor:not-allowed; }
+    button.primary{
+      background:var(--grad-primary); background-size:160% 160%;
+      border-color:transparent; color:#fff;
+      box-shadow:var(--shadow-glow);
+    }
+    button.primary:hover:not(:disabled){ transform:translateY(-2px); background-position:100% 0; color:#fff; box-shadow:0 16px 34px rgba(124,58,237,.38); }
+    button#tlsBtn{
+      border-color:rgba(225,29,72,.28); color:var(--red-dark);
+      background:linear-gradient(135deg,#fff,#fff1f4);
+    }
+    button#tlsBtn:hover{ color:var(--red-dark); border-color:var(--red); box-shadow:0 10px 22px rgba(225,29,72,.18); }
+
+    select, input, textarea{
+      width:100%; box-sizing:border-box;
+      padding:10px 12px; font-size:14px; color:var(--ink);
+      border:1px solid #d8d4f5; border-radius:var(--radius-sm);
+      background:#fff; outline:none;
+      transition:border-color .14s ease, box-shadow .14s ease;
+    }
+    textarea{ min-height:70px; resize:vertical; font-family:inherit; }
+    select:focus, input:focus, textarea:focus{ border-color:var(--primary); box-shadow:var(--focus); }
+    select.nfaNoTimeRequired{ opacity:.7; background:var(--card-soft); }
+    textarea[readonly]{ background:var(--card-soft); color:#334155; }
+
+    label.muted{ display:block; margin-bottom:5px; }
+
+    code{ background:var(--card-soft); border:1px solid var(--line); padding:2px 6px; border-radius:6px; font-size:12px; }
+    a{ color:var(--primary-dark); }
+    a:hover{ opacity:.85; }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+    /* ---------- pills, badges, tags ---------- */
+    .pill, .badge, .miniPill{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:5px 11px; border-radius:999px;
+      border:1px solid var(--line); background:#fff;
+      font-size:12px; font-weight:750; color:var(--ink);
+      box-shadow:var(--shadow-sm); white-space:nowrap;
+    }
+    .pill strong{ font-weight:850; }
+    .miniOk{ border-color:var(--green-line); background:var(--green-soft); color:var(--green-dark); font-weight:850; }
+    .miniBad{ border-color:var(--red-line); background:var(--red-soft); color:var(--red-dark); font-weight:850; }
+
+    .needTag, .linkedMiniTag, .ticketTinyPill, .ticketStatusPill, .ticketOpenHint{
+      display:inline-flex; align-items:center; gap:5px;
+      padding:5px 10px; border-radius:999px; font-size:11px; font-weight:850;
+      border:1px solid var(--line); background:#fff; color:#334155;
+      box-shadow:var(--shadow-sm); white-space:nowrap; line-height:1.1;
+    }
+    .needTag{ position:relative; padding-left:19px; border-color:var(--amber-line); background:var(--amber-soft); color:var(--amber-dark); }
+    .needTag::before{ content:""; position:absolute; left:9px; top:50%; width:6px; height:6px; margin-top:-3px; border-radius:999px; background:var(--amber-dark); animation:pulseDot 1.8s infinite; }
+    .linkedMiniTag{ border-color:var(--blue-line); background:var(--blue-soft); color:#1e3a8a; word-break:break-word; white-space:normal; }
+    .ticketOpenHint{ color:var(--blue-dark); background:var(--blue-soft); border-color:var(--blue-line); }
+    .proofYes{ color:var(--green-dark); background:var(--green-soft); border-color:var(--green-line); }
+    .proofNo{ color:var(--amber-dark); background:var(--amber-soft); border-color:var(--amber-line); }
+
+    .ticketStatusPill{ flex:0 0 auto; max-width:150px; text-align:center; }
+    .ticketStatusPill[data-status="finalised"]{ background:var(--green-soft); border-color:var(--green-line); color:var(--green-dark); }
+    .ticketStatusPill[data-status="in-review"]{ background:var(--indigo-soft); border-color:var(--indigo-line); color:var(--indigo-dark); }
+    .ticketStatusPill[data-status="ready-to-publish"]{ background:var(--teal-soft); border-color:var(--teal-line); color:var(--teal-dark); }
+    .ticketStatusPill[data-status="awaiting-review"],
+    .ticketStatusPill[data-status="under-review"],
+    .ticketStatusPill[data-status=""]{ background:var(--amber-soft); border-color:var(--amber-line); color:var(--amber-dark); }
+
+    .stmtTag, .delibTag{
+      padding:9px 10px; border-radius:var(--radius-sm); font-size:12px; font-weight:850; line-height:1.25;
+      border:1px solid var(--line); background:var(--card-soft); color:var(--ink);
+    }
+    .stmtTag small, .delibTag small{ display:block; margin-top:4px; font-weight:750; opacity:.9; }
+    .stmtOk, .delibOk{ border-color:var(--green-line); background:var(--green-soft); color:var(--green-dark); }
+    .stmtBad, .delibBad{ border-color:var(--red-line); background:var(--red-soft); color:var(--red-dark); }
+
+    /* ---------- top stat bar (NEW) ---------- */
+    .statBar{ display:grid; grid-template-columns:repeat(auto-fit, minmax(190px, 1fr)); gap:12px; }
+    .statTile{
+      position:relative; overflow:hidden;
+      background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+      padding:15px 16px; display:flex; align-items:center; gap:13px;
+      box-shadow:var(--shadow-sm);
+      animation:fadeSlideIn .3s ease both;
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+    .statTile:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+    .statTile::after{ content:""; position:absolute; right:-26px; top:-26px; width:84px; height:84px; border-radius:999px; opacity:.10; }
+    .statTileIcon{ position:relative; z-index:1; width:44px; height:44px; border-radius:13px; display:flex; align-items:center; justify-content:center; color:#fff; flex:0 0 auto; box-shadow:0 8px 18px rgba(15,23,42,.16); }
+    .statTileIcon .icon{ width:21px; height:21px; }
+    .statTileBody{ position:relative; z-index:1; min-width:0; }
+    .statTileNum{ font-family:var(--font-display); font-size:23px; font-weight:800; color:var(--navy); line-height:1.15; }
+    .statTileLabel{ font-size:11px; font-weight:750; color:var(--muted); text-transform:uppercase; letter-spacing:.045em; margin-top:2px; }
+    .statTile.tone-indigo .statTileIcon{ background:linear-gradient(135deg,#4f46e5,#818cf8); }
+    .statTile.tone-indigo::after{ background:#4f46e5; }
+    .statTile.tone-amber .statTileIcon{ background:linear-gradient(135deg,#d97706,#fbbf24); }
+    .statTile.tone-amber::after{ background:#d97706; }
+    .statTile.tone-pink .statTileIcon{ background:linear-gradient(135deg,#db2777,#f472b6); }
+    .statTile.tone-pink::after{ background:#db2777; }
+    .statTile.tone-teal .statTileIcon{ background:linear-gradient(135deg,#0d9488,#2dd4bf); }
+    .statTile.tone-teal::after{ background:#0d9488; }
+
+    /* ---------- workload box ---------- */
+    .workloadBox{ position:relative; overflow:hidden; border:1px solid var(--indigo-line); border-radius:var(--radius-sm); padding:13px 15px; background:linear-gradient(135deg,var(--indigo-soft),#fff); margin:10px 0 12px; }
+    .workloadBox::after{ content:""; position:absolute; right:-22px; top:-22px; width:80px; height:80px; border-radius:999px; background:var(--indigo); opacity:.08; }
+    .workloadTop{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; position:relative; z-index:1; }
+    .workloadTitle{ font-weight:800; font-size:13px; margin:0; color:var(--navy); display:flex; align-items:center; gap:8px; }
+    .workloadSub{ margin-top:6px; font-size:12px; color:var(--muted); line-height:1.3; position:relative; z-index:1; }
+
+    /* ---------- ticket list ---------- */
+    .list{
+      flex:1; min-height:0; overflow-y:auto; overflow-x:hidden;
+      display:flex; flex-direction:column; gap:12px;
+      padding:2px 6px 14px 2px; margin-right:-4px;
+      scrollbar-width:thin; scrollbar-color:#c7bdf5 transparent;
+    }
+    .list::-webkit-scrollbar{ width:9px; }
+    .list::-webkit-scrollbar-thumb{ background:#c7bdf5; border-radius:999px; border:3px solid transparent; background-clip:content-box; }
+    @media (max-width: 980px){ .list{ max-height:62vh; min-height:280px; } }
+
+    .ticket{
+      position:relative; cursor:pointer; border-radius:var(--radius); overflow:hidden;
+      border:1px solid var(--line); background:linear-gradient(180deg,#fff,#fbfbff);
+      box-shadow:var(--shadow-sm);
+      animation:fadeSlideIn .28s ease both;
+      transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+      /* ✅ FIXED: same flex-shrink issue as the card's own children (see
+         .wrap > .card comment above) one level deeper - .list is itself a
+         column flexbox, so each .ticket card defaulted to shrinking below
+         its real content height (and, with overflow:hidden here, silently
+         clipping everything past the title line - the id/people/info/
+         incident/footer rows, and the second line of the subtitle) rather
+         than letting .list's own overflow-y:auto scroll to show every card
+         at full size. Cards now always render full height; .list scrolls. */
+      flex-shrink:0;
+    }
+    .ticket::before{ content:""; position:absolute; inset:0 auto 0 0; width:5px; background:var(--grad-primary); opacity:.35; transition:opacity .16s ease, width .16s ease; }
+    .ticket:hover{ transform:translateY(-2px); box-shadow:0 16px 32px rgba(79,70,229,.16); border-color:var(--indigo-line); background:#fff; }
+    .ticket:hover::before{ opacity:.85; width:6px; }
+    .ticket.active{ border-color:var(--primary); box-shadow:0 0 0 3px rgba(79,70,229,.14), var(--shadow); background:linear-gradient(135deg,#fff,var(--indigo-soft)); }
+    .ticket.active::before{ width:6px; opacity:1; }
+    .ticket .id{ font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; color:var(--navy); font-weight:750; }
+    .ticket .status{ font-size:12px; color:#334155; margin-top:3px; }
+
+    .ticketCardInner, .ticketCardInner.compactTicketCard{ position:relative; z-index:1; padding:14px 14px 13px 18px; }
+    .ticketHeadLine{ display:flex; align-items:flex-start; justify-content:space-between; gap:10px; min-width:0; }
+    .ticketHeadText{ min-width:0; flex:1; }
+    .ticketEvent{ font-size:14px; font-weight:850; color:var(--navy); line-height:1.25; white-space:normal; word-break:break-word; }
+    .ticketCompetition{ margin-top:3px; font-size:12px; font-weight:700; color:var(--muted); line-height:1.25; white-space:normal; word-break:break-word; }
+
+    .ticketIdLine{
+      margin-top:9px; display:flex; gap:8px; align-items:center; min-width:0;
+      border:1px solid var(--line); background:var(--card-soft); border-radius:var(--radius-sm); padding:7px 9px;
+    }
+    .ticketIdLine span, .ticketPeopleLine span, .ticketInfoLine span{
+      display:block; color:var(--muted-2); font-size:10px; text-transform:uppercase; letter-spacing:.07em; font-weight:850;
+    }
+    .ticketIdLine strong{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--navy); font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; }
+
+    .ticketPeopleLine, .ticketInfoLine{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px; }
+    .ticketPeopleLine > div, .ticketInfoLine > div{ min-width:0; border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; padding:8px 9px; }
+    .ticketPeopleLine strong, .ticketInfoLine strong{ display:block; margin-top:3px; color:var(--navy); font-size:12px; line-height:1.25; font-weight:800; white-space:normal; word-break:break-word; }
+    .ticketPeopleLine > div:first-child{ background:#fff8f9; border-color:var(--red-line); }
+    .ticketPeopleLine > div:last-child{ background:#f7f7fe; border-color:var(--indigo-line); }
+    @media (max-width: 560px){ .ticketPeopleLine, .ticketInfoLine{ grid-template-columns:1fr; } }
+
+    .ticketIncidentLine{
+      margin-top:8px; color:#334155; font-size:12px; line-height:1.35; font-weight:650;
+      background:var(--card-soft); border:1px solid var(--line); border-radius:var(--radius-sm); padding:8px 9px;
+      white-space:normal; word-break:break-word;
+    }
+
+    .compactFooter{ margin-top:9px; display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+    .compactFooter .ticketOpenHint{ margin-left:auto; }
+    .compactChecklist{ margin-top:8px; display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+    @media (max-width: 980px){ .compactChecklist{ grid-template-columns:1fr; } }
+
+    /* ---------- section blocks ---------- */
+    .sec{ border:1px solid var(--line); border-left:4px solid var(--line); border-radius:var(--radius); padding:15px; background:var(--card-soft); margin-top:13px; transition:box-shadow .18s ease, border-color .18s ease; }
+    .sec:hover{ box-shadow:var(--shadow-sm); }
+    .sec h3{ margin:0 0 9px; font-size:14.5px; font-family:var(--font-display); font-weight:800; color:var(--navy); display:flex; align-items:center; gap:9px; }
+    #statementsSec{ border-left-color:var(--teal); }
+    #discussionSec{ border-left-color:var(--indigo); }
+    #driverHistorySec{ border-left-color:var(--amber); }
+    #linkedIncidentSec{ border-left-color:var(--blue); }
+
+    #selTitle{ font-size:19px; }
+    #selTitle::after{ content:""; display:block; width:60px; height:3px; margin-top:8px; border-radius:999px; background:var(--grad-primary); }
+
+    #sumCompetition, #sumEvent, #sumRule, #sumProof{ font-weight:750; color:#172033; word-break:break-word; }
+
+    .redBox{
+      border:1px solid var(--red-line); background:var(--red-soft); color:var(--red-dark);
+      border-radius:var(--radius-sm); padding:10px 12px 10px 40px; margin-top:10px;
+      font-size:13px; line-height:1.3; font-weight:700; position:relative;
+    }
+    .redBox::before{
+      content:"!"; position:absolute; left:12px; top:50%; transform:translateY(-50%);
+      width:20px; height:20px; display:grid; place-items:center; border-radius:999px;
+      color:#fff; background:var(--red); font-weight:900; font-size:12px;
+    }
+
+    .bannerBox{ border-radius:var(--radius-sm); padding:12px 14px; font-size:13px; font-weight:800; line-height:1.3; }
+    .bannerBox small{ display:block; margin-top:6px; font-weight:700; opacity:.95; }
+    .bannerRed{ border:1px solid var(--red-line); background:var(--red-soft); color:var(--red-dark); }
+    .bannerAmber{ border:1px solid var(--amber-line); background:var(--amber-soft); color:var(--amber-dark); }
+    .bannerGreen{ border:1px solid var(--green-line); background:var(--green-soft); color:var(--green-dark); }
+
+    .videoWrap{ position:relative; width:100%; padding-top:56.25%; background:#000; border-radius:var(--radius-sm); overflow:hidden; border:1px solid var(--line); margin-top:10px; box-shadow:var(--shadow-sm); }
+    .videoWrap iframe, .videoWrap video{ position:absolute; top:0; left:0; width:100%; height:100%; border:0; }
+
+    .commentBox{
+      position:relative; border:1px solid var(--line); border-radius:var(--radius-sm);
+      padding:12px 12px 12px 16px; background:#fff;
+      transition:box-shadow .15s ease, transform .15s ease;
+    }
+    .commentBox:hover{ transform:translateY(-1px); box-shadow:var(--shadow-sm); }
+    .commentBox::before{ content:""; position:absolute; left:0; top:12px; bottom:12px; width:4px; border-radius:999px; background:var(--grad-primary); opacity:.55; }
+    .commentMeta{ font-size:12px; color:var(--muted); margin-top:4px; font-weight:650; }
+
+    .timePenaltyRow{ margin-top:10px; }
+    .nfaNoTimeNote{ margin-top:6px; font-size:12px; font-weight:800; color:var(--green-dark); display:none; }
+
+    .penPreview{ margin-top:10px; padding:10px 12px; border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; color:var(--ink); font-size:13px; line-height:1.3; }
+    .penPreview .mutedLine{ color:var(--muted); font-size:12px; margin-top:6px; }
+    .penPreview .k{ font-weight:900; }
+    .penPreview pre{ margin:8px 0 0; white-space:pre-wrap; font-family:inherit; background:transparent; }
+
+    .voteSummaryBox{ margin-top:12px; border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; padding:12px; }
+    .voteSummaryTitle{ font-weight:850; font-size:14px; margin-bottom:8px; color:var(--navy); display:flex; align-items:center; gap:8px; }
+    .voteSummaryGrid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px; }
+    @media (max-width: 980px){ .voteSummaryGrid{ grid-template-columns:1fr; } }
+    .voteSummaryPanel{ border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card-soft); padding:10px 12px; }
+    .voteSummaryPanelTitle{ font-size:12px; font-weight:850; color:var(--navy); margin-bottom:6px; }
+    .voteLine{ display:flex; justify-content:space-between; gap:10px; border-top:1px solid var(--line-soft); padding:6px 0; font-size:12px; line-height:1.25; }
+    .voteLine:first-of-type{ border-top:0; }
+    .voteLine strong{ font-weight:850; }
+    .recommendationBox{ margin-top:10px; border:1px solid var(--green-line); background:var(--green-soft); color:var(--green-dark); border-radius:var(--radius-sm); padding:10px 12px; font-size:13px; font-weight:850; line-height:1.3; }
+    .recommendationBox small{ display:block; margin-top:5px; font-weight:750; opacity:.95; }
+
+    .linkedMiniTag{ margin-top:8px; display:inline-block; }
+    .linkedIncidentBox{ border:1px solid var(--blue-line); border-radius:var(--radius-sm); background:linear-gradient(135deg,var(--blue-soft),#fff); padding:12px; margin-top:10px; }
+    .linkedIncidentTitle{ font-size:14px; font-weight:850; color:var(--navy); margin-bottom:6px; }
+    .linkedTicketGrid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+    @media (max-width: 980px){ .linkedTicketGrid{ grid-template-columns:1fr; } }
+    .linkedTicketCard{ border:1px solid var(--line); border-radius:var(--radius-sm); background:linear-gradient(180deg,#fff,#f8f7fe); padding:10px 12px; font-size:13px; line-height:1.35; cursor:pointer; box-shadow:var(--shadow-sm); transition:transform .14s ease, box-shadow .14s ease; }
+    .linkedTicketCard:hover{ transform:translateY(-2px); box-shadow:0 12px 24px rgba(37,99,235,.14); }
+    .linkedTicketCard .mono{ word-break:break-all; font-size:12px; }
+    .linkedDriverList{ border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; padding:10px 12px; margin-top:10px; font-size:13px; line-height:1.35; }
+    .linkedDriverList ol{ margin:6px 0 0 20px; padding:0; }
+    .linkedDriverList li{ margin:3px 0; }
+
+    /* ---------- driver history ---------- */
+    .driverHistoryGrid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:10px; }
+    @media (max-width: 640px){ .driverHistoryGrid{ grid-template-columns:1fr; } }
+    .driverHistoryCol{ min-width:0; }
+    .driverHistoryLabel{ font-size:12px; font-weight:800; color:var(--navy); margin-bottom:6px; }
+    .driverHistoryList{ display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto; padding-right:2px; }
+    .driverHistoryItem{
+      border:1px solid var(--line); border-radius:var(--radius-sm); background:linear-gradient(180deg,#fff,#f8f7fe);
+      padding:9px 11px; font-size:12px; line-height:1.35; cursor:pointer; box-shadow:var(--shadow-sm);
+      transition:transform .14s ease, box-shadow .14s ease;
+    }
+    .driverHistoryItem:hover{ transform:translateY(-2px); box-shadow:0 12px 24px rgba(79,70,229,.14); }
+    .driverHistoryItem .roleTag{ font-weight:850; color:var(--navy); }
+    .driverHistoryItem .muted{ margin-top:2px; }
+    .driverHistoryEmpty{ font-size:12px; color:var(--muted); font-weight:650; padding:6px 2px; }
+
+    /* ---------- driver identity cards (licence-card styling) ---------- */
+    .driverCardRow{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+    @media (max-width: 640px){ .driverCardRow{ grid-template-columns:1fr; } }
+
+    .driverIdCard{
+      position:relative; border-radius:18px; padding:3px;
+      background:linear-gradient(135deg, var(--muted-2), #cbd5e1);
+      box-shadow:var(--shadow-sm);
+      transition:box-shadow .18s ease, transform .18s ease;
+    }
+    .driverIdCard.role-accused{ background:linear-gradient(135deg,#fca5a5,var(--red)); }
+    .driverIdCard.role-reporter{ background:linear-gradient(135deg,var(--indigo-line),var(--indigo)); }
+    .driverIdCard:not(.unlinked):hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+
+    .driverIdCardInner{
+      border-radius:15px; background:#11151b; padding:12px 13px 13px;
+      position:relative; min-height:96px; background-size:cover; background-position:center;
+      display:flex; gap:11px; align-items:center;
+    }
+    .driverIdCardInner::before{
+      content:""; position:absolute; inset:0; border-radius:15px;
+      background:linear-gradient(180deg, rgba(8,10,13,.15), rgba(8,10,13,.82)); pointer-events:none;
+    }
+    .driverIdCard.unlinked .driverIdCardInner{ background:#1f2937; }
+
+    .driverCardRole{
+      position:absolute; top:8px; left:13px; z-index:1;
+      font-size:9px; font-weight:900; letter-spacing:.09em; text-transform:uppercase; color:rgba(255,255,255,.75);
+    }
+    .driverCardPhoto{
+      position:relative; z-index:1; width:52px; height:52px; border-radius:12px; object-fit:cover; flex:0 0 auto;
+      border:2px solid rgba(255,255,255,.25); background:#1a2027;
+    }
+    .driverCardBody{ position:relative; z-index:1; min-width:0; flex:1; padding-top:8px; }
+    .driverCardName{ font-size:14px; font-weight:800; color:#fff; line-height:1.2; word-break:break-word; }
+    .driverCardNumber{ font-size:10.5px; color:rgba(255,255,255,.62); font-family:ui-monospace, SFMono-Regular, Menlo, monospace; margin-top:2px; }
+    .driverCardMetaRow{ display:flex; align-items:center; gap:6px; margin-top:6px; flex-wrap:wrap; }
+    .driverCardTierPill{ display:inline-block; padding:3px 9px; border-radius:999px; font-size:9.5px; font-weight:900; text-transform:uppercase; letter-spacing:.03em; }
+    .driverCardPoints{ font-size:10.5px; font-weight:850; padding:2px 8px; border-radius:999px; background:rgba(255,255,255,.12); }
+    .driverCardPoints.pts-green{ color:#6ee7b7; }
+    .driverCardPoints.pts-orange{ color:#fcd34d; }
+    .driverCardPoints.pts-red{ color:#fca5a5; }
+    .driverIdCard.unlinked .driverCardName{ color:#e5e7eb; }
+    .driverIdCard.unlinked .driverCardNumber{ color:rgba(255,255,255,.5); }
+
+    /* ---------- toast ---------- */
+    .toast{
+      position:fixed; right:16px; bottom:16px; z-index:9999;
+      background:var(--grad-primary); color:#fff;
+      padding:11px 16px; border-radius:999px;
+      box-shadow:0 16px 32px rgba(79,70,229,.30); font-weight:750; font-size:13px;
+      opacity:0; transform:translateY(8px); transition:all .18s ease;
+    }
+    .toast.show{ opacity:1; transform:translateY(0); }
+
+    /* ---------- misc small-screen guards ---------- */
+    @media (max-width: 980px){
+      #refreshStatementsBtn, #refreshTicketsBtn, #refreshDiscussionBtn, #postDiscussionBtn{ width:100%; }
+      #filter{ font-size:16px; }
+      .statBar{ grid-template-columns:repeat(2, 1fr); }
+    }
+
+    /* ============================================================
+       ITS OWNERS SETUP — supplemental styling (its-owner-setup.html only)
+       Shared IFWL design system copied verbatim from steward.html above;
+       these rules theme the wizard-specific components.
+       ============================================================ */
+    .setupWrap{ width:min(880px, calc(100% - 28px)); margin:0 auto; padding:24px 0 40px; }
+    .setupIntro{ text-align:center; margin-bottom:20px; }
+    .setupIntro h1{ font-family:var(--font-display); font-size:26px; font-weight:800; color:var(--navy); margin:0 0 8px; }
+    .setupIntro p{ color:var(--muted); font-size:14px; max-width:560px; margin:0 auto; }
+
+    .stepSec{ border:1px solid var(--line); border-left:4px solid var(--indigo); border-radius:var(--radius); padding:18px; background:var(--card-soft); margin-top:16px; }
+    .stepSec h2{ margin:0 0 4px; font-size:16px; font-family:var(--font-display); font-weight:800; color:var(--navy); }
+    .stepSec .stepHint{ color:var(--muted); font-size:12.5px; margin-bottom:12px; }
+    .stepGrid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:6px; }
+    @media (max-width: 700px){ .stepGrid{ grid-template-columns:1fr; } }
+    .stepGrid label.muted{ margin-bottom:5px; }
+    .stepFull{ grid-column:1 / -1; }
+
+    .logoPreviewRow{ display:flex; align-items:center; gap:12px; margin-top:8px; }
+    .logoPreviewRow img{ width:52px; height:52px; border-radius:12px; object-fit:contain; background:#fff; border:1px solid var(--line); }
+
+    .subscriptionNote{
+      border:1px solid var(--amber-line); background:var(--amber-soft); color:var(--amber-dark);
+      border-radius:var(--radius-sm); padding:10px 12px; margin-top:10px; font-size:13px; line-height:1.35; font-weight:700;
+    }
+
+    .authPanel{ max-width:420px; margin:40px auto 0; }
+    .authPanel .row{ margin-top:10px; }
+    .authSwitch{ text-align:center; margin-top:10px; font-size:13px; }
+    .authSwitch a{ cursor:pointer; }
+
+    .successBox{
+      border:1px solid var(--green-line); background:var(--green-soft); color:var(--green-dark);
+      border-radius:var(--radius-sm); padding:16px; margin-top:16px; font-size:14px; line-height:1.4;
+    }
+    .successBox .mono{ display:block; margin-top:6px; font-size:13px; }
+  
+    /* ============================================================
+       ITS OWNER DASHBOARD — supplemental styling (owner.html only)
+       Shared IFWL ticket-system design system above, unchanged.
+       ============================================================ */
+    .ownerWrap{ width:min(1180px, calc(100% - 28px)); margin:0 auto; padding:16px 0 48px; }
+    .gateCard{ max-width:520px; margin:40px auto 0; }
+
+    .tabs{
+      position:sticky; top:86px; z-index:40;
+      display:flex; gap:6px; flex-wrap:wrap; margin:16px 0 4px; padding:6px;
+      background:rgba(255,255,255,.92); border:1px solid var(--line); border-radius:999px;
+      box-shadow:var(--shadow-sm); backdrop-filter:blur(12px);
+    }
+    .tabBtn{ min-height:36px; padding:8px 15px; border:0; box-shadow:none; background:transparent; }
+    .tabBtn:hover:not(:disabled){ transform:none; box-shadow:none; background:var(--indigo-soft); }
+    .tabBtn.active, .tabBtn.active:hover{ background:var(--grad-primary); color:#fff; }
+    @media (max-width: 980px){ .tabs{ position:relative; top:auto; border-radius:var(--radius); } .tabBtn{ flex:1 1 auto; } }
+
+    .panel{ display:none; }
+    .panel.active{ display:block; animation:fadeSlideIn .25s ease both; }
+    .panel > .card{ margin-top:14px; }
+    .cardHead{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap; }
+    .cardHead .muted{ max-width:760px; }
+
+    /* field-level feedback */
+    .fieldMsg{ font-size:12px; margin-top:5px; font-weight:700; min-height:0; }
+    .fieldMsg.bad{ color:var(--red-dark); }
+    .fieldMsg.ok{ color:var(--green-dark); }
+    .fieldMsg.warn{ color:var(--amber-dark); }
+    input.bad, select.bad{ border-color:var(--red); box-shadow:0 0 0 3px rgba(225,29,72,.10); }
+    input.good{ border-color:var(--green); }
+    .req{ color:var(--red); font-weight:900; }
+    .opt{ color:var(--muted-2); font-weight:700; }
+
+    details.howTo{ margin-top:10px; border:1px solid var(--blue-line); background:var(--blue-soft); border-radius:var(--radius-sm); padding:10px 12px; font-size:13px; color:#1e3a8a; }
+    details.howTo summary{ cursor:pointer; font-weight:800; }
+    details.howTo ol{ margin:8px 0 2px 18px; padding:0; line-height:1.5; }
+
+    /* getting-started checklist */
+    .checkList{ display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+    .checkItem{ display:flex; align-items:center; gap:12px; border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; padding:10px 12px; }
+    .checkDot{ width:26px; height:26px; border-radius:999px; display:grid; place-items:center; flex:0 0 auto; font-weight:900; font-size:13px; }
+    .checkItem.done .checkDot{ background:var(--green-soft); color:var(--green-dark); border:1px solid var(--green-line); }
+    .checkItem.todo .checkDot{ background:var(--amber-soft); color:var(--amber-dark); border:1px solid var(--amber-line); }
+    .checkItem.optional .checkDot{ background:var(--card-soft); color:var(--muted); border:1px solid var(--line); }
+    .checkText{ flex:1; min-width:0; font-size:13px; font-weight:750; color:var(--navy); }
+    .checkText small{ display:block; color:var(--muted); font-weight:650; margin-top:2px; }
+
+    .kv{ display:grid; grid-template-columns:160px 1fr; gap:6px 12px; font-size:13px; margin-top:8px; }
+    .kv div:nth-child(odd){ color:var(--muted); font-weight:700; }
+    @media (max-width:560px){ .kv{ grid-template-columns:1fr; } }
+
+    /* tables */
+    .tableWrap{ overflow:auto; border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; margin-top:10px; }
+    table.dataTable{ width:100%; border-collapse:collapse; font-size:13px; }
+    .dataTable th{ position:sticky; top:0; background:var(--card-soft); text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); padding:9px 10px; border-bottom:1px solid var(--line); white-space:nowrap; z-index:1; }
+    .dataTable td{ padding:7px 10px; border-bottom:1px solid var(--line-soft); vertical-align:top; }
+    .dataTable tr:last-child td{ border-bottom:0; }
+    .dataTable input, .dataTable select{ padding:6px 8px; font-size:13px; border-radius:8px; min-width:110px; }
+    .dataTable td.statusCell{ min-width:220px; font-size:12px; font-weight:700; line-height:1.35; }
+    tr.rowErr td{ background:#fff6f8; }
+    tr.rowWarn td{ background:#fffdf3; }
+    tr.rowOk td.statusCell{ color:var(--green-dark); }
+    tr.rowErr td.statusCell{ color:var(--red-dark); }
+    tr.rowWarn td.statusCell{ color:var(--amber-dark); }
+    .impTableWrap{ max-height:60vh; }
+    .impTable.problemsOnly tr.rowOk{ display:none; }
+
+    /* import steps */
+    .stepBadge{ display:inline-grid; place-items:center; width:24px; height:24px; border-radius:999px; background:var(--grad-primary); color:#fff; font-size:12px; font-weight:900; margin-right:8px; flex:0 0 auto; }
+    .impStep{ border:1px solid var(--line); border-left:4px solid var(--indigo); border-radius:var(--radius); padding:15px; background:var(--card-soft); margin-top:13px; }
+    .impStep h3{ margin:0 0 6px; font-size:14.5px; font-family:var(--font-display); font-weight:800; color:var(--navy); display:flex; align-items:center; }
+    .impStep.locked{ opacity:.5; pointer-events:none; }
+    .dropZone{ border:2px dashed #c7bdf5; border-radius:var(--radius); background:#fff; padding:22px; text-align:center; cursor:pointer; transition:border-color .15s ease, background .15s ease; }
+    .dropZone:hover, .dropZone.drag{ border-color:var(--primary); background:var(--indigo-soft); }
+    .dropZone strong{ display:block; font-size:14px; color:var(--navy); }
+    .orLine{ text-align:center; color:var(--muted-2); font-size:12px; font-weight:800; margin:12px 0; }
+    .mapGrid{ display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:10px; margin-top:8px; }
+    @media (max-width:900px){ .mapGrid{ grid-template-columns:1fr 1fr; } }
+    @media (max-width:560px){ .mapGrid{ grid-template-columns:1fr; } }
+    .summaryRow{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px; }
+    .progressOuter{ height:10px; border-radius:999px; background:var(--line-soft); overflow:hidden; margin-top:10px; display:none; }
+    .progressInner{ height:100%; width:0; background:var(--grad-primary); transition:width .2s ease; }
+    .bannerBlue{ border:1px solid var(--blue-line); background:var(--blue-soft); color:#1e3a8a; }
+
+    button.danger{ border-color:var(--red-line); color:var(--red-dark); background:#fff; }
+    button.danger:hover:not(:disabled){ border-color:var(--red); color:var(--red-dark); box-shadow:0 10px 22px rgba(225,29,72,.16); }
+    button.small{ min-height:32px; padding:6px 12px; font-size:12px; white-space:nowrap; flex:0 0 auto; }
+    .roleHint{ font-size:12px; color:var(--muted); margin-top:5px; font-weight:650; }
+    .privacyDoc h3{ font-family:var(--font-display); font-size:15px; color:var(--navy); margin:18px 0 6px; }
+    .privacyDoc h3:first-child{ margin-top:0; }
+    .privacyDoc p, .privacyDoc li{ font-size:13.5px; line-height:1.55; color:#334155; }
+    .privacyDoc ul{ margin:4px 0 8px 20px; padding:0; }
+    .clauseBox{ border:1px solid var(--indigo-line); background:var(--indigo-soft); border-radius:var(--radius-sm); padding:14px; font-size:13.5px; line-height:1.55; color:var(--navy); white-space:pre-wrap; }
+
+    /* ---------- ticket rules ---------- */
+    .modeCards{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; margin-top:12px; }
+    @media (max-width:900px){ .modeCards{ grid-template-columns:1fr; } }
+    .modeCard{ display:flex; gap:10px; align-items:flex-start; border:2px solid var(--line); border-radius:var(--radius); padding:14px; cursor:pointer; background:#fff; transition:border-color .15s ease, box-shadow .15s ease, background .15s ease; }
+    .modeCard:hover{ border-color:var(--indigo-line); }
+    .modeCard.selected{ border-color:var(--primary); box-shadow:0 0 0 4px rgba(79,70,229,.12); background:var(--indigo-soft); }
+    .modeCard input{ width:auto; margin-top:3px; accent-color:var(--primary); }
+    .modeCard strong{ display:block; font-size:14px; color:var(--navy); }
+    .modeCard span{ display:block; font-size:12px; color:var(--muted); font-weight:650; margin-top:3px; }
+
+    .sevGrid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:10px; margin-top:10px; }
+    @media (max-width:900px){ .sevGrid{ grid-template-columns:1fr; } }
+    .sevCol{ border:1px solid var(--line); border-radius:var(--radius-sm); padding:10px 11px; font-size:12.5px; line-height:1.4; min-width:0; }
+    .sevCol label.muted{ margin-top:6px; }
+    .sevCol textarea{ min-height:58px; font-size:13px; }
+    .sev-mild{ border-color:var(--amber-line); background:var(--amber-soft); }
+    .sev-standard{ border-color:#fdba74; background:#fff7ed; }
+    .sev-severe{ border-color:var(--red-line); background:var(--red-soft); }
+    a.btnLink{ display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 16px; min-height:42px; border:1px solid var(--line); border-radius:999px; background:var(--card); color:var(--navy); font-weight:750; font-size:13px; text-decoration:none; box-shadow:var(--shadow-sm); transition:transform .15s ease, box-shadow .15s ease; }
+    a.btnLink:hover{ transform:translateY(-2px); opacity:1; border-color:var(--primary); color:var(--primary-dark); }
+    a.btnLink.primary{ background:var(--grad-primary); border-color:transparent; color:#fff; box-shadow:var(--shadow-glow); }
+    a.btnLink.primary:hover{ color:#fff; }
+    @media (max-width: 980px){ header a.btnLink{ width:100%; } }
+    .sevLabel .codePill{ text-transform:none; letter-spacing:0; }
+    .sevLabel{ font-size:11px; font-weight:900; text-transform:uppercase; letter-spacing:.06em; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .sev-mild .sevLabel{ color:var(--amber-dark); }
+    .sev-standard .sevLabel{ color:#9a3412; }
+    .sev-severe .sevLabel{ color:var(--red-dark); }
+    .penPill{ display:inline-block; padding:3px 9px; border-radius:999px; background:#fff; border:1px solid currentColor; font-weight:900; font-size:12px; letter-spacing:0; text-transform:none; }
+    .sevCol .ex{ color:var(--muted); font-style:italic; margin-top:6px; }
+
+    .ruleCard{ border:1px solid var(--line); border-radius:var(--radius); background:var(--card-soft); margin-top:10px; overflow:hidden; }
+    .ruleCard.invalid{ border-color:var(--red); box-shadow:0 0 0 3px rgba(225,29,72,.08); }
+    .ruleHead{ display:flex; align-items:center; gap:10px; padding:12px 14px; cursor:pointer; }
+    .ruleHead .ruleTitle{ flex:1; min-width:0; font-weight:800; color:var(--navy); font-size:14px; }
+    .ruleHead .ruleTitle small{ display:block; font-weight:650; color:var(--muted); font-size:12px; margin-top:2px; }
+    .codePill{ font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12px; font-weight:800; padding:3px 8px; border-radius:8px; background:#fff; border:1px solid var(--line); color:var(--navy); flex:0 0 auto; }
+    .chev{ transition:transform .15s ease; color:var(--muted); font-weight:900; }
+    .ruleCard.open .chev{ transform:rotate(90deg); }
+    .ruleBody{ display:none; padding:0 14px 14px; }
+    .ruleCard.open .ruleBody{ display:block; }
+    .ruleErrs{ margin-top:10px; }
+    .stdRule{ border:1px solid var(--line); border-radius:var(--radius); background:#fff; padding:12px 14px; margin-top:10px; }
+    .stdRuleHead{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+    .stdRuleHead .ruleTitle{ flex:1; min-width:180px; font-weight:800; color:var(--navy); font-size:14px; }
+    .stdRuleHead .ruleTitle small{ display:block; font-weight:650; color:var(--muted); font-size:12px; margin-top:2px; }
+    .saveBar{ position:sticky; bottom:12px; z-index:30; border-color:var(--indigo-line); }
+    .saveBar.dirty{ border-color:var(--amber); box-shadow:0 0 0 4px rgba(217,119,6,.12), var(--shadow); }
+
+    /* ---------- admin page extras ---------- */
+    .adminGrid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    @media (max-width:900px){ .adminGrid{ grid-template-columns:1fr; } }
+    table.dataTable tr.clickRow{ cursor:pointer; }
+    table.dataTable tr.clickRow:hover td{ background:var(--indigo-soft); }
+    table.dataTable tr.sel td{ background:var(--indigo-soft); }
+    .num{ text-align:right; font-variant-numeric:tabular-nums; }
+    .tableWrap{ overflow:auto; max-height:70vh; border:1px solid var(--line); border-radius:var(--radius-sm); }
+    .tableWrap thead th{ position:sticky; top:0; background:#fff; z-index:1; }
+    .reqCard{ border:1px solid var(--line); border-radius:var(--radius-sm); background:#fff; padding:12px 14px; margin-top:10px; }
+    .reqCard.overdue{ border-color:var(--red-line); background:var(--red-soft); }
+    .reqHead{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; font-weight:800; }
+    .reqBody{ font-size:13px; margin-top:6px; white-space:pre-wrap; }
+    .logLine{ font-size:12px; color:#334155; border-left:3px solid var(--line); padding:2px 8px; margin-top:4px; }
+    .filterRow{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .filterRow > *{ flex:0 0 auto; width:auto; }
+    .filterRow input[type=search]{ flex:1 1 220px; }
+    .diffOld{ color:var(--red-dark); text-decoration:line-through; }
+    .diffNew{ color:var(--green-dark); font-weight:700; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="brandText">
+        <div class="brandTitle">ITS — Admin</div>
+        <div class="welcomeLine">Every league, ticket, payment and data request on ITS.</div>
+        <div class="small" id="who"></div>
+      </div>
+    </div>
+    <div class="row">
+      <button id="refreshBtn" style="display:none;">Refresh</button>
+      <button id="logoutBtn" style="display:none;">Sign out</button>
+    </div>
+  </header>
+
+  <div class="ownerWrap">
+    <div class="card gateCard" id="authPanel" style="display:none;">
+      <div class="title" style="margin:0;">ITS Admin sign-in</div>
+      <div class="muted">For the ITS team only.</div>
+      <div class="row" style="justify-content:center; margin-top:16px;">
+        <button class="primary" id="authGoogleBtn">Continue with Google</button>
+      </div>
+      <div class="muted" id="authError" style="margin-top:10px; color:var(--red-dark); text-align:center;"></div>
+    </div>
+    <div class="card gateCard" id="gateMsg" style="display:none;">
+      <div class="title" style="margin:0;" id="gateTitle"></div>
+      <div class="muted" id="gateText" style="margin-top:6px;"></div>
+    </div>
+    <div class="muted" id="loadingMsg" style="text-align:center; margin-top:60px;">Loading…</div>
+
+    <div id="app" style="display:none;">
+      <div id="attentionBox"></div>
+      <div class="statBar" style="margin-top:14px;">
+        <div class="statTile tone-indigo"><div class="statTileBody"><div class="statTileNum" id="sLeagues">—</div><div class="statTileLabel">Leagues (live)</div></div></div>
+        <div class="statTile tone-amber"><div class="statTileBody"><div class="statTileNum" id="sBeta">—</div><div class="statTileLabel">On beta</div></div></div>
+        <div class="statTile tone-pink"><div class="statTileBody"><div class="statTileNum" id="sOpen">—</div><div class="statTileLabel">Open tickets</div></div></div>
+        <div class="statTile tone-teal"><div class="statTileBody"><div class="statTileNum" id="sMedian">—</div><div class="statTileLabel">Median time to close</div></div></div>
+        <div class="statTile tone-indigo"><div class="statTileBody"><div class="statTileNum" id="sDrivers">—</div><div class="statTileLabel">Drivers on ITS roster</div></div></div>
+      </div>
+
+      <nav class="tabs" id="tabs">
+        <button class="tabBtn" data-tab="leagues">Leagues</button>
+        <button class="tabBtn" data-tab="payments">Payments</button>
+        <button class="tabBtn" data-tab="data">Data requests</button>
+        <button class="tabBtn" data-tab="tickets">Tickets</button>
+        <button class="tabBtn" data-tab="roster">Roster</button>
+        <button class="tabBtn" data-tab="log">Admin log</button>
+      </nav>
+
+      <!-- ===== LEAGUES ===== -->
+      <section class="panel" id="panel-leagues">
+        <div class="card">
+          <div class="filterRow">
+            <input type="search" id="lgSearch" placeholder="Search leagues or owners…">
+            <select id="lgFilter">
+              <option value="">All statuses</option>
+              <option value="pending">Pending approval</option>
+              <option value="beta">Beta</option>
+              <option value="active">Paid / active</option>
+              <option value="ending">Ending in 7 days</option>
+              <option value="expired">Expired</option>
+              <option value="suspended">Suspended</option>
+            </select>
+          </div>
+          <div class="tableWrap" style="margin-top:10px;">
+            <table class="dataTable" id="lgTable"></table>
+          </div>
+          <div class="muted" style="margin-top:6px; font-size:12px;">Median time to close = from ticket submitted to ticket finalised. Click a league to manage it.</div>
+        </div>
+        <div class="card" id="lgDetail" style="display:none;"></div>
+      </section>
+
+      <!-- ===== PAYMENTS ===== -->
+      <section class="panel" id="panel-payments">
+        <div class="card">
+          <div class="title" style="margin:0;">Waiting for you</div>
+          <div class="muted">Owners tell ITS when they've paid on Patreon. Check Patreon, then approve (adds the time) or mark as not matched (the owner sees your note).</div>
+          <div id="claimsPending" style="margin-top:10px;"></div>
+        </div>
+        <div class="card">
+          <div class="title" style="margin:0;">History</div>
+          <div class="tableWrap" style="margin-top:10px;"><table class="dataTable" id="claimsHistory"></table></div>
+        </div>
+      </section>
+
+      <!-- ===== DATA REQUESTS ===== -->
+      <section class="panel" id="panel-data">
+        <div class="card">
+          <div class="title" style="margin:0;">"Your data" requests — every league</div>
+          <div class="muted">ITS must respond within one month of the request. Leagues pass requests on within 3 days. Log every action you take — it's your record if anyone asks.</div>
+          <div class="filterRow" style="margin-top:10px;">
+            <input type="search" id="drSearch" placeholder="Search driver, league, details…">
+            <select id="drFilter">
+              <option value="live">Open + in progress</option>
+              <option value="">All</option>
+              <option value="open">Open</option>
+              <option value="in_progress">In progress</option>
+              <option value="done">Done</option>
+              <option value="refused">Refused</option>
+            </select>
+          </div>
+          <div id="drList"></div>
+        </div>
+      </section>
+
+      <!-- ===== TICKETS ===== -->
+      <section class="panel" id="panel-tickets">
+        <div class="card">
+          <div class="filterRow">
+            <select id="tkLeague"></select>
+            <input type="search" id="tkSearch" placeholder="Search ticket ID, driver, Discord, event…">
+            <select id="tkStatus">
+              <option value="">All tickets</option>
+              <option value="open">Open</option>
+              <option value="Finalised">Finalised</option>
+            </select>
+          </div>
+          <div class="tableWrap" style="margin-top:10px;"><table class="dataTable" id="tkTable"></table></div>
+        </div>
+        <div class="card" id="tkEditor" style="display:none;"></div>
+      </section>
+
+      <!-- ===== ROSTER ===== -->
+      <section class="panel" id="panel-roster">
+        <div class="card">
+          <div class="title" style="margin:0;">Full ITS roster</div>
+          <div class="muted">Everyone who has signed in with Discord on any league's ticket page, and the leagues they've signed in to (with their server nickname).</div>
+          <div class="filterRow" style="margin-top:10px;">
+            <input type="search" id="rsSearch" placeholder="Search Discord username, display name, nickname, league…">
+            <select id="rsLeague"></select>
+          </div>
+          <div class="tableWrap" style="margin-top:10px;"><table class="dataTable" id="rsTable"></table></div>
+        </div>
+      </section>
+
+      <!-- ===== LOG ===== -->
+      <section class="panel" id="panel-log">
+        <div class="card">
+          <div class="title" style="margin:0;">Admin log</div>
+          <div class="muted">Every change made from this page. It can't be edited or deleted.</div>
+          <div class="tableWrap" style="margin-top:10px;"><table class="dataTable" id="logTable"></table></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Saved</div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="./firebase-init.js"></script>
+  <script src="./its-config.js"></script>
+  <script>
+    // ============================================================
+    // ITS ADMIN — for platformAdmins/{email} only (Firestore rules
+    // enforce this; the page just hides itself from everyone else).
+    // ============================================================
+    const $ = (id) => document.getElementById(id);
+    const FV = () => firebase.firestore.FieldValue;
+    const TS = () => firebase.firestore.Timestamp;
+    const DAY = 86400000;
+    const BETA_DAYS = (typeof ITS_CONFIG !== "undefined" && ITS_CONFIG.betaDays) || 30;
+    let me = "", toastTimer = null;
+    function toast(m, ms = 2600) { const t = $("toast"); t.textContent = m; t.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), ms); }
+    const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const ms = (v) => !v ? 0 : v.toMillis ? v.toMillis() : typeof v === "number" ? v : (new Date(v).getTime() || 0);
+    const fmtDate = (v, withTime = true) => { const m = ms(v); if (!m) return "—"; return new Date(m).toLocaleString(undefined, withTime ? { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" } : { day: "numeric", month: "short", year: "numeric" }); };
+    function fmtDur(m) { if (m == null || !isFinite(m)) return "—"; const h = m / 3600000; if (h < 1) return Math.max(1, Math.round(m / 60000)) + "m"; if (h < 48) return (Math.round(h * 10) / 10) + "h"; return (Math.round(h / 24 * 10) / 10) + "d"; }
+    function median(a) { if (!a.length) return null; const s = [...a].sort((x, y) => x - y), i = Math.floor(s.length / 2); return s.length % 2 ? s[i] : (s[i - 1] + s[i]) / 2; }
+    function friendlyError(e) { const c = e && e.code ? String(e.code) : ""; if (c.includes("permission-denied")) return "Permission denied — are you signed in as an ITS admin?"; return (e && e.message) ? e.message.replace(/^Firebase:\s*/, "") : String(e); }
+    function addMonths(date, n) { const d = new Date(date); const day = d.getDate(); d.setMonth(d.getMonth() + n); if (d.getDate() < day) d.setDate(0); return d; }
+    const isFinal = (t) => String(t.status || "").trim().toLowerCase() === "finalised";
+    const closeMs = (t) => { const a = ms(t.timestamp), b = t.finalisedAtMs ? Number(t.finalisedAtMs) : ms(t.finalisedAt); return a && b && b >= a ? b - a : null; };
+
+    function gate(title, html) { $("loadingMsg").style.display = "none"; $("authPanel").style.display = "none"; $("app").style.display = "none"; $("gateTitle").textContent = title; $("gateText").innerHTML = html; $("gateMsg").style.display = "block"; }
+
+    // ---------- tabs ----------
+    const TABS = ["leagues", "payments", "data", "tickets", "roster", "log"];
+    function switchTab(id) {
+      if (!TABS.includes(id)) id = "leagues";
+      document.querySelectorAll(".tabBtn").forEach(b => b.classList.toggle("active", b.dataset.tab === id));
+      document.querySelectorAll(".panel").forEach(p => p.classList.toggle("active", p.id === "panel-" + id));
+      if (location.hash !== "#" + id) history.replaceState(null, "", "#" + id);
+      if (id === "roster" && !rosterLoaded) loadRoster();
+      if (id === "log") loadLog();
+      if (id === "tickets" && !$("tkLeague").value && leagues.length) { $("tkLeague").value = leagues[0].id; loadTickets(); }
+    }
+    document.querySelectorAll(".tabBtn").forEach(b => b.onclick = () => switchTab(b.dataset.tab));
+
+    // ---------- audit log ----------
+    async function logAction(action, data) {
+      try { await db.collection("adminLog").add({ action, ...data, by: me, at: FV().serverTimestamp() }); }
+      catch (e) { console.warn("adminLog", e); }
+    }
+
+    // ============================================================
+    // LOAD
+    // ============================================================
+    let leagues = [], stats = {}, claims = [], dataReqs = [], roster = [], rosterLoaded = false;
+
+    function planState(L) {
+      const until = ms(L.accessUntil), s = L.status || "pending";
+      const live = ["active", "approved", "beta"].includes(s) && (!until || until > Date.now());
+      const daysLeft = until ? Math.ceil((until - Date.now()) / DAY) : null;
+      let label = s, cls = "";
+      if (s === "pending") label = "Pending";
+      else if (["active", "approved", "beta"].includes(s) && until && until <= Date.now()) { label = "Expired"; cls = "miniBad"; }
+      else if (s === "beta") { label = "Beta"; cls = daysLeft != null && daysLeft <= 7 ? "" : "miniOk"; }
+      else if (s === "active" || s === "approved") { label = "Paid"; cls = daysLeft != null && daysLeft <= 7 ? "" : "miniOk"; }
+      else { label = s.charAt(0).toUpperCase() + s.slice(1); cls = "miniBad"; }
+      return { live, daysLeft, label, cls, until, ending: live && daysLeft != null && daysLeft <= 7 };
+    }
+
+    async function loadAll() {
+      $("lgTable").innerHTML = `<tr><td class="muted">Loading leagues…</td></tr>`;
+      const [ls, cs, ds] = await Promise.all([
+        db.collection("leagues").get(),
+        db.collection("paymentClaims").orderBy("createdAt", "desc").limit(500).get(),
+        db.collection("dataRequests").orderBy("createdAt", "desc").limit(500).get()
+      ]);
+      leagues = ls.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => String(a.name || a.id).localeCompare(String(b.name || b.id)));
+      claims = cs.docs.map(d => ({ id: d.id, ...d.data() }));
+      dataReqs = ds.docs.map(d => ({ id: d.id, ...d.data() }));
+      fillLeagueSelects();
+      renderClaims(); renderDataReqs(); renderAttention();
+      renderLeagues();
+      // Ticket stats per league (in parallel; the table fills in as they arrive).
+      await Promise.all(leagues.map(async L => {
+        try {
+          const [t, st] = await Promise.all([
+            db.collection("leagues").doc(L.id).collection("tickets").get(),
+            db.collection("leagues").doc(L.id).collection("staff").get()
+          ]);
+          const tickets = t.docs.map(d => d.data());
+          const closed = tickets.filter(isFinal), open = tickets.length - closed.length;
+          const durs = closed.map(closeMs).filter(x => x != null);
+          const openAges = tickets.filter(x => !isFinal(x)).map(x => ms(x.timestamp)).filter(Boolean);
+          const last = tickets.map(x => ms(x.timestamp)).filter(Boolean).sort((a, b) => b - a)[0] || 0;
+          stats[L.id] = { total: tickets.length, open, closed: closed.length, median: median(durs), durs, oldestOpen: openAges.length ? Date.now() - Math.min(...openAges) : null, last, staff: st.size };
+        } catch (e) { stats[L.id] = { error: friendlyError(e) }; }
+      }));
+      renderLeagues(); renderTotals(); renderAttention();
+    }
+
+    function renderTotals() {
+      const live = leagues.filter(L => planState(L).live);
+      $("sLeagues").textContent = `${live.length} / ${leagues.length}`;
+      $("sBeta").textContent = leagues.filter(L => L.status === "beta" && planState(L).live).length;
+      const all = Object.values(stats).filter(s => !s.error);
+      $("sOpen").textContent = all.reduce((n, s) => n + s.open, 0);
+      $("sMedian").textContent = fmtDur(median(all.flatMap(s => s.durs)));
+    }
+
+    function renderAttention() {
+      const items = [];
+      const pend = leagues.filter(L => (L.status || "pending") === "pending");
+      const claimsP = claims.filter(c => c.status === "pending");
+      const reqOpen = dataReqs.filter(r => r.status === "open" || r.status === "in_progress");
+      const reqDue = reqOpen.filter(r => ms(r.createdAt) && Date.now() - ms(r.createdAt) > 23 * DAY);
+      const ending = leagues.filter(L => planState(L).ending);
+      if (pend.length) items.push([`${pend.length} league${pend.length === 1 ? "" : "s"} waiting for approval`, "leagues", "pending"]);
+      if (claimsP.length) items.push([`${claimsP.length} payment${claimsP.length === 1 ? "" : "s"} to check`, "payments"]);
+      if (reqDue.length) items.push([`${reqDue.length} data request${reqDue.length === 1 ? "" : "s"} due within a week (one-month deadline)`, "data"]);
+      else if (reqOpen.length) items.push([`${reqOpen.length} open data request${reqOpen.length === 1 ? "" : "s"}`, "data"]);
+      if (ending.length) items.push([`${ending.length} league${ending.length === 1 ? "" : "s"} ending in the next 7 days`, "leagues", "ending"]);
+      $("attentionBox").innerHTML = items.length ? `<div class="bannerBox ${reqDue.length ? "bannerRed" : "bannerAmber"}">Needs you:<small>${items.map((it, i) => `<a href="#" data-att="${i}" style="margin-right:14px;">${esc(it[0])} →</a>`).join("")}</small></div>` : `<div class="bannerBox bannerBlue">All clear — nothing waiting for you.</div>`;
+      $("attentionBox").querySelectorAll("[data-att]").forEach(a => a.onclick = (e) => { e.preventDefault(); const it = items[a.dataset.att]; if (it[2]) { $("lgFilter").value = it[2]; renderLeagues(); } switchTab(it[1]); });
+      const tab = document.querySelector('.tabBtn[data-tab="payments"]'); tab.innerHTML = `Payments${claimsP.length ? ` <span class="pill miniBad" style="padding:1px 8px;">${claimsP.length}</span>` : ""}`;
+      const tab2 = document.querySelector('.tabBtn[data-tab="data"]'); tab2.innerHTML = `Data requests${reqOpen.length ? ` <span class="pill ${reqDue.length ? "miniBad" : ""}" style="padding:1px 8px;">${reqOpen.length}</span>` : ""}`;
+    }
+
+    function fillLeagueSelects() {
+      const opts = leagues.map(L => `<option value="${esc(L.id)}">${esc(L.name || L.id)}</option>`).join("");
+      const cur = $("tkLeague").value;
+      $("tkLeague").innerHTML = `<option value="">— Choose a league —</option>` + opts; if (cur) $("tkLeague").value = cur;
+      $("rsLeague").innerHTML = `<option value="">All leagues</option>` + opts;
+    }
+
+    // ============================================================
+    // LEAGUES
+    // ============================================================
+    let selectedLeague = null;
+    function renderLeagues() {
+      const q = $("lgSearch").value.trim().toLowerCase(), f = $("lgFilter").value;
+      const list = leagues.filter(L => {
+        const p = planState(L), s = L.status || "pending";
+        if (q && ![L.name, L.id, L.ownerEmail, L.game].join(" ").toLowerCase().includes(q)) return false;
+        if (f === "pending") return s === "pending";
+        if (f === "beta") return s === "beta" && p.live;
+        if (f === "active") return (s === "active" || s === "approved") && p.live;
+        if (f === "ending") return p.ending;
+        if (f === "expired") return p.label === "Expired";
+        if (f === "suspended") return s === "suspended";
+        return true;
+      });
+      $("lgTable").innerHTML = `<thead><tr><th>League</th><th>Owner</th><th>Plan</th><th class="num">Days left</th><th class="num">Open</th><th class="num">Closed</th><th class="num">Median close</th><th class="num">Oldest open</th><th class="num">Staff</th><th>Last ticket</th></tr></thead><tbody>` +
+        (list.length ? list.map(L => {
+          const p = planState(L), s = stats[L.id];
+          return `<tr class="clickRow ${selectedLeague === L.id ? "sel" : ""}" data-lid="${esc(L.id)}">
+            <td><strong>${esc(L.name || L.id)}</strong><div class="muted" style="font-size:11px;">${esc(L.id)}${L.game ? " · " + esc(L.game) : ""}</div></td>
+            <td style="font-size:12px;">${esc(L.ownerEmail || "—")}</td>
+            <td><span class="pill ${p.cls}">${esc(p.label)}</span></td>
+            <td class="num">${p.daysLeft == null ? "—" : p.daysLeft <= 0 ? "0" : p.daysLeft}</td>
+            <td class="num">${s ? (s.error ? "!" : s.open) : "…"}</td>
+            <td class="num">${s && !s.error ? s.closed : "…"}</td>
+            <td class="num">${s && !s.error ? fmtDur(s.median) : "…"}</td>
+            <td class="num">${s && !s.error ? fmtDur(s.oldestOpen) : "…"}</td>
+            <td class="num">${s && !s.error ? s.staff : "…"}</td>
+            <td style="font-size:12px;">${s && s.last ? esc(fmtDate(s.last, false)) : "—"}</td>
+          </tr>`;
+        }).join("") : `<tr><td colspan="10" class="muted">No leagues match.</td></tr>`) + `</tbody>`;
+      $("lgTable").querySelectorAll("[data-lid]").forEach(tr => tr.onclick = () => openLeague(tr.dataset.lid));
+    }
+    $("lgSearch").oninput = renderLeagues; $("lgFilter").onchange = renderLeagues;
+
+    async function openLeague(lid) {
+      selectedLeague = lid; renderLeagues();
+      const L = leagues.find(x => x.id === lid); if (!L) return;
+      const p = planState(L), s = stats[lid] || {};
+      const box = $("lgDetail"); box.style.display = "block";
+      let billing = [];
+      try { billing = (await db.collection("leagues").doc(lid).collection("billing").get()).docs.map(d => d.data()).sort((a, b) => ms(b.createdAt) - ms(a.createdAt)); } catch (e) { /* ignore */ }
+      const pc = L.privacyConfirmation;
+      box.innerHTML = `
+        <div class="title" style="margin:0;">${esc(L.name || lid)} <span class="pill ${p.cls}" style="margin-left:6px;">${esc(p.label)}</span></div>
+        <div class="adminGrid" style="margin-top:12px;">
+          <div>
+            <div class="kv">
+              <div>League ID</div><div><code>${esc(lid)}</code></div>
+              <div>Owner</div><div>${esc(L.ownerEmail || "—")}</div>
+              <div>Status</div><div>${esc(L.status || "pending")}${L.statusBeforeExpiry ? ` <span class="muted">(was ${esc(L.statusBeforeExpiry)})</span>` : ""}</div>
+              <div>Plan</div><div>${esc(L.plan || "—")}</div>
+              <div>Access until</div><div>${p.until ? esc(fmtDate(p.until)) + (p.daysLeft != null ? ` <span class="muted">(${p.daysLeft > 0 ? p.daysLeft + " days left" : "ended"})</span>` : "") : "No end date"}</div>
+              <div>Approved</div><div>${esc(fmtDate(L.approvedAt))}</div>
+              <div>Created</div><div>${esc(fmtDate(L.createdAt))}</div>
+              <div>Privacy rules</div><div>${pc && pc.confirmedAt ? `Confirmed v${esc(pc.version)} by ${esc(pc.confirmedByDiscord || pc.confirmedByEmail)} · ${esc(fmtDate(pc.confirmedAt, false))}` : `<span style="color:var(--red-dark); font-weight:700;">Not confirmed</span>`}</div>
+              <div>Support Discord</div><div>${L.supportDiscord && L.supportDiscord.joinedAt ? "Joined" : "Not yet"}</div>
+              <div>Tickets</div><div>${s.error ? esc(s.error) : `${s.total ?? "…"} total · ${s.open ?? "…"} open · median close ${fmtDur(s.median)}`}</div>
+            </div>
+            <div class="row" style="margin-top:12px;">
+              <button class="small" id="lgViewTickets">View tickets</button>
+              <a class="btnLink" href="./ticket.html?l=${encodeURIComponent(lid)}" target="_blank" rel="noopener" style="min-height:32px; padding:6px 12px; font-size:12px;">Driver page ↗</a>
+            </div>
+          </div>
+          <div>
+            <div class="muted" style="font-weight:800;">Plan</div>
+            ${(L.status || "pending") === "pending" ? `<div class="row" style="margin-top:8px;"><button class="primary" id="lgApproveBeta">Approve — start ${BETA_DAYS}-day beta</button><button class="small" id="lgApprovePaid">Approve as paid (no beta)</button></div>` : ""}
+            <div class="row" style="margin-top:8px;">
+              <button class="small primary" data-add="1">+ 1 month</button>
+              <button class="small primary" data-add="3">+ 3 months</button>
+              <button class="small primary" data-add="12">+ 12 months</button>
+            </div>
+            <div class="row" style="margin-top:8px; flex-wrap:nowrap;">
+              <input type="number" id="lgDays" min="1" max="365" placeholder="Days" style="width:90px;">
+              <input id="lgReason" maxlength="120" placeholder="Reason (shown to the owner)">
+              <button class="small" id="lgAddDays">Add days</button>
+            </div>
+            <div class="muted" style="font-size:12px; margin-top:4px;">Time is always added on to the end of the current plan (or from today if it's already ended). Months make the league "Paid".</div>
+            <div class="row" style="margin-top:12px;">
+              ${L.status === "suspended" ? `<button class="small" id="lgReinstate">Reinstate</button>` : `<button class="small danger" id="lgSuspend">Suspend</button>`}
+              ${p.live ? `<button class="small danger" id="lgExpireNow">End plan now</button>` : ""}
+            </div>
+            <div class="muted" style="font-weight:800; margin-top:14px;">Plan history</div>
+            ${billing.length ? billing.map(b => `<div class="logLine">${esc(fmtDate(b.createdAt, false))} — ${b.months ? `+${esc(b.months)} month${b.months === 1 ? "" : "s"}` : `+${esc(b.days)} days`}${b.reason ? " · " + esc(b.reason) : ""} → ${esc(fmtDate(b.newAccessUntil, false))} <span class="muted">(${esc(b.by || "")})</span></div>`).join("") : `<div class="muted" style="font-size:12px;">Nothing yet.</div>`}
+          </div>
+        </div>`;
+      $("lgViewTickets").onclick = () => { $("tkLeague").value = lid; switchTab("tickets"); loadTickets(); };
+      if ($("lgApproveBeta")) $("lgApproveBeta").onclick = () => approveLeague(lid, "beta");
+      if ($("lgApprovePaid")) $("lgApprovePaid").onclick = () => approveLeague(lid, "paid");
+      box.querySelectorAll("[data-add]").forEach(b => b.onclick = () => extendLeague(lid, { months: Number(b.dataset.add), reason: $("lgReason").value.trim() || "Patreon payment" }));
+      $("lgAddDays").onclick = () => { const d = Math.round(Number($("lgDays").value)); if (!(d >= 1 && d <= 365)) { toast("Enter 1–365 days."); return; } extendLeague(lid, { days: d, reason: $("lgReason").value.trim() }); };
+      if ($("lgSuspend")) $("lgSuspend").onclick = () => setStatus(lid, "suspended");
+      if ($("lgReinstate")) $("lgReinstate").onclick = () => setStatus(lid, "reinstate");
+      if ($("lgExpireNow")) $("lgExpireNow").onclick = () => setStatus(lid, "expire");
+      box.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    async function notifyOwner(lid, type, title, message) {
+      await db.collection("leagues").doc(lid).collection("notifications").add({ type, title, message, createdAt: FV().serverTimestamp(), read: false });
+    }
+    async function refreshLeague(lid) {
+      const d = await db.collection("leagues").doc(lid).get();
+      const i = leagues.findIndex(x => x.id === lid); if (i >= 0) leagues[i] = { id: lid, ...d.data() };
+      renderLeagues(); renderTotals(); renderAttention(); if (selectedLeague === lid) openLeague(lid);
+    }
+
+    async function approveLeague(lid, kind) {
+      const L = leagues.find(x => x.id === lid);
+      if (!confirm(kind === "beta" ? `Approve ${L.name} and start their ${BETA_DAYS}-day free beta?` : `Approve ${L.name} as a paid league? You'll add their months next.`)) return;
+      try {
+        const until = new Date(Date.now() + BETA_DAYS * DAY);
+        const upd = kind === "beta"
+          ? { status: "beta", plan: "beta", accessUntil: TS().fromDate(until), approvedAt: FV().serverTimestamp() }
+          : { status: "active", approvedAt: FV().serverTimestamp() };
+        await db.collection("leagues").doc(lid).update(upd);
+        if (kind === "beta") {
+          await db.collection("leagues").doc(lid).collection("billing").add({ days: BETA_DAYS, reason: "Free beta", newAccessUntil: TS().fromDate(until), by: me, createdAt: FV().serverTimestamp() });
+          await notifyOwner(lid, "subscription", "You're approved — welcome to ITS!", `Your ${BETA_DAYS}-day free beta has started and runs until ${until.toLocaleDateString()}. Your stewards and ticket page are now live.`);
+        } else await notifyOwner(lid, "subscription", "You're approved — welcome to ITS!", "Your stewards and ticket page are now live.");
+        await logAction(kind === "beta" ? "approve_beta" : "approve_paid", { leagueId: lid, leagueName: L.name || lid });
+        toast("Approved."); await refreshLeague(lid);
+      } catch (e) { toast(friendlyError(e), 5000); }
+    }
+
+    // Adds time onto max(now, accessUntil). Months → paid/active; days keep the
+    // current type (or restore what it was before it expired).
+    async function extendLeague(lid, { months = 0, days = 0, reason = "", claimId = null }) {
+      const ref = db.collection("leagues").doc(lid);
+      const snap = await ref.get(); const L = snap.data() || {};
+      const base = new Date(Math.max(Date.now(), ms(L.accessUntil) || 0));
+      const until = months ? addMonths(base, months) : new Date(base.getTime() + days * DAY);
+      const what = months ? `${months} month${months === 1 ? "" : "s"}` : `${days} day${days === 1 ? "" : "s"}`;
+      if (!claimId && !confirm(`Add ${what} to ${L.name || lid}?\nNew end date: ${until.toLocaleDateString()}`)) return false;
+      const cur = L.status || "pending";
+      const live = ["active", "approved", "beta"].includes(cur);
+      const status = months ? "active" : (live ? cur : (L.statusBeforeExpiry || "active"));
+      try {
+        const batch = db.batch();
+        batch.update(ref, {
+          status, accessUntil: TS().fromDate(until), reminderSentFor: FV().delete(),
+          ...(months ? { plan: `${months} month${months === 1 ? "" : "s"}` } : {}),
+          ...(cur === "pending" ? { approvedAt: FV().serverTimestamp() } : {})
+        });
+        batch.set(ref.collection("billing").doc(), { months: months || null, days: days || null, reason, claimId, newAccessUntil: TS().fromDate(until), by: me, createdAt: FV().serverTimestamp() });
+        batch.set(ref.collection("notifications").doc(), { type: "payment", title: `ITS added ${what} to your plan`, message: `Your league now runs until ${until.toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })}.${reason ? " (" + reason + ")" : ""}`, createdAt: FV().serverTimestamp(), read: false });
+        if (claimId) batch.update(db.collection("paymentClaims").doc(claimId), { status: "approved", reviewedBy: me, reviewedAt: FV().serverTimestamp(), newAccessUntil: TS().fromDate(until) });
+        await batch.commit();
+        await logAction("extend", { leagueId: lid, leagueName: L.name || lid, months: months || null, days: days || null, reason, claimId, newAccessUntil: TS().fromDate(until), statusFrom: cur, statusTo: status });
+        toast(`Added ${what}. Ends ${until.toLocaleDateString()}.`);
+        await refreshLeague(lid);
+        return true;
+      } catch (e) { toast(friendlyError(e), 5000); return false; }
+    }
+
+    async function setStatus(lid, action) {
+      const L = leagues.find(x => x.id === lid);
+      const ref = db.collection("leagues").doc(lid);
+      try {
+        if (action === "suspended") {
+          const why = prompt(`Suspend ${L.name}? Their stewards and ticket page stop working.\n\nReason (shown to the owner):`); if (why == null) return;
+          await ref.update({ status: "suspended", statusBeforeExpiry: L.status || "active" });
+          await notifyOwner(lid, "subscription", "Your league has been suspended by ITS", why || "Contact ITS support for details.");
+          await logAction("suspend", { leagueId: lid, leagueName: L.name, reason: why });
+        } else if (action === "reinstate") {
+          const back = ["active", "approved", "beta"].includes(L.statusBeforeExpiry) ? L.statusBeforeExpiry : "active";
+          await ref.update({ status: back });
+          await notifyOwner(lid, "subscription", "Your league is back on", "ITS has reinstated your league.");
+          await logAction("reinstate", { leagueId: lid, leagueName: L.name, statusTo: back });
+        } else if (action === "expire") {
+          if (!confirm(`End ${L.name}'s plan right now? Stewarding stops immediately.`)) return;
+          await ref.update({ status: "expired", statusBeforeExpiry: L.status, expiredAt: FV().serverTimestamp(), accessUntil: TS().now() });
+          await notifyOwner(lid, "subscription", "Your ITS plan has ended", "Your data is safe — renew on Patreon and tell ITS in Plan & Billing to switch back on.");
+          await logAction("expire_now", { leagueId: lid, leagueName: L.name });
+        }
+        toast("Done."); await refreshLeague(lid);
+      } catch (e) { toast(friendlyError(e), 5000); }
+    }
+
+    // ============================================================
+    // PAYMENTS
+    // ============================================================
+    function renderClaims() {
+      const pend = claims.filter(c => c.status === "pending");
+      $("claimsPending").innerHTML = pend.length ? pend.map(c => {
+        const L = leagues.find(x => x.id === c.leagueId) || {}; const p = planState(L);
+        return `<div class="reqCard">
+          <div class="reqHead">${esc(c.leagueName || c.leagueId)} <span class="pill">${esc(c.months)} month${c.months === 1 ? "" : "s"}</span> <span class="pill ${p.cls}">${esc(p.label)}${p.daysLeft != null && p.live ? " · " + p.daysLeft + "d left" : ""}</span></div>
+          <div class="reqBody">Patreon name: <strong>${esc(c.patreonName || "—")}</strong> · sent by ${esc(c.claimedBy)} · ${esc(fmtDate(c.createdAt))}${c.note ? `\nNote: ${esc(c.note)}` : ""}</div>
+          <div class="row" style="margin-top:8px; flex-wrap:nowrap;">
+            <button class="small primary" data-approve="${esc(c.id)}">Approve — add ${esc(c.months)} month${c.months === 1 ? "" : "s"}</button>
+            <input id="rej_${esc(c.id)}" maxlength="200" placeholder="Why not? (shown to the owner)">
+            <button class="small danger" data-reject="${esc(c.id)}">Not matched</button>
+          </div>
+        </div>`;
+      }).join("") : `<div class="muted">Nothing to check.</div>`;
+      $("claimsPending").querySelectorAll("[data-approve]").forEach(b => b.onclick = async () => {
+        const c = claims.find(x => x.id === b.dataset.approve);
+        if (!confirm(`Have you found ${c.patreonName}'s ${c.months}-month payment on Patreon?\n\nThis adds ${c.months} month${c.months === 1 ? "" : "s"} to ${c.leagueName}.`)) return;
+        b.disabled = true;
+        if (await extendLeague(c.leagueId, { months: Number(c.months), reason: `Patreon — ${c.patreonName}`, claimId: c.id })) { c.status = "approved"; renderClaims(); renderAttention(); }
+        else b.disabled = false;
+      });
+      $("claimsPending").querySelectorAll("[data-reject]").forEach(b => b.onclick = async () => {
+        const c = claims.find(x => x.id === b.dataset.reject); const note = $("rej_" + c.id).value.trim();
+        if (!note) { toast("Add a short reason so the owner knows what to do."); return; }
+        try {
+          await db.collection("paymentClaims").doc(c.id).update({ status: "rejected", adminNote: note, reviewedBy: me, reviewedAt: FV().serverTimestamp() });
+          await notifyOwner(c.leagueId, "payment", "We couldn't match your payment", note);
+          await logAction("claim_rejected", { leagueId: c.leagueId, leagueName: c.leagueName, claimId: c.id, reason: note });
+          c.status = "rejected"; c.adminNote = note; renderClaims(); renderAttention(); toast("Owner told.");
+        } catch (e) { toast(friendlyError(e), 5000); }
+      });
+      const done = claims.filter(c => c.status !== "pending");
+      $("claimsHistory").innerHTML = `<thead><tr><th>Sent</th><th>League</th><th>Months</th><th>Patreon name</th><th>Result</th><th>Reviewed</th></tr></thead><tbody>` +
+        (done.length ? done.map(c => `<tr><td>${esc(fmtDate(c.createdAt, false))}</td><td>${esc(c.leagueName || c.leagueId)}</td><td>${esc(c.months)}</td><td>${esc(c.patreonName)}</td><td>${c.status === "approved" ? `<span class="pill miniOk">Approved</span>` : `<span class="pill miniBad">Not matched</span> <span class="muted" style="font-size:12px;">${esc(c.adminNote || "")}</span>`}</td><td style="font-size:12px;">${esc(fmtDate(c.reviewedAt, false))} · ${esc(c.reviewedBy || "")}</td></tr>`).join("") : `<tr><td colspan="6" class="muted">Nothing yet.</td></tr>`) + `</tbody>`;
+    }
+
+    // ============================================================
+    // DATA REQUESTS
+    // ============================================================
+    const REQ_TYPES = { access: "See my data", correct: "Correct something", dispute: "Dispute a decision", delete: "Delete my data", other: "Other" };
+    const REQ_STATUS = { open: "Open", in_progress: "In progress", done: "Done", refused: "Refused" };
+    function renderDataReqs() {
+      const q = $("drSearch").value.trim().toLowerCase(), f = $("drFilter").value;
+      const list = dataReqs.filter(r => {
+        const st = r.status || "open";
+        if (f === "live" && !(st === "open" || st === "in_progress")) return false;
+        if (f && f !== "live" && st !== f) return false;
+        return !q || [r.discordKey, r.driverName, r.discordName, r.leagueName, r.leagueId, r.details, r.contact, r.passedBy].join(" ").toLowerCase().includes(q);
+      });
+      $("drList").innerHTML = list.length ? list.map(r => {
+        const created = ms(r.createdAt), due = created ? created + 30 * DAY : 0, left = due ? Math.ceil((due - Date.now()) / DAY) : null;
+        const st = r.status || "open", liveReq = st === "open" || st === "in_progress";
+        const overdue = liveReq && left != null && left < 0;
+        const actions = Array.isArray(r.actions) ? r.actions : [];
+        return `<div class="reqCard ${overdue ? "overdue" : ""}">
+          <div class="reqHead">
+            <span class="pill">${esc(REQ_TYPES[r.type] || r.type)}</span>
+            @${esc(r.discordKey || "?")}${r.driverName || r.discordName ? ` <span class="muted">(${esc(r.driverName || r.discordName)})</span>` : ""}
+            <span class="muted" style="font-weight:700;">· ${esc(r.leagueName || r.leagueId || "—")} · ${r.source === "league" ? "passed on by league" + (r.passedBy ? " (" + esc(r.passedBy) + ")" : "") : "from the driver"}</span>
+            <span class="pill ${st === "done" ? "miniOk" : st === "refused" ? "miniBad" : ""}">${esc(REQ_STATUS[st] || st)}</span>
+            ${liveReq && left != null ? `<span class="pill ${left <= 7 ? "miniBad" : ""}">${left >= 0 ? `Reply due in ${left} day${left === 1 ? "" : "s"}` : `${-left} day${left === -1 ? "" : "s"} overdue`}</span>` : ""}
+          </div>
+          <div class="reqBody">${esc(r.details || "")}</div>
+          <div class="muted" style="font-size:12px; margin-top:4px;">Received ${esc(fmtDate(r.createdAt))} · Reply to: <strong>${esc(r.contact || "—")}</strong> · ID ${esc(r.id)}</div>
+          ${actions.length ? `<div style="margin-top:6px;">${actions.map(a => `<div class="logLine">${esc(fmtDate(a.at))} — ${esc(a.text)}${a.status ? ` <strong>[${esc(REQ_STATUS[a.status] || a.status)}]</strong>` : ""} <span class="muted">(${esc(a.by)})</span></div>`).join("")}</div>` : `<div class="muted" style="font-size:12px; margin-top:6px;">No actions logged yet.</div>`}
+          <div class="row" style="margin-top:8px; flex-wrap:nowrap;">
+            <input id="act_${esc(r.id)}" maxlength="500" placeholder="What did you do? e.g. 'Sent their records by DM', 'Corrected ticket 251109-AB12'">
+            <select id="ast_${esc(r.id)}" style="width:auto;">${Object.entries(REQ_STATUS).map(([k, v]) => `<option value="${k}" ${k === st ? "selected" : ""}>${v}</option>`).join("")}</select>
+            <button class="small primary" data-act="${esc(r.id)}">Log action</button>
+          </div>
+        </div>`;
+      }).join("") : `<div class="muted" style="margin-top:10px;">No requests here.</div>`;
+      $("drList").querySelectorAll("[data-act]").forEach(b => b.onclick = async () => {
+        const r = dataReqs.find(x => x.id === b.dataset.act);
+        const text = $("act_" + r.id).value.trim(), status = $("ast_" + r.id).value;
+        if (!text && status === (r.status || "open")) { toast("Write what you did, or change the status."); return; }
+        const entry = { at: TS().now(), by: me, text: text || `Status changed to ${REQ_STATUS[status]}`, status };
+        try {
+          await db.collection("dataRequests").doc(r.id).update({ actions: FV().arrayUnion(entry), status, updatedAt: FV().serverTimestamp(), ...(status === "done" || status === "refused" ? { closedAt: FV().serverTimestamp(), closedBy: me } : {}) });
+          await logAction("data_request", { requestId: r.id, leagueId: r.leagueId || null, discordKey: r.discordKey || null, text: entry.text, status });
+          r.actions = [...(r.actions || []), entry]; r.status = status; renderDataReqs(); renderAttention(); toast("Logged.");
+        } catch (e) { toast(friendlyError(e), 5000); }
+      });
+    }
+    $("drSearch").oninput = renderDataReqs; $("drFilter").onchange = renderDataReqs;
+
+    // ============================================================
+    // TICKETS — view + correct any league's tickets (every change audited)
+    // ============================================================
+    let tickets = [], tkLid = "";
+    const EDIT_FIELDS = [
+      ["reporter", "Reporter (name)", "text"], ["reporterDiscord", "Reporter Discord", "text"],
+      ["accused", "Accused (name)", "text"], ["accusedDiscord", "Accused Discord", "text"],
+      ["competition", "Competition / division", "text"], ["event", "Event / race", "text"],
+      ["incidentTime", "Incident time / lap", "text"], ["ruleBreach", "Rule breach", "text"],
+      ["proofUrl", "Video link", "text"], ["extraProofUrl", "Extra proof link", "text"],
+      ["status", "Status", "status"], ["fullIncident", "What happened", "area"]
+    ];
+    const STATUSES = ["Under Review", "In Review", "Ready to Publish", "Finalised"];
+    async function loadTickets() {
+      tkLid = $("tkLeague").value; $("tkEditor").style.display = "none";
+      if (!tkLid) { $("tkTable").innerHTML = `<tr><td class="muted">Choose a league.</td></tr>`; return; }
+      $("tkTable").innerHTML = `<tr><td class="muted">Loading…</td></tr>`;
+      try {
+        const snap = await db.collection("leagues").doc(tkLid).collection("tickets").get();
+        tickets = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => ms(b.timestamp) - ms(a.timestamp));
+      } catch (e) { $("tkTable").innerHTML = `<tr><td class="redBox">${esc(friendlyError(e))}</td></tr>`; return; }
+      renderTickets();
+    }
+    function renderTickets() {
+      const q = $("tkSearch").value.trim().toLowerCase(), f = $("tkStatus").value;
+      const list = tickets.filter(t => (!f || (f === "open" ? !isFinal(t) : isFinal(t))) && (!q || [t.id, t.reporter, t.reporterDiscord, t.accused, t.accusedDiscord, t.event, t.competition].join(" ").toLowerCase().includes(q)));
+      $("tkTable").innerHTML = `<thead><tr><th>Ticket</th><th>Submitted</th><th>Reporter</th><th>Accused</th><th>Event</th><th>Status</th><th class="num">Time to close</th></tr></thead><tbody>` +
+        (list.length ? list.slice(0, 500).map(t => `<tr class="clickRow" data-tid="${esc(t.id)}">
+          <td class="mono" style="font-size:12px;">${esc(t.id)}${t.adminEditedAt ? ` <span class="pill" title="Edited by ITS admin" style="padding:0 6px;">edited</span>` : ""}</td>
+          <td style="font-size:12px;">${esc(fmtDate(t.timestamp))}</td>
+          <td>${esc(t.reporter)} <span class="muted" style="font-size:11px;">@${esc(t.reporterDiscord)}</span></td>
+          <td>${esc(t.accused)} <span class="muted" style="font-size:11px;">@${esc(t.accusedDiscord)}</span></td>
+          <td style="font-size:12px;">${esc(t.event)}${t.competition ? " · " + esc(t.competition) : ""}</td>
+          <td><span class="pill ${isFinal(t) ? "miniOk" : ""}">${esc(t.status || "Under Review")}</span></td>
+          <td class="num">${fmtDur(closeMs(t))}</td></tr>`).join("") : `<tr><td colspan="7" class="muted">No tickets match.</td></tr>`) + `</tbody>`;
+      $("tkTable").querySelectorAll("[data-tid]").forEach(tr => tr.onclick = () => openTicket(tr.dataset.tid));
+    }
+    $("tkLeague").onchange = loadTickets; $("tkSearch").oninput = renderTickets; $("tkStatus").onchange = renderTickets;
+
+    async function openTicket(tid) {
+      const t = tickets.find(x => x.id === tid); if (!t) return;
+      const box = $("tkEditor"); box.style.display = "block";
+      let statements = [];
+      try { statements = (await db.collection("leagues").doc(tkLid).collection("tickets").doc(tid).collection("player_statements").get()).docs.map(d => d.data()); } catch (e) { /* ignore */ }
+      box.innerHTML = `
+        <div class="title" style="margin:0;">Ticket <span class="mono">${esc(tid)}</span></div>
+        <div class="muted">Fix anything a driver got wrong. Every change is saved to the Admin log with the old and new value.${isFinal(t) ? " <strong>This ticket is finalised</strong> — changing it won't re-post the result to Discord." : ""}</div>
+        <div class="grid2" style="margin-top:12px;">
+          ${EDIT_FIELDS.map(([k, label, type]) => `<div class="${type === "area" ? "stepFull" : ""}" style="${type === "area" ? "grid-column:1/-1;" : ""}">
+            <label class="muted">${esc(label)}</label>
+            ${type === "area" ? `<textarea data-f="${k}" rows="5" maxlength="4000">${esc(t[k] || "")}</textarea>`
+              : type === "status" ? `<select data-f="${k}">${[...new Set([...STATUSES, t.status || "Under Review"])].map(s => `<option ${s === (t.status || "Under Review") ? "selected" : ""}>${esc(s)}</option>`).join("")}</select>`
+              : `<input data-f="${k}" maxlength="500" value="${esc(t[k] || "")}">`}
+          </div>`).join("")}
+        </div>
+        <div style="margin-top:10px;"><label class="muted">Why are you changing it? (for the log)</label><input id="tkWhy" maxlength="200" placeholder="e.g. Driver typed the wrong Discord name — confirmed in their DM"></div>
+        <div class="row" style="margin-top:12px;">
+          <button class="primary" id="tkSave">Save changes</button>
+          <button class="small" id="tkClose">Close</button>
+          <span style="flex:1;"></span>
+          <button class="small danger" id="tkDelete">Delete ticket…</button>
+        </div>
+        <div class="muted" style="font-size:12px; margin-top:8px;">Submitted by uid ${esc(t.submittedByUid || "—")} · source ${esc(t.source || "—")}${t.finalisedAt ? " · finalised " + esc(fmtDate(t.finalisedAt)) + (t.finalisedBy ? " by " + esc(t.finalisedBy) : "") : ""}${t.adminEditedAt ? " · last admin edit " + esc(fmtDate(t.adminEditedAt)) + " by " + esc(t.adminEditedBy) : ""}</div>
+        <div class="muted" style="font-weight:800; margin-top:14px;">Driver statements (${statements.length})</div>
+        ${statements.length ? statements.map(s => `<div class="logLine"><strong>${esc(s.role)}</strong> — ${esc(s.name)} @${esc(s.discord)} · ${esc(fmtDate(s.submittedAt))}<div style="white-space:pre-wrap; margin-top:2px;">${esc(s.statement)}</div></div>`).join("") : `<div class="muted" style="font-size:12px;">None.</div>`}`;
+      $("tkClose").onclick = () => { box.style.display = "none"; };
+      $("tkSave").onclick = async () => {
+        const changes = {}, before = {};
+        box.querySelectorAll("[data-f]").forEach(el => { const k = el.dataset.f, v = el.value.trim(), old = t[k] == null ? "" : String(t[k]); if (v !== old) { changes[k] = k.endsWith("Discord") ? v.toLowerCase().replace(/^@/, "") : v; before[k] = t[k] == null ? null : t[k]; } });
+        if (!Object.keys(changes).length) { toast("Nothing changed."); return; }
+        const why = $("tkWhy").value.trim();
+        if (!why) { toast("Add a reason for the log."); $("tkWhy").focus(); return; }
+        const summary = Object.keys(changes).map(k => `${k}: "${before[k] ?? ""}" → "${changes[k]}"`).join("\n");
+        if (!confirm(`Save these changes to ${tid}?\n\n${summary}`)) return;
+        try {
+          await db.collection("leagues").doc(tkLid).collection("tickets").doc(tid).update({ ...changes, adminEditedAt: FV().serverTimestamp(), adminEditedBy: me });
+          await logAction("ticket_edit", { leagueId: tkLid, leagueName: (leagues.find(x => x.id === tkLid) || {}).name || tkLid, ticketId: tid, before, after: changes, reason: why });
+          Object.assign(t, changes, { adminEditedAt: TS().now(), adminEditedBy: me });
+          toast("Saved."); renderTickets(); openTicket(tid);
+        } catch (e) { toast(friendlyError(e), 5000); }
+      };
+      $("tkDelete").onclick = async () => {
+        const typed = prompt(`Delete ticket ${tid} permanently? This can't be undone.\n\nType the ticket ID to confirm:`);
+        if (typed == null) return; if (typed.trim() !== tid) { toast("ID didn't match — nothing deleted."); return; }
+        const why = $("tkWhy").value.trim() || prompt("Reason (for the log):") || "";
+        try {
+          const keep = { reporter: t.reporter, reporterDiscord: t.reporterDiscord, accused: t.accused, accusedDiscord: t.accusedDiscord, event: t.event, status: t.status };
+          await db.collection("leagues").doc(tkLid).collection("tickets").doc(tid).delete();
+          await logAction("ticket_delete", { leagueId: tkLid, ticketId: tid, before: keep, reason: why });
+          tickets = tickets.filter(x => x.id !== tid); box.style.display = "none"; renderTickets(); toast("Deleted.");
+        } catch (e) { toast(friendlyError(e), 5000); }
+      };
+      box.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    // ============================================================
+    // ROSTER
+    // ============================================================
+    async function loadRoster() {
+      $("rsTable").innerHTML = `<tr><td class="muted">Loading…</td></tr>`;
+      try {
+        const snap = await db.collection("itsRoster").orderBy("lastSeenAt", "desc").limit(5000).get();
+        roster = snap.docs.map(d => ({ id: d.id, ...d.data() })); rosterLoaded = true;
+        $("sDrivers").textContent = roster.length + (roster.length >= 5000 ? "+" : "");
+      } catch (e) { $("rsTable").innerHTML = `<tr><td class="redBox">${esc(friendlyError(e))}</td></tr>`; return; }
+      renderRoster();
+    }
+    function renderRoster() {
+      const q = $("rsSearch").value.trim().toLowerCase(), lf = $("rsLeague").value;
+      const list = roster.filter(r => {
+        const ls = r.leagues || {};
+        if (lf && !ls[lf]) return false;
+        return !q || [r.username, r.globalName, r.discordId, ...Object.values(ls).map(x => (x.name || "") + " " + (x.nick || ""))].join(" ").toLowerCase().includes(q);
+      });
+      $("rsTable").innerHTML = `<thead><tr><th></th><th>Discord</th><th>Display name</th><th>Leagues (server nickname)</th><th>Last seen</th></tr></thead><tbody>` +
+        (list.length ? list.slice(0, 1000).map(r => `<tr>
+          <td>${r.avatarUrl ? `<img src="${esc(r.avatarUrl)}" alt="" style="width:26px; height:26px; border-radius:50%;">` : ""}</td>
+          <td><strong>@${esc(r.username)}</strong><div class="muted" style="font-size:11px;">${esc(r.discordId)}</div></td>
+          <td>${esc(r.globalName || "—")}</td>
+          <td style="font-size:12px;">${Object.entries(r.leagues || {}).map(([lid, x]) => `${esc(x.name || lid)}${x.nick ? ` <strong>(${esc(x.nick)})</strong>` : ""}${x.inGuild === false ? ` <span class="pill miniBad" style="padding:0 6px;">not in server</span>` : ""}`).join("<br>") || "—"}</td>
+          <td style="font-size:12px;">${esc(fmtDate(r.lastSeenAt, false))}</td></tr>`).join("") : `<tr><td colspan="5" class="muted">No drivers yet — they appear here once they sign in with Discord on a ticket page.</td></tr>`) + `</tbody>`;
+    }
+    $("rsSearch").oninput = renderRoster; $("rsLeague").onchange = renderRoster;
+
+    // ============================================================
+    // LOG
+    // ============================================================
+    const ACTION_LABEL = { approve_beta: "Approved (beta)", approve_paid: "Approved (paid)", extend: "Added time", suspend: "Suspended", reinstate: "Reinstated", expire_now: "Ended plan", claim_rejected: "Payment not matched", data_request: "Data request", ticket_edit: "Ticket edited", ticket_delete: "Ticket deleted" };
+    async function loadLog() {
+      $("logTable").innerHTML = `<tr><td class="muted">Loading…</td></tr>`;
+      try {
+        const snap = await db.collection("adminLog").orderBy("at", "desc").limit(300).get();
+        const rows = snap.docs.map(d => d.data());
+        $("logTable").innerHTML = `<thead><tr><th>When</th><th>Who</th><th>What</th><th>Details</th></tr></thead><tbody>` + (rows.length ? rows.map(r => {
+          let det = [r.leagueName || r.leagueId, r.ticketId && "ticket " + r.ticketId, r.months && "+" + r.months + " months", r.days && "+" + r.days + " days", r.reason, r.text, r.discordKey && "@" + r.discordKey].filter(Boolean).map(esc).join(" · ");
+          if (r.after) det += `<div style="margin-top:2px;">${Object.keys(r.after).map(k => `${esc(k)}: <span class="diffOld">${esc(r.before && r.before[k] != null ? r.before[k] : "")}</span> → <span class="diffNew">${esc(r.after[k])}</span>`).join("<br>")}</div>`;
+          return `<tr><td style="font-size:12px; white-space:nowrap;">${esc(fmtDate(r.at))}</td><td style="font-size:12px;">${esc(r.by)}</td><td><strong>${esc(ACTION_LABEL[r.action] || r.action)}</strong></td><td style="font-size:12px;">${det}</td></tr>`;
+        }).join("") : `<tr><td colspan="4" class="muted">Nothing yet.</td></tr>`) + `</tbody>`;
+      } catch (e) { $("logTable").innerHTML = `<tr><td class="redBox">${esc(friendlyError(e))}</td></tr>`; }
+    }
+
+    // ============================================================
+    // AUTH
+    // ============================================================
+    $("authGoogleBtn").onclick = async () => {
+      const p = new firebase.auth.GoogleAuthProvider(); p.setCustomParameters({ prompt: "select_account" });
+      try { await auth.signInWithPopup(p); } catch (e) { if (e && e.code !== "auth/popup-closed-by-user") $("authError").textContent = friendlyError(e); }
+    };
+    $("logoutBtn").onclick = () => auth.signOut();
+    $("refreshBtn").onclick = async () => { stats = {}; await loadAll(); if (rosterLoaded) loadRoster(); toast("Refreshed."); };
+
+    auth.onAuthStateChanged(async (user) => {
+      $("gateMsg").style.display = "none";
+      if (!user) { $("loadingMsg").style.display = "none"; $("app").style.display = "none"; $("logoutBtn").style.display = "none"; $("refreshBtn").style.display = "none"; $("authPanel").style.display = "block"; return; }
+      me = (user.email || "").toLowerCase();
+      $("authPanel").style.display = "none"; $("loadingMsg").style.display = "block";
+      $("who").textContent = `Signed in as ${me}`; $("logoutBtn").style.display = "inline-flex";
+      try {
+        const a = await db.collection("platformAdmins").doc(me).get();
+        if (!a.exists) { gate("Not an ITS admin", `<strong>${esc(me)}</strong> isn't on the ITS admin list.`); return; }
+      } catch (e) { gate("Not an ITS admin", esc(friendlyError(e))); return; }
+      $("loadingMsg").style.display = "none"; $("app").style.display = "block"; $("refreshBtn").style.display = "inline-flex";
+      switchTab((location.hash || "#leagues").slice(1));
+      try { await loadAll(); } catch (e) { toast(friendlyError(e), 6000); console.error(e); }
+      db.collection("itsRoster").get().then(s => $("sDrivers").textContent = s.size).catch(() => {});
+    });
+  </script>
+</body>
+</html>

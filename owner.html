@@ -830,6 +830,7 @@
         <button class="tabBtn" data-tab="alerts">Bans &amp; Alerts</button>
         <button class="tabBtn" data-tab="standards">Standards</button>
         <button class="tabBtn" data-tab="privacy">Privacy &amp; Data</button>
+        <button class="tabBtn" data-tab="plan">Plan &amp; Billing</button>
       </nav>
 
       <!-- ===== OVERVIEW ===== -->
@@ -1005,6 +1006,21 @@
             <table class="dataTable">
               <thead><tr><th>Google email</th><th>Role</th><th>Discord</th><th>Added</th><th></th></tr></thead>
               <tbody id="staffBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="cardHead">
+            <div class="title" style="margin:0;">Driver roster</div>
+            <button class="small" id="refreshRosterBtn">Load / refresh</button>
+          </div>
+          <div class="muted">Drivers are added automatically the first time they sign in with Discord on your ticket page — with their nickname in your Discord server.</div>
+          <input type="search" id="rosterSearch" placeholder="Search drivers…" style="margin-top:10px;">
+          <div class="tableWrap" style="margin-top:10px;">
+            <table class="dataTable">
+              <thead><tr><th>Discord</th><th>Server nickname</th><th>Display name</th><th>In your server?</th><th>Last seen</th></tr></thead>
+              <tbody id="rosterBody"><tr><td colspan="5" class="muted">Press "Load / refresh".</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -1312,6 +1328,58 @@
       </section>
 
       <!-- ===== STANDARDS (ported from IFWL headsteward.html) ===== -->
+      <!-- ===== PLAN & BILLING ===== -->
+      <section class="panel" id="panel-plan">
+        <div class="card">
+          <div class="title" style="margin:0;">Your ITS plan</div>
+          <div id="planSummary" style="margin-top:12px;"></div>
+        </div>
+
+        <div class="card">
+          <div class="title" style="margin:0;">Extend your plan</div>
+          <div class="muted">Two steps. ITS checks every payment by hand, usually within a day — your time is added from the end of your current plan, so you never lose days by paying early.</div>
+          <div class="checkList" style="margin-top:12px;">
+            <div class="checkItem optional">
+              <div class="checkDot">1</div>
+              <div class="checkText">Pay on Patreon<small>Choose the 1, 3 or 12 month tier for your league.</small></div>
+              <a class="btnLink" id="patreonLink" target="_blank" rel="noopener">Open Patreon ↗</a>
+            </div>
+            <div class="checkItem optional">
+              <div class="checkDot">2</div>
+              <div class="checkText">Tell ITS you've paid<small>Fill this in so we can match your payment to your league.</small></div>
+            </div>
+          </div>
+          <div class="grid2" style="margin-top:12px;">
+            <div>
+              <label class="muted">What did you buy? <span class="req">*</span></label>
+              <select id="claimMonths">
+                <option value="">— Choose —</option>
+                <option value="1">1 month</option>
+                <option value="3">3 months</option>
+                <option value="12">12 months</option>
+              </select>
+            </div>
+            <div>
+              <label class="muted">Your name on Patreon <span class="req">*</span></label>
+              <input id="claimPatreonName" maxlength="80" placeholder="Exactly as it shows on Patreon">
+            </div>
+          </div>
+          <div style="margin-top:10px;">
+            <label class="muted">Anything else? (optional)</label>
+            <input id="claimNote" maxlength="300" placeholder="e.g. paid on 9 Nov, or paid from a friend's account">
+          </div>
+          <div class="row" style="margin-top:12px;">
+            <button class="primary" id="claimSendBtn">I've paid — tell ITS</button>
+            <span class="fieldMsg" id="claimMsg"></span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="title" style="margin:0;">Payment history</div>
+          <div id="claimHistory" style="margin-top:10px;"></div>
+        </div>
+      </section>
+
       <section class="panel" id="panel-standards">
         <div class="card" id="ownerClauseCard">
           <div class="title" style="margin:0;">Owner's Emergency Standards Clause</div>
@@ -1350,6 +1418,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
   <script src="./firebase-init.js"></script>
+  <script src="./its-config.js"></script>
   <script src="./its-rules.js"></script>
 
   <script>
@@ -1755,7 +1824,7 @@
         renderHeader();
         fillSettingsForm();
         initTabs();
-        await Promise.all([loadStaff(), loadImports(), loadTicketCount(), loadRules(), loadNotifications(), loadBans(), initOwnerClauseUI(), initSeniorStewardUI()]);
+        await Promise.all([loadStaff(), loadImports(), loadTicketCount(), loadRules(), loadNotifications(), loadBans(), initOwnerClauseUI(), initSeniorStewardUI(), loadPlan()]);
         renderOverview();
         renderPrivacy();
       } catch (e) {
@@ -1798,10 +1867,18 @@
     // ============================================================
     // HEADER / OVERVIEW
     // ============================================================
-    function isActive() { return league && (league.status === "active" || league.status === "approved"); }
+    function accessUntilMs() { const a = league && league.accessUntil; return a ? (a.toMillis ? a.toMillis() : Number(a)) : null; }
+    function daysLeft() { const a = accessUntilMs(); return a == null ? null : Math.ceil((a - Date.now()) / 86400000); }
+    function isActive() {
+      if (!league || !["active", "approved", "beta"].includes(league.status)) return false;
+      const a = accessUntilMs(); return a == null || a > Date.now();
+    }
     function statusInfo() {
       const s = (league && league.status) || "pending";
-      if (s === "active" || s === "approved") return { label: "Active", cls: "miniOk" };
+      const d = daysLeft();
+      if (["active", "approved", "beta"].includes(s) && d != null && d <= 0) return { label: "Expired", cls: "miniBad" };
+      if (s === "beta") return { label: d != null ? `Beta · ${d} day${d === 1 ? "" : "s"} left` : "Beta", cls: d != null && d <= 7 ? "" : "miniOk" };
+      if (s === "active" || s === "approved") return { label: d != null ? `Active · ${d} day${d === 1 ? "" : "s"} left` : "Active", cls: d != null && d <= 7 ? "" : "miniOk" };
       if (s === "pending") return { label: "Pending approval", cls: "" };
       return { label: s.charAt(0).toUpperCase() + s.slice(1), cls: "miniBad" };
     }
@@ -1824,10 +1901,15 @@
       $("statStatus").textContent = si.label;
 
       const s = league.status || "pending";
+      const dl = daysLeft();
+      const expired = s === "expired" || (["active", "approved", "beta"].includes(s) && dl != null && dl <= 0);
       $("leagueBanner").innerHTML =
         s === "pending" ? `<div class="bannerBox bannerAmber">Your league is waiting for approval.<small>You can set everything up now — settings, staff and imports all work. Your staff dashboards switch on once ITS approves your league.</small></div>`
-        : (s === "active" || s === "approved") ? ""
+        : expired ? `<div class="bannerBox bannerRed" style="cursor:pointer;" data-goplan="1">Your ITS plan has ended — stewarding and the ticket page are switched off.<small>Your tickets and settings are safe. Extend your plan in Plan &amp; Billing and you're straight back on. Click here.</small></div>`
+        : (isActive() && dl != null && dl <= 7) ? `<div class="bannerBox bannerAmber" style="cursor:pointer;" data-goplan="1">${s === "beta" ? "Your free beta" : "Your ITS plan"} ends in ${dl} day${dl === 1 ? "" : "s"}.<small>Extend in Plan &amp; Billing so your stewards aren't locked out. Click here.</small></div>`
+        : isActive() ? ""
         : `<div class="bannerBox bannerRed">Your league is currently <strong>${esc(s)}</strong>.<small>Your staff can't use ITS until this is resolved. Contact the ITS team.</small></div>`;
+      const gp = document.querySelector("[data-goplan]"); if (gp) gp.onclick = () => switchTab("plan");
     }
 
     function renderOverview() {
@@ -1896,7 +1978,7 @@
     // ============================================================
     // TABS
     // ============================================================
-    const TAB_IDS = ["overview", "settings", "staff", "rules", "import", "alerts", "standards", "privacy"];
+    const TAB_IDS = ["overview", "settings", "staff", "rules", "import", "alerts", "standards", "privacy", "plan"];
     function switchTab(id) {
       if (!TAB_IDS.includes(id)) id = "overview";
       document.querySelectorAll(".tabBtn").forEach(b => b.classList.toggle("active", b.dataset.tab === id));
@@ -2879,16 +2961,103 @@
       renderNotifications();
     }
 
+    // ============================================================
+    // PLAN & BILLING
+    //   leagues/{lid}: status (beta|active|expired…), accessUntil, plan
+    //   leagues/{lid}/billing/{id}: extensions ITS has added (admin-written)
+    //   paymentClaims/{id}: "I've paid" messages from the owner
+    // ============================================================
+    let claims = [], billing = [];
+    async function loadPlan() {
+      $("patreonLink").href = (typeof ITS_CONFIG !== "undefined" && ITS_CONFIG.patreonUrl) || "#";
+      try {
+        const [c, b] = await Promise.all([
+          db.collection("paymentClaims").where("leagueId", "==", lid).get(),
+          leagueRef.collection("billing").get()
+        ]);
+        claims = c.docs.map(d => ({ id: d.id, ...d.data() }));
+        billing = b.docs.map(d => ({ id: d.id, ...d.data() }));
+      } catch (e) { console.warn("plan:", e); claims = []; billing = []; }
+      renderPlan();
+    }
+    const tsMs = (v) => v && v.toMillis ? v.toMillis() : (v ? Number(v) : 0);
+    function renderPlan() {
+      const s = league.status || "pending", dl = daysLeft(), a = accessUntilMs();
+      const planName = s === "beta" ? "Free beta (30 days)" : (s === "active" || s === "approved") ? (league.plan ? `Paid — ${esc(league.plan)}` : "Paid") : s === "pending" ? "Not started — waiting for ITS approval" : s === "expired" ? "Expired" : esc(s);
+      const pct = s === "beta" && dl != null ? Math.max(0, Math.min(100, Math.round(dl / 30 * 100))) : null;
+      $("planSummary").innerHTML = `
+        <div class="kv">
+          <div class="k">Plan</div><div class="v"><strong>${planName}</strong> <span class="pill ${statusInfo().cls}" style="margin-left:6px;">${esc(statusInfo().label)}</span></div>
+          <div class="k">Ends</div><div class="v">${a ? esc(new Date(a).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })) + (dl != null ? ` <span class="muted">(${dl > 0 ? dl + " day" + (dl === 1 ? "" : "s") + " left" : "ended"})</span>` : "") : (s === "pending" ? "Your 30-day beta starts when ITS approves you." : "No end date")}</div>
+        </div>
+        ${pct != null ? `<div style="margin-top:10px; height:10px; border-radius:99px; background:var(--line,#e5e7eb); overflow:hidden;"><div style="height:100%; width:${pct}%; background:${dl <= 7 ? "var(--amber,#f59e0b)" : "var(--green,#16a34a)"};"></div></div>` : ""}
+        ${s === "expired" || (dl != null && dl <= 0) ? `<div class="redBox" style="margin-top:12px;">Your plan has ended, so stewarding and your ticket page are off. Nothing has been deleted — pay below and ITS will switch you back on.</div>` : ""}`;
+
+      const pending = claims.filter(c => c.status === "pending");
+      $("claimSendBtn").disabled = pending.length >= 3;
+      const rows = [
+        ...claims.map(c => ({ when: tsMs(c.createdAt), html: `<tr><td>${esc(fmtDate(c.createdAt))}</td><td>You told ITS you paid for <strong>${esc(c.months)} month${c.months === 1 ? "" : "s"}</strong>${c.patreonName ? " (Patreon: " + esc(c.patreonName) + ")" : ""}</td><td>${c.status === "approved" ? `<span class="pill miniOk">Approved</span>` : c.status === "rejected" ? `<span class="pill miniBad">Not matched</span>${c.adminNote ? `<div class="muted" style="font-size:12px;">${esc(c.adminNote)}</div>` : ""}` : `<span class="pill">Waiting for ITS</span>`}</td></tr>` })),
+        ...billing.map(b => ({ when: tsMs(b.createdAt), html: `<tr><td>${esc(fmtDate(b.createdAt))}</td><td>ITS added <strong>${b.days ? esc(b.days) + " days" : esc(b.months) + " month" + (b.months === 1 ? "" : "s")}</strong>${b.reason ? " — " + esc(b.reason) : ""}${b.newAccessUntil ? ` <span class="muted">→ now ends ${esc(fmtDate(b.newAccessUntil))}</span>` : ""}</td><td><span class="pill miniOk">Added</span></td></tr>` }))
+      ].sort((x, y) => y.when - x.when);
+      $("claimHistory").innerHTML = rows.length ? `<table class="dataTable"><thead><tr><th>Date</th><th>What happened</th><th>Status</th></tr></thead><tbody>${rows.map(r => r.html).join("")}</tbody></table>` : `<div class="muted">Nothing yet.</div>`;
+    }
+    $("claimSendBtn").onclick = async () => {
+      const msg = $("claimMsg");
+      const months = Number($("claimMonths").value), name = $("claimPatreonName").value.trim(), note = $("claimNote").value.trim();
+      if (![1, 3, 12].includes(months)) { setMsg(msg, "bad", "Choose what you bought."); return; }
+      if (name.length < 2) { setMsg(msg, "bad", "Enter your Patreon name so we can find your payment."); return; }
+      if (claims.some(c => c.status === "pending" && c.months === months)) { setMsg(msg, "bad", "You've already told us about this one — it's waiting for ITS."); return; }
+      $("claimSendBtn").disabled = true;
+      try {
+        await db.collection("paymentClaims").add({ leagueId: lid, leagueName: league.name || lid, months, patreonName: name, note, status: "pending", claimedBy: currentEmail, createdAt: FV().serverTimestamp() });
+        setMsg(msg, "ok", "Sent ✓ ITS will check and add your time — you'll get an alert here.");
+        $("claimMonths").value = ""; $("claimNote").value = "";
+        await loadPlan();
+      } catch (e) { setMsg(msg, "bad", friendlyError(e)); }
+      finally { $("claimSendBtn").disabled = false; }
+    };
+
+    // ---------- driver roster (written by the discordsignin function) ----------
+    let rosterList = [];
+    async function loadRoster() {
+      $("rosterBody").innerHTML = `<tr><td colspan="5" class="muted">Loading…</td></tr>`;
+      try {
+        const snap = await leagueRef.collection("roster").orderBy("lastSeenAt", "desc").limit(3000).get();
+        rosterList = snap.docs.map(d => d.data());
+      } catch (e) { $("rosterBody").innerHTML = `<tr><td colspan="5"><div class="redBox">${esc(friendlyError(e))}</div></td></tr>`; return; }
+      renderRoster();
+    }
+    function renderRoster() {
+      const q = $("rosterSearch").value.trim().toLowerCase();
+      const list = rosterList.filter(r => !q || [r.username, r.nick, r.globalName].join(" ").toLowerCase().includes(q));
+      $("rosterBody").innerHTML = list.length ? list.map(r => `<tr>
+        <td><strong>@${esc(r.username)}</strong></td><td>${esc(r.nick || "—")}</td><td>${esc(r.globalName || "—")}</td>
+        <td>${r.inGuild === true ? `<span class="pill miniOk">Yes</span>` : r.inGuild === false ? `<span class="pill miniBad">No</span>` : "—"}</td>
+        <td style="font-size:12px;">${esc(fmtDate(r.lastSeenAt))}</td></tr>`).join("")
+        : `<tr><td colspan="5" class="muted">${rosterList.length ? "No drivers match." : "No drivers yet. Share your ticket page link — drivers appear here once they sign in."}</td></tr>`;
+    }
+    $("refreshRosterBtn").onclick = loadRoster;
+    $("rosterSearch").oninput = renderRoster;
+
     function renderNotifications() {
       const unread = notifications.filter(n => !n.read).length;
       const tab = document.querySelector('.tabBtn[data-tab="alerts"]');
       if (tab) tab.innerHTML = `Bans &amp; Alerts${unread ? ` <span class="pill miniBad" style="padding:1px 8px; margin-left:4px;">${unread}</span>` : ""}`;
       const ob = $("alertsBanner");
-      if (ob) ob.innerHTML = unread ? `<div class="bannerBox bannerRed" style="cursor:pointer;" id="alertsBannerBox">⛔ You have ${unread} new ITS alert${unread === 1 ? "" : "s"} about banned drivers.<small>Open Bans &amp; Alerts to see who and where.</small></div>` : "";
+      if (ob) ob.innerHTML = unread ? `<div class="bannerBox bannerRed" style="cursor:pointer;" id="alertsBannerBox">🔔 You have ${unread} new ITS alert${unread === 1 ? "" : "s"}.<small>Open Bans &amp; Alerts to see who and where.</small></div>` : "";
       const box = $("alertsBannerBox"); if (box) box.onclick = () => switchTab("alerts");
       $("markAllReadBtn").disabled = !unread;
       if (!notifications.length) { $("notifList").innerHTML = `<div class="muted">No alerts. You'll see one here if a driver from your league is banned elsewhere on ITS.</div>`; return; }
-      $("notifList").innerHTML = notifications.map(n => `
+      $("notifList").innerHTML = notifications.map(n => n.type && n.type !== "ban" ? `
+        <div class="checkItem ${n.read ? "optional" : "todo"}">
+          <div class="checkDot">${n.type === "subscription" ? "⏳" : n.type === "payment" ? "£" : "ℹ"}</div>
+          <div class="checkText">${esc(n.title || "ITS update")}<small>${esc(n.message || "")} · ${esc(fmtDate(n.createdAt))}</small></div>
+          <div class="row" style="flex-wrap:nowrap;">
+            ${n.type === "subscription" || n.type === "payment" ? `<button class="small" data-goplan2="1">Plan &amp; Billing</button>` : ""}
+            ${n.read ? "" : `<button class="small" data-read="${esc(n.id)}">Mark read</button>`}
+            <button class="small danger" data-dismiss="${esc(n.id)}">Dismiss</button>
+          </div>
+        </div>` : `
         <div class="checkItem ${n.read ? "optional" : "todo"}" style="${n.read ? "" : "border-color:var(--red-line); background:var(--red-soft);"}">
           <div class="checkDot" style="${n.read ? "" : "background:var(--red); color:#fff; border-color:var(--red);"}">⛔</div>
           <div class="checkText">
@@ -2901,6 +3070,7 @@
             <button class="small danger" data-dismiss="${esc(n.id)}">Dismiss</button>
           </div>
         </div>`).join("");
+      $("notifList").querySelectorAll("[data-goplan2]").forEach(b => b.onclick = () => switchTab("plan"));
       $("notifList").querySelectorAll("[data-read]").forEach(b => b.onclick = () => markRead([b.dataset.read]));
       $("notifList").querySelectorAll("[data-dismiss]").forEach(b => b.onclick = async () => {
         try { await leagueRef.collection("notifications").doc(b.dataset.dismiss).delete(); notifications = notifications.filter(n => n.id !== b.dataset.dismiss); renderNotifications(); }

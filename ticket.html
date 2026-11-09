@@ -707,14 +707,16 @@
     </div>
 
     <div class="card gateCard" id="authPanel" style="display:none;">
-      <div class="title" style="margin:0;">Sign in to continue</div>
-      <div class="muted">We ask you to sign in so stewards know who sent each ticket and statement. Use any Google account.</div>
+      <div class="title" style="margin:0;">Sign in with Discord</div>
+      <div class="muted">Sign in with your Discord account so stewards know exactly who sent each ticket and statement. Your Discord username is filled in for you — no typing, no mistakes.</div>
       <div class="bannerBox bannerAmber" id="inAppWarning" style="display:none; margin-top:12px;">
-        You're in an in-app browser (e.g. Discord). Google blocks sign-in here.
-        <small>Tap the ⋯ menu and choose “Open in browser” (Chrome or Safari), then sign in.</small>
+        You're in an in-app browser. If Discord sign-in doesn't open properly,
+        <small>tap the ⋯ menu and choose “Open in browser” (Chrome or Safari).</small>
       </div>
       <div class="row" style="justify-content:center; margin-top:16px;">
-        <button class="primary" id="authGoogleBtn">Continue with Google</button>
+        <button class="primary" id="authDiscordBtn" style="background:#5865F2; box-shadow:0 12px 26px rgba(88,101,242,.35);">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M20.3 4.4A19.6 19.6 0 0 0 15.4 3l-.6 1.3a18.2 18.2 0 0 0-5.6 0L8.6 3a19.5 19.5 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18a19.8 19.8 0 0 0 6 3l1.3-2.1a12.8 12.8 0 0 1-2-1l.5-.4a14.1 14.1 0 0 0 12.2 0l.5.4c-.6.4-1.3.7-2 1l1.3 2.1a19.7 19.7 0 0 0 6-3c.5-5.1-.8-9.6-3.6-13.6ZM8 15.3c-1.2 0-2.2-1.1-2.2-2.4S6.8 10.5 8 10.5s2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>
+          Continue with Discord</button>
       </div>
       <div class="muted" id="authError" style="margin-top:10px; color:var(--red-dark); text-align:center;"></div>
     </div>
@@ -842,7 +844,13 @@
       <section class="panel" id="panel-statement">
         <div class="card">
           <div class="title"><span class="iconChip chip-indigo"><svg class="icon" viewBox="0 0 24 24"><path d="M7 8h10M7 12h6"/><path d="M4 5h16v11H9l-5 4z"/></svg></span>Give a statement</div>
-          <div class="muted">Named in a ticket, or saw what happened? Give the stewards your side. You can send one statement per ticket.</div>
+          <div class="muted">Named in a ticket, or saw what happened? Pick the ticket below and give the stewards your side. You can send one statement per ticket.</div>
+          <div class="row" style="margin-top:12px; flex-wrap:nowrap;">
+            <input type="search" id="otSearch" placeholder="Search active tickets — driver, race, ticket ID…">
+            <button class="small" id="otRefresh">Refresh</button>
+          </div>
+          <div id="openTicketList" style="margin-top:10px; max-height:360px; overflow:auto;"></div>
+          <div class="orLine">— the ticket you picked —</div>
           <div class="stepGrid" style="margin-top:12px;">
             <div>
               <label class="muted">Ticket ID <span class="req">*</span></label>
@@ -910,6 +918,10 @@
               <div class="fieldMsg"></div>
             </div>
             <div class="stepFull">
+              <label class="muted">Email for our reply (optional)</label>
+              <input type="email" id="drContact" maxlength="120" placeholder="Leave blank and we'll reply by Discord DM">
+            </div>
+            <div class="stepFull">
               <label class="muted">Details <span class="req">*</span></label>
               <textarea id="drDetails" rows="4" maxlength="2000" placeholder="Tell us what you need. Include ticket IDs if it's about a particular decision."></textarea>
               <div class="fieldMsg" id="drDetailsMsg"></div>
@@ -933,7 +945,7 @@
     <div class="card" style="max-width:560px; margin:0 auto;">
       <div class="title" style="margin:0;">Before you start: your data and ITS</div>
       <div style="font-size:13.5px; line-height:1.55; color:#334155; margin-top:8px;">
-        <p style="margin:6px 0;"><strong id="pnLeague">This league</strong> uses ITS to manage stewarding. ITS stores your Discord username, tickets involving you, and stewarding decisions about you.</p>
+        <p style="margin:6px 0;"><strong id="pnLeague">This league</strong> uses ITS to manage stewarding. ITS stores your Discord account (ID, username and your nickname in the league's server), tickets involving you, and stewarding decisions about you.</p>
         <p style="margin:6px 0;"><strong>Shared with other ITS leagues:</strong> confirmed penalties and bans only, kept for 2 years from the decision and then deleted automatically.</p>
         <p style="margin:6px 0;"><strong>Never shared:</strong> open tickets, reports that didn't lead to a penalty, and internal steward notes.</p>
         <p style="margin:6px 0;">You can ask to see, correct or dispute your record, or have your data deleted, at any time from the <strong>Your data</strong> tab.</p>
@@ -952,6 +964,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js"></script>
   <script src="./firebase-init.js"></script>
+  <script src="./its-config.js"></script>
   <script src="./its-rules.js"></script>
   <script>
     // ============================================================
@@ -977,8 +990,13 @@
     }
 
     const params = new URLSearchParams(location.search);
-    const LID = (params.get("l") || params.get("league") || "").trim();
-    const STATEMENT_FOR = (params.get("statement") || "").trim();
+    // Coming back from Discord sign-in: the league + ticket were saved before leaving.
+    let pending = null;
+    if (params.get("code") || params.get("error")) { try { pending = JSON.parse(sessionStorage.getItem("ITS_DISCORD_STATE") || "null"); } catch (e) { pending = null; } }
+    const LID = (params.get("l") || params.get("league") || (pending && pending.lid) || "").trim();
+    const STATEMENT_FOR = (params.get("statement") || (pending && pending.statement) || "").trim();
+    const REDIRECT_URI = location.origin + location.pathname;
+    let me = { username: "", name: "" }; // verified Discord identity (from the sign-in token)
     let league = null, currentUser = null;
 
     function gate(title, html) {
@@ -1040,12 +1058,23 @@
       document.title = `${league.name} — Submit a Ticket`;
       $("brandTitle").textContent = `${league.name} — Tickets`;
       if (league.logoUrl) { const img = $("leagueLogo"); img.onerror = () => img.style.display = "none"; img.src = league.logoUrl; img.alt = league.name; img.style.display = "block"; }
-      if (!league.active) { gate("Tickets aren't open yet", `<strong>${esc(league.name)}</strong> isn't accepting tickets on ITS yet. Check with your league staff.`); return; }
+      if (!league.active) {
+        if (league.status === "expired") gate("Tickets are paused", `<strong>${esc(league.name)}</strong>'s ticket system is paused right now. Let your league staff know — it'll be back as soon as they sort it.`);
+        else gate("Tickets aren't open yet", `<strong>${esc(league.name)}</strong> isn't accepting tickets on ITS yet. Check with your league staff.`);
+        return;
+      }
 
       showPrivacyNotice();
+      await finishDiscordSignIn();
       auth.onAuthStateChanged(async (user) => {
         currentUser = user;
         $("loadingMsg").style.display = "none";
+        if (user) {
+          // Drivers must be signed in with Discord (staff Google sessions don't count here).
+          const claims = (await user.getIdTokenResult()).claims || {};
+          if (!claims.discordUsername) { await auth.signOut(); return; }
+          me = { username: claims.discordUsername, name: claims.discordName || claims.discordUsername };
+        }
         if (!user) {
           $("app").style.display = "none"; $("logoutBtn").style.display = "none"; $("who").textContent = "";
           $("authPanel").style.display = "block";
@@ -1054,26 +1083,93 @@
         }
         $("authPanel").style.display = "none";
         $("logoutBtn").style.display = "inline-flex";
-        $("who").textContent = `Signed in as ${user.email}`;
+        $("who").textContent = `Signed in with Discord as @${me.username}${me.name && me.name.toLowerCase() !== me.username ? ` (${me.name})` : ""}`;
         $("app").style.display = "block";
         restoreRemembered();
+        applyDiscordIdentity();
         loadRuleOptions();
+        loadOpenTickets();
         switchTab(STATEMENT_FOR ? "statement" : "ticket");
         if (STATEMENT_FOR) $("stTicket").value = STATEMENT_FOR;
       });
     })();
 
-    $("authGoogleBtn").onclick = async () => {
-      $("authError").textContent = "";
-      const p = new firebase.auth.GoogleAuthProvider();
-      p.setCustomParameters({ prompt: "select_account" });
-      try { await auth.signInWithPopup(p); }
-      catch (e) {
-        if (e && (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment")) { try { await auth.signInWithRedirect(p); return; } catch (e2) { e = e2; } }
-        if (e && e.code === "auth/popup-closed-by-user") return;
-        $("authError").textContent = friendlyError(e) || "Sign-in failed.";
-      }
+    // ---------- Discord sign-in ----------
+    $("authDiscordBtn").onclick = () => {
+      if (!ITS_CONFIG.discordClientId || /PASTE/.test(ITS_CONFIG.discordClientId)) { $("authError").textContent = "Discord sign-in isn't set up on ITS yet. Please tell the league staff."; return; }
+      const a = new Uint32Array(4); crypto.getRandomValues(a);
+      const state = Array.from(a, x => x.toString(36)).join("");
+      sessionStorage.setItem("ITS_DISCORD_STATE", JSON.stringify({ state, lid: LID, statement: STATEMENT_FOR }));
+      const q = new URLSearchParams({ client_id: ITS_CONFIG.discordClientId, response_type: "code", redirect_uri: REDIRECT_URI, scope: "identify guilds.members.read", state, prompt: "none" });
+      location.href = "https://discord.com/oauth2/authorize?" + q.toString();
     };
+
+    async function finishDiscordSignIn() {
+      const code = params.get("code"), state = params.get("state"), err = params.get("error");
+      if (!code && !err) return;
+      const clean = () => history.replaceState(null, "", `${location.pathname}?l=${encodeURIComponent(LID)}${STATEMENT_FOR ? "&statement=" + encodeURIComponent(STATEMENT_FOR) : ""}`);
+      if (err) { clean(); sessionStorage.removeItem("ITS_DISCORD_STATE"); setTimeout(() => $("authError").textContent = "Discord sign-in was cancelled.", 50); return; }
+      if (!pending || pending.state !== state) { clean(); setTimeout(() => $("authError").textContent = "That sign-in link was out of date — please press Continue with Discord again.", 50); return; }
+      sessionStorage.removeItem("ITS_DISCORD_STATE");
+      $("loadingMsg").textContent = "Signing you in with Discord…";
+      try {
+        const res = await functions.httpsCallable("discordsignin")({ code, redirectUri: REDIRECT_URI, leagueId: LID });
+        await auth.signInWithCustomToken(res.data.token);
+        const p = res.data.profile || {};
+        if (p.inGuild === false) setTimeout(() => toast(`Signed in — note: you don't seem to be in ${league.name}'s Discord server.`, 5000), 400);
+      } catch (e) {
+        setTimeout(() => $("authError").textContent = (e && e.message ? e.message.replace(/^Firebase:\s*/, "") : "Discord sign-in failed — please try again."), 50);
+      } finally { clean(); }
+    }
+
+    // Verified Discord username fills (and locks) every Discord box.
+    function applyDiscordIdentity() {
+      ["tkReporterDiscord", "stDiscord", "drDiscord"].forEach(id => {
+        const el = $(id); if (!el) return;
+        el.value = me.username; el.readOnly = true; el.classList.add("good"); el.classList.remove("bad");
+        el.title = "From your Discord account";
+        setMsg(msgFor(el), "ok", "✓ From your Discord account");
+      });
+      ["tkReporter", "stName"].forEach(id => { const el = $(id); if (el && !el.value && me.name) el.value = me.name; });
+    }
+
+    // ---------- active tickets (Give a statement) ----------
+    let openTickets = [];
+    async function loadOpenTickets() {
+      const box = $("openTicketList");
+      box.innerHTML = `<div class="muted">Loading active tickets…</div>`;
+      try {
+        const snap = await db.collection("leagues").doc(LID).collection("openTickets").orderBy("submittedAt", "desc").limit(200).get();
+        openTickets = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      } catch (e) { box.innerHTML = `<div class="muted">Couldn't load active tickets — you can still type the ticket ID below.</div>`; return; }
+      renderOpenTickets();
+    }
+    function renderOpenTickets() {
+      const q = ($("otSearch").value || "").trim().toLowerCase();
+      const box = $("openTicketList");
+      const mine = (t) => t.accusedDiscord === me.username ? "accused" : t.reporterDiscord === me.username ? "reporter" : "";
+      const list = openTickets.filter(t => !q || [t.id, t.accused, t.reporter, t.event, t.competition].join(" ").toLowerCase().includes(q))
+        .sort((a, b) => (mine(b) ? 1 : 0) - (mine(a) ? 1 : 0));
+      if (!list.length) { box.innerHTML = `<div class="muted">${openTickets.length ? "No active tickets match your search." : "No active tickets right now."}</div>`; return; }
+      box.innerHTML = list.map(t => {
+        const m = mine(t);
+        const when = t.submittedAt && t.submittedAt.toDate ? t.submittedAt.toDate().toLocaleDateString() : "";
+        return `<div class="checkItem ${m ? "todo" : "optional"}" style="margin-top:8px; ${m ? "border-color:var(--amber-line); background:var(--amber-soft);" : ""}">
+          <div class="checkText"><span class="mono" style="font-size:12px;">${esc(t.id)}</span> — ${esc(t.event || "Race")}${t.competition ? " · " + esc(t.competition) : ""}
+            <small><strong>${esc(t.accused || "?")}</strong> reported by ${esc(t.reporter || "?")}${when ? " · " + esc(when) : ""}${m ? ` · <strong style="color:var(--amber-dark);">You're the ${m}</strong>` : ""}</small></div>
+          <button class="small ${m ? "primary" : ""}" data-pick="${esc(t.id)}">Give statement</button>
+        </div>`;
+      }).join("");
+      box.querySelectorAll("[data-pick]").forEach(b => b.onclick = () => {
+        const t = openTickets.find(x => x.id === b.dataset.pick);
+        $("stTicket").value = t.id;
+        $("stRole").value = mine(t) || "witness";
+        $("stText").focus();
+        $("stTicket").scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    }
+    $("otSearch").addEventListener("input", renderOpenTickets);
+    $("otRefresh").onclick = loadOpenTickets;
     $("logoutBtn").onclick = async () => { await auth.signOut(); };
 
     function switchTab(id) {
@@ -1083,7 +1179,7 @@
     document.querySelectorAll(".tabBtn").forEach(b => b.onclick = () => switchTab(b.dataset.tab));
 
     // Remember the driver's own details on this device.
-    const REMEMBER = { tkReporter: "name", tkReporterDiscord: "discord", stName: "name", stDiscord: "discord", drDiscord: "discord", tkCompetition: "competition" };
+    const REMEMBER = { tkReporter: "name", stName: "name", tkCompetition: "competition" };
     function restoreRemembered() {
       Object.entries(REMEMBER).forEach(([id, k]) => {
         try { const v = localStorage.getItem(`ITS_DRIVER_${LID}_${k}`); if (v && !$(id).value) $(id).value = v; } catch (e) { /* ignore */ }
@@ -1169,7 +1265,7 @@
       }
       btn.disabled = false; btn.textContent = "Submit ticket";
       if (!id) { if (!$("tkSubmitMsg").textContent) setMsg($("tkSubmitMsg"), "bad", "Couldn't submit — please try again."); return; }
-      ["tkReporter", "tkReporterDiscord", "tkCompetition"].forEach(remember);
+      ["tkReporter", "tkCompetition"].forEach(remember);
       $("tkSuccessId").textContent = id;
       $("tkSuccess").style.display = "block";
       document.querySelector("#panel-ticket > .card").style.display = "none";
@@ -1211,12 +1307,12 @@
       const btn = $("drSubmitBtn"); btn.disabled = true; btn.textContent = "Sending…";
       try {
         await db.collection("dataRequests").add({
-          type, discordKey: discord, details, contact: currentUser.email || "",
+          type, discordKey: discord, details, contact: ($("drContact").value.trim() || ("Discord DM: @" + me.username)), discordName: me.name || "",
           source: "driver", leagueId: LID, leagueName: league.name,
           submittedByUid: currentUser.uid, submittedByEmail: (currentUser.email || "").toLowerCase(),
           status: "open", createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-        $("drSuccessEmail").textContent = currentUser.email || "your email";
+        $("drSuccessEmail").textContent = $("drContact").value.trim() || ("@" + me.username + " on Discord");
         $("drSuccess").style.display = "block";
         document.querySelector("#panel-data > .card").style.display = "none";
       } catch (e) { setMsg($("drSubmitMsg"), "bad", friendlyError(e) || "Couldn't send — please try again."); }
@@ -1250,7 +1346,7 @@
             submittedByEmail: (currentUser.email || "").toLowerCase(),
             submittedAt: firebase.firestore.FieldValue.serverTimestamp()
           });
-        ["stName", "stDiscord"].forEach(remember);
+        ["stName"].forEach(remember);
         $("stSuccessId").textContent = ticketId;
         $("stSuccess").style.display = "block";
         document.querySelector("#panel-statement > .card").style.display = "none";
