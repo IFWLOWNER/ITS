@@ -628,6 +628,10 @@
     .discordBtn{ display:inline-flex; align-items:center; gap:9px; min-height:40px; padding:8px 16px; border-radius:999px; background:#5865F2; color:#fff; font-weight:800; font-size:13px; text-decoration:none; box-shadow:0 8px 20px rgba(88,101,242,.3); transition:transform .15s ease; }
     .discordBtn:hover{ transform:translateY(-2px); background:#4752C4; color:#fff; opacity:1; }
     .discordBtn.big{ min-height:58px; padding:14px 26px; font-size:16px; }
+    .gamePicker{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+    .gameChip{ display:inline-flex; align-items:center; gap:7px; padding:7px 12px; border:1px solid var(--line); border-radius:999px; background:#fff; font-size:13px; font-weight:650; cursor:pointer; user-select:none; }
+    .gameChip input{ width:auto; margin:0; accent-color:var(--primary); }
+    .gameChip:has(input:checked){ border-color:var(--primary); background:var(--indigo-soft); color:var(--primary-dark); }
   </style>
 
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@1,800&display=swap" rel="stylesheet">
@@ -757,9 +761,10 @@
             <label class="muted">League name</label>
             <input type="text" id="leagueName" placeholder="e.g. GT World Sprint League">
           </div>
-          <div>
-            <label class="muted">Game / competition (optional)</label>
-            <input type="text" id="leagueGame" placeholder="e.g. Assetto Corsa Competizione">
+          <div style="grid-column:1 / -1;">
+            <label class="muted">Which games does your league run? (tick all that apply)</label>
+            <div class="gamePicker" id="leagueGames"></div>
+            <input type="text" id="leagueGamesOther" maxlength="200" placeholder="Other games, separated by commas (optional)" style="margin-top:8px;">
           </div>
           <div>
             <label class="muted">Timezone (optional)</label>
@@ -967,6 +972,27 @@
       if (url) $("logoPreview").src = url;
     });
 
+    const ITS_GAMES = [
+      "Assetto Corsa Competizione", "Assetto Corsa EVO", "Assetto Corsa", "Assetto Corsa Rally",
+      "Le Mans Ultimate", "iRacing", "rFactor 2", "RaceRoom", "Automobilista 2",
+      "F1 25", "Gran Turismo 7", "Forza Motorsport", "EA SPORTS WRC", "Rocket League"
+    ];
+    // Multi-game picker: tick boxes for known games + a free-text "other games" box.
+    function renderGamePicker(boxId, otherId, selected) {
+      const sel = (selected || []).map(String);
+      const known = sel.filter(g => ITS_GAMES.includes(g)), extra = sel.filter(g => !ITS_GAMES.includes(g));
+      document.getElementById(boxId).innerHTML = ITS_GAMES.map((g, i) => `<label class="gameChip"><input type="checkbox" value="${g.replace(/"/g, "&quot;")}" ${known.includes(g) ? "checked" : ""}><span>${g}</span></label>`).join("");
+      document.getElementById(otherId).value = extra.join(", ");
+    }
+    function readGamePicker(boxId, otherId) {
+      const picked = [...document.querySelectorAll(`#${boxId} input:checked`)].map(i => i.value);
+      const extra = (document.getElementById(otherId).value || "").split(",").map(s => s.trim()).filter(Boolean);
+      const seen = new Set(), out = [];
+      [...picked, ...extra].forEach(g => { const k = g.toLowerCase(); if (!seen.has(k) && out.length < 10) { seen.add(k); out.push(g.slice(0, 60)); } });
+      return out;
+    }
+    renderGamePicker("leagueGames", "leagueGamesOther", []);
+
     function showWizardError(msg) { $("wizardError").textContent = msg || ""; }
 
     $("createLeagueBtn").onclick = async () => {
@@ -976,7 +1002,7 @@
 
       const payload = {
         name,
-        game: ($("leagueGame").value || "").trim(),
+        games: readGamePicker("leagueGames", "leagueGamesOther"),
         timezone: ($("leagueTimezone").value || "").trim(),
         logoUrl: ($("leagueLogoUrl").value || "").trim(),
         discordGuildId: ($("discordGuildId").value || "").trim(),
